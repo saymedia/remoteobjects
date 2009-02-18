@@ -181,6 +181,13 @@ class RemoteObject(DataObject):
 
         return response, content
 
+    def update_from_response(self, response, content):
+        data = json.loads(content)
+        self.update_from_dict(data)
+        self._id = response['content-location']  # follow redirects
+        if 'etag' in response:
+            self._etag = response['etag']
+
     @classmethod
     def get(cls, url, http=None, **kwargs):
         """Fetches a RemoteObject from a URL.
@@ -191,12 +198,9 @@ class RemoteObject(DataObject):
 
         """
         response, content = cls.get_response(url, http)
-        data = json.loads(content)
-        x = cls.from_dict(data)
-        x._id = response['content-location']  # follow redirects
-        if 'etag' in response:
-            x._etag = response['etag']
-        return x
+        self = cls()
+        self.update_from_response(response, content)
+        return self
 
     def save(self, http=None):
         """Save a RemoteObject to a remote resource.
@@ -234,11 +238,5 @@ class RemoteObject(DataObject):
         # TBD: check for errors
         # self._raise_response(response, classname=type(self).__name__, url=url)
 
-        # TODO: follow redirects first?
         logging.debug('Yay saved my obj, now turning %s into new content' % (content,))
-        new_body = json.loads(content)
-        new_inst = type(self).from_dict(new_body)
-        self.__dict__.update(new_inst.__dict__)
-        self._id = response['content-location']
-        if 'etag' in response:
-            self._etag = response['etag']
+        self.update_from_response(response, content)

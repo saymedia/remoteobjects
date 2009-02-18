@@ -82,6 +82,9 @@ class DataObject(object):
     def from_dict(cls, data):
         """Decodes a dictionary into an instance of the DataObject class."""
         self = cls()
-        for field_name, field in cls.fields.iteritems():
-            field.decode_into(data, self, field_name=field_name)
+        self.update_from_dict(data)
         return self
+
+    def update_from_dict(self, data):
+        for field_name, field in self.fields.iteritems():
+            field.decode_into(data, self, field_name=field_name)
