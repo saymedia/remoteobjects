@@ -170,12 +170,17 @@ class RemoteObject(DataObject):
             raise BadResponse('Bad response fetching %s %s: content-type is %s, not JSON' % (classname, url, response.get('content-type')))
 
     @classmethod
-    def get_response(cls, url, http=None):
+    def get_response(cls, url, http=None, headers=None, **kwargs):
         logging.debug('Fetching %s' % (url,))
+
+        if headers is None:
+            headers = {}
+        if 'accept' not in headers:
+            headers['accept'] = 'application/json'
 
         if http is None:
             http = userAgent
-        response, content = http.request(url, headers={'accept': 'application/json'})
+        response, content = http.request(url, headers=headers, **kwargs)
         cls._raise_response(response, classname=cls.__name__, url=url)
         logging.debug('Got content %s' % (content,))
 
@@ -213,12 +218,9 @@ class RemoteObject(DataObject):
         objects should be compatible with `httplib2.Http` objects.
 
         """
-        if http is None:
-            http = userAgent
-
         body = json.dumps(self.to_dict(), default=omit_nulls)
 
-        headers = {'accept': 'application/json'}
+        headers = {}
         if self._id is not None:
             url = self._id
             method = 'PUT'
@@ -233,10 +235,7 @@ class RemoteObject(DataObject):
             method = 'POST'
             # raise ValueError('nowhere to save this object to?')
 
-        (response, content) = http.request(url, method=method, body=body, headers=headers)
-
-        # TBD: check for errors
-        # self._raise_response(response, classname=type(self).__name__, url=url)
-
+        response, content = self.get_response(url, http=http, method=method,
+            body=body, headers=headers)
         logging.debug('Yay saved my obj, now turning %s into new content' % (content,))
         self.update_from_response(response, content)
