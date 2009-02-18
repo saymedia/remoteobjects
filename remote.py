@@ -207,7 +207,15 @@ class RemoteObject(DataObject):
         self.update_from_response(response, content)
         return self
 
-    def save(self, http=None):
+    def post(self, obj, http=None):
+        if getattr(self, '_id', None) is None:
+            raise ValueError, 'Cannot add %r to %r with no URL to POST to' % (obj, self)
+
+        body = json.dumps(obj.to_dict(), default=omit_nulls)
+        response, content = self.get_response(self._id, http=http,
+            method='POST', body=body)
+
+    def put(self, http=None):
         """Save a RemoteObject to a remote resource.
 
         If the RemoteObject was fetched with a `get()` call, it is saved by
@@ -218,24 +226,16 @@ class RemoteObject(DataObject):
         objects should be compatible with `httplib2.Http` objects.
 
         """
+        if getattr(self, '_id', None) is None:
+            raise ValueError, 'Cannot save %r with no URL to PUT to' % (self,)
+
         body = json.dumps(self.to_dict(), default=omit_nulls)
 
         headers = {}
-        if self._id is not None:
-            url = self._id
-            method = 'PUT'
-            if hasattr(self, _etag) and self._etag is not None:
-                headers['if-match'] = self._etag
-        elif self.parent is not None and self.parent._id is not None:
-            url = self.parent._id
-            method = 'POST'
-        else:
-            # FIXME: !
-            url = urljoin(BASE_URL, '/blogs/1/posts.json')
-            method = 'POST'
-            # raise ValueError('nowhere to save this object to?')
+        if hasattr(self, _etag) and self._etag is not None:
+            headers['if-match'] = self._etag
 
-        response, content = self.get_response(url, http=http, method=method,
+        response, content = self.get_response(self._id, http=http, method='PUT',
             body=body, headers=headers)
         logging.debug('Yay saved my obj, now turning %s into new content' % (content,))
         self.update_from_response(response, content)

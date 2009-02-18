@@ -68,7 +68,6 @@ class DataObject(object):
 
     def __init__(self, **kwargs):
         self._id = None
-        self.parent = None
         self.__dict__.update(kwargs)
 
     def to_dict(self):
