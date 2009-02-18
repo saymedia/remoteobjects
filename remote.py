@@ -17,8 +17,6 @@ from remoteobjects.dataobject import DataObject, DataObjectMetaclass
 
 # TODO configurable?
 BASE_URL = 'http://127.0.0.1:8000/'
-EMAIL    = 'mjmalone@gmail.com'
-PASSWORD = 'password'
 
 userAgent = httplib2.Http()
 
@@ -212,7 +210,6 @@ class RemoteObject(DataObject):
         """
         if http is None:
             http = userAgent
-        http.add_credentials(EMAIL, PASSWORD)
 
         body = json.dumps(self.to_dict(), default=omit_nulls)
 
