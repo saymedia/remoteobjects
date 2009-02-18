@@ -133,6 +133,7 @@ class RemoteObjectMetaclass(DataObjectMetaclass):
                 def make_method(linkobj):
                     def method(self, **kwargs):
                         return linkobj(self, **kwargs)
+                    method.__name__ = attrname
                     return method
                 attrs[attrname] = make_method(link)
             elif attrname in links:
