@@ -109,7 +109,7 @@ class Link(object):
 
         # Get the content.
         resp, content = RemoteObject.get_response(url, http=kwargs.get('http'))
-        data = simplejson.loads(content)
+        data = json.loads(content)
 
         # Have our field decode it.
         j = self.fld.decode(data)
