@@ -7,7 +7,8 @@ except ImportError:
 import httplib2
 import httplib
 import logging
-from urlparse import urljoin
+from urlparse import urljoin, urlparse, urlunparse
+from urllib import quote_plus
 import types
 from datetime import datetime
 import time
@@ -95,20 +96,54 @@ class Link(object):
         function too.
 
         """
+        http = kwargs.get('http')
+        if http is not None:
+            del kwargs['http']
+
         if callable(self.url):
             # Only give the url function the arguments it expects.
             import inspect
-            if inspect.getargspec(self.url)[2] is not None:
-                url = self.url(obj, **kwargs)
+            argument_names, vararg_name, varkw_name, defaults = inspect.getargspec(self.url)
+            if varkw_name is not None:
+                # Well, give it everything then.
+                urlargs = kwargs
+                kwargs = {}
+                url = self.url(obj, **urlargs)
             else:
-                url = self.url(obj)
+                # Only give the url function the kw arguments it'll take.
+                urlargs = {}
+                for argname in argument_names:
+                    if argname in kwargs:
+                        urlargs[argname] = kwargs[argname]
+                        del kwargs[argname]
+                url = self.url(obj, **urlargs)
         else:
             if getattr(obj, '_id') is None:
                 raise ValueError, "The object must have an identity URL before you can follow its link"
             url = urljoin(obj._id, self.url)
 
+        # Add remaining kwargs as query parameters.
+        if kwargs:
+            queryparts = []
+            for k, v in kwargs.iteritems():
+                if v is None:
+                    continue
+                # TODO: no one uses underscores in query parameters. that would be crazy.
+                k = k.replace('_', '-')
+                v = quote_plus(str(v))
+                queryparts.append('%s=%s' % (k, v))
+            if queryparts:
+                query = '&'.join(queryparts)
+                # Add it to the url, or to existing query params if present.
+                parts = list(urlparse(url))
+                if parts[4]:
+                    parts[4] += '&' + query
+                else:
+                    parts[4] = query
+                url = urlunparse(parts)
+
         # Get the content.
-        resp, content = RemoteObject.get_response(url, http=kwargs.get('http'))
+        resp, content = RemoteObject.get_response(url, http=http)
         data = json.loads(content)
 
         # Have our field decode it.
