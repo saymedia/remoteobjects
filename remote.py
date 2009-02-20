@@ -205,7 +205,7 @@ class RemoteObject(DataObject):
         if response.status == httplib.UNAUTHORIZED:
             raise Unauthorized('Not authorized to fetch %s %s' % (classname, url))
         # catch other unhandled
-        if response.status != httplib.OK:
+        if (response.status != httplib.OK) and (response.status != 201): # 201 = CREATED
             raise BadResponse('Bad response fetching %s %s: %d %s' % (classname, url, response.status, response.reason))
         if response.get('content-type') != 'application/json':
             raise BadResponse('Bad response fetching %s %s: content-type is %s, not JSON' % (classname, url, response.get('content-type')))
