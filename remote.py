@@ -143,11 +143,17 @@ class Link(object):
                 url = urlunparse(parts)
 
         # Get the content.
-        resp, content = RemoteObject.get_response(url, http=http)
+        response, content = RemoteObject.get_response(url, http=http)
         data = json.loads(content)
 
         # Have our field decode it.
         j = self.fld.decode(data)
+
+        # Make sure the object knows where it came from.
+        # TODO: refactor this against update_from_response somehow? ugh
+        j._id = response['content-location']  # follow redirects
+        if 'etag' in response:
+            j._etag = response['etag']
 
         return j
 
