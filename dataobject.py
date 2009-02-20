@@ -51,7 +51,7 @@ class DataObject(object):
     DataObject subclasses should be declared with their different data
     attributes defined as instances of fields from the `remoteobjects.fields`
     module. For example:
-    
+
     >>> from remoteobjects import DataObject, fields
     >>> class Asset(DataObject):
     ...     name    = fields.Something()
