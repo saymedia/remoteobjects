@@ -230,7 +230,8 @@ class RemoteObject(DataObject):
     def update_from_response(self, response, content):
         data = json.loads(content)
         self.update_from_dict(data)
-        self._id = response['content-location']  # follow redirects
+        if 'content-location' in response:
+            self._id = response['content-location']  # follow redirects
         if 'etag' in response:
             self._etag = response['etag']
 
@@ -255,6 +256,10 @@ class RemoteObject(DataObject):
         body = json.dumps(obj.to_dict(), default=omit_nulls)
         response, content = self.get_response(self._id, http=http,
             method='POST', body=body)
+        # obj.update_from_response(response, content)
+        new_obj = obj.__class__()
+        new_obj.update_from_response(response, content)
+        return new_obj
 
     def put(self, http=None):
         """Save a RemoteObject to a remote resource.
