@@ -75,7 +75,7 @@ class DataObject(object):
         try:
             # TODO: this shallow copy only prevents sticky modification of the
             # dict's contents, not the contents' contents.
-            data = dict(self._dict)
+            data = dict(self._originaldata)
         except AttributeError:
             data = {}
 
@@ -104,9 +104,9 @@ class DataObject(object):
 
         """
         # Remember this extra data, so we can play it back later.
-        if not hasattr(self, '_dict'):
-            self._dict = {}
-        self._dict.update(data)
+        if not hasattr(self, '_originaldata'):
+            self._originaldata = {}
+        self._originaldata.update(data)
 
         for field_name, field in self.fields.iteritems():
             field.decode_into(data, self, field_name=field_name)
