@@ -72,7 +72,13 @@ class DataObject(object):
 
     def to_dict(self):
         """Encodes the DataObject to a dictionary."""
-        data = getattr(self, '_dict', {})
+        try:
+            # TODO: this shallow copy only prevents sticky modification of the
+            # dict's contents, not the contents' contents.
+            data = dict(self._dict)
+        except AttributeError:
+            data = {}
+
         for field_name, field in self.fields.iteritems():
             field.encode_into(self, data, field_name=field_name)
         return data
