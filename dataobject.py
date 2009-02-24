@@ -72,7 +72,7 @@ class DataObject(object):
 
     def to_dict(self):
         """Encodes the DataObject to a dictionary."""
-        data = {}
+        data = getattr(self, '_dict', {})
         for field_name, field in self.fields.iteritems():
             field.encode_into(self, data, field_name=field_name)
         return data
@@ -97,5 +97,10 @@ class DataObject(object):
         object with `from_dict()`.
 
         """
+        # Remember this extra data, so we can play it back later.
+        if not hasattr(self, '_dict'):
+            self._dict = {}
+        self._dict.update(data)
+
         for field_name, field in self.fields.iteritems():
             field.decode_into(data, self, field_name=field_name)
