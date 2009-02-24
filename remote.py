@@ -22,12 +22,35 @@ BASE_URL = 'http://127.0.0.1:8000/'
 userAgent = httplib2.Http()
 
 class NotFound(httplib.HTTPException):
+    """An HTTPException thrown when the server reports that the requested
+    resource was not found."""
     pass
 
 class Unauthorized(httplib.HTTPException):
+    """An HTTPException thrown when the server reports that the requested
+    resource is not available through an unauthenticated request.
+
+    This exception corresponds to the HTTP status code 401. Thus when this
+    exception is received, the caller may need to try again using the
+    available authentication credentials.
+
+    """
+    pass
+
+class Forbidden(httplib.HTTPException):
+    """An HTTPException thrown when the server reports that the client, as
+    authenticated, is not authorized to request the requested resource.
+
+    This exception corresponds to the HTTP status code 403. Thus when this
+    exception is received, nothing the caller (as currently authenticated) can
+    do will make the requested resource available.
+
+    """
     pass
 
 class BadResponse(httplib.HTTPException):
+    """An HTTPException thrown when the client receives some other non-success
+    HTTP response."""
     pass
 
 def omit_nulls(data):
@@ -204,6 +227,8 @@ class RemoteObject(DataObject):
             raise NotFound('No such %s %s' % (classname, url))
         if response.status == httplib.UNAUTHORIZED:
             raise Unauthorized('Not authorized to fetch %s %s' % (classname, url))
+        if response.status == httplib.FORBIDDEN:
+            raise Forbidden('Forbidden from fetching %s %s' % (classname, url))
         # catch other unhandled
         if (response.status != httplib.OK) and (response.status != 201): # 201 = CREATED
             raise BadResponse('Bad response fetching %s %s: %d %s' % (classname, url, response.status, response.reason))
