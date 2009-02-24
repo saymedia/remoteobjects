@@ -85,5 +85,17 @@ class DataObject(object):
         return self
 
     def update_from_dict(self, data):
+        """Adds the content of a dictionary to this DataObject.
+
+        Parameter `data` is the dictionary from which to update the object.
+
+        Use this only when receiving newly updated or partial content for a
+        DataObject; that is, when the data is from the outside data source and
+        needs decoded through the object's fields. Data from "inside" should
+        be added to an object manually by setting the object's attributes.
+        Data that constitutes a new object should be turned into another
+        object with `from_dict()`.
+
+        """
         for field_name, field in self.fields.iteritems():
             field.decode_into(data, self, field_name=field_name)

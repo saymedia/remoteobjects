@@ -228,8 +228,16 @@ class RemoteObject(DataObject):
         return response, content
 
     def update_from_response(self, response, content):
+        """Adds the content of this HTTP response and message body to this RemoteObject.
+
+        Use `update_from_response()` only when you would use
+        `DataObject.update_from_dict()`: when decoding outside content (in
+        this case an HTTP response) into an existing RemoteObject.
+
+        """
         data = json.loads(content)
         self.update_from_dict(data)
+        # TODO: when is there ever no content-location? for unfollowed redirects?
         if 'content-location' in response:
             self._id = response['content-location']  # follow redirects
         if 'etag' in response:
@@ -245,17 +253,30 @@ class RemoteObject(DataObject):
 
         """
         response, content = cls.get_response(url, http)
+        # Make a new instance and use update_from_response(), rather than
+        # having a superfluous from_response() classmethod for this one call.
         self = cls()
         self.update_from_response(response, content)
         return self
 
     def post(self, obj, http=None):
+        """Add another RemoteObject to this remote resource with a `POST`.
+
+        Parameter `obj` is a RemoteObject to save to this RemoteObject's
+        resource. For example, this (`self`) may be a collection to which you
+        want to post an asset (`obj`).
+
+        Optional parameter `http` is the user agent object to use for posting.
+        `http` should be compatible with `httplib2.Http` objects.
+
+        """
         if getattr(self, '_id', None) is None:
             raise ValueError, 'Cannot add %r to %r with no URL to POST to' % (obj, self)
 
         body = json.dumps(obj.to_dict(), default=omit_nulls)
         response, content = self.get_response(self._id, http=http,
             method='POST', body=body)
+        # TODO: wtf this is not a new object
         # obj.update_from_response(response, content)
         new_obj = obj.__class__()
         new_obj.update_from_response(response, content)
