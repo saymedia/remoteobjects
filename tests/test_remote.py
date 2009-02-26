@@ -18,6 +18,41 @@ class TestDataObjects(test_dataobject.TestDataObjects):
 
 class TestBasic(unittest.TestCase):
 
+    def testGet(self):
+
+        class BasicMost(RemoteObject):
+            name  = fields.Something()
+            value = fields.Something()
+
+        headers = {'accept': 'application/json'}
+        content = """{"name": "Fred", "value": 7}"""
+        with tests.MockedHttp('http://example.com/ohhai', content, headers=headers) as h:
+            b = BasicMost.get('http://example.com/ohhai', http=h)
+
+        self.assertEquals(b.name, 'Fred')
+        self.assertEquals(b.value, 7)
+
+
+    @tests.todo
+    def testPut(self):
+
+        class BasicMost(RemoteObject):
+            name  = fields.Something()
+            value = fields.Something()
+
+        b = BasicMost()
+        self.assertRaises(ValueError, lambda: b.put())
+
+        headers = {'accept': 'application/json'}
+        content = """{"name": "Molly", "value": 80}"""
+        with tests.MockedHttp('http://example.com/bwuh', content, headers=headers) as h:
+            b = BasicMost.get('http://example.com/bwuh', http=h)
+
+        request = dict(url='http://example.com/bwuh', method='PUT', headers=headers)
+        with tests.MockedHttp(request, content) as h:
+            b.put()
+
+
     def testNotFound(self):
         self.assert_(RemoteObject.NotFound)
 

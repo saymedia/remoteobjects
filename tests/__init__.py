@@ -18,12 +18,30 @@ def todo(fn):
     return testReverse
 
 class MockedHttp(object):
-    def __init__(self, request, response, **kwargs):
+    def __init__(self, req_or_url, resp_or_content, **kwargs):
+        self.mock = mox.MockObject(httplib2.Http)
+
+        url,  req     = self.make_request(req_or_url, **kwargs)
+        resp, content = self.make_response(resp_or_content, url)
+        self.mock.request(url, **req).AndReturn((resp, content))
+
+    def make_request(self, request, **kwargs):
+        request_info = {}
+        if isinstance(request, dict):
+            url = request['url']
+            del request['url']
+            request_info.update(request)
+        else:
+            url = request
+        request_info.update(kwargs)
+        return url, request_info
+
+    def make_response(self, response, url):
         response_info = {
-            'status': 200,
-            'etag': '7',
-            'content-type': 'application/json',
-            'content-location': request,
+            'status':           200,
+            'etag':             '7',
+            'content-type':     'application/json',
+            'content-location': url,
         }
         if isinstance(response, dict):
             if 'content' in response:
@@ -35,10 +53,7 @@ class MockedHttp(object):
         else:
             content = response
 
-        response_obj = httplib2.Response(response_info)
-        self.mock = mox.MockObject(httplib2.Http)
-
-        self.mock.request(request, **kwargs).AndReturn((response_obj, content))
+        return httplib2.Response(response_info), content
 
     def __enter__(self):
         mox.Replay(self.mock)
