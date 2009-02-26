@@ -56,6 +56,32 @@ class TestBasic(unittest.TestCase):
             b.put(http=h)
 
 
+    def testDelete(self):
+
+        class BasicMost(RemoteObject):
+            name  = fields.Something()
+            value = fields.Something()
+
+        b = BasicMost()
+        self.assertRaises(ValueError, lambda: b.put())
+
+        headers = {'accept': 'application/json'}
+        content = """{"name": "Molly", "value": 80}"""
+        with tests.MockedHttp('http://example.com/bwuh', content, headers=headers) as h:
+            b = BasicMost.get('http://example.com/bwuh', http=h)
+
+        headers = {
+            'accept':   'application/json',
+            'if-match': '7',  # default etag
+        }
+        request  = dict(url='http://example.com/bwuh', method='DELETE', headers=headers)
+        response = dict(status=204)
+        with tests.MockedHttp(request, response) as h:
+            b.delete(http=h)
+
+        self.failIf(hasattr(b, '_id'))
+
+
     def testNotFound(self):
         self.assert_(RemoteObject.NotFound)
 

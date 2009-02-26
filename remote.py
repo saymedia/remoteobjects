@@ -231,7 +231,7 @@ class RemoteObject(DataObject):
         if response.status == httplib.FORBIDDEN:
             raise cls.Forbidden('Forbidden from fetching %s %s' % (classname, url))
         # catch other unhandled
-        if (response.status != httplib.OK) and (response.status != 201): # 201 = CREATED
+        if response.status not in (httplib.OK, httplib.CREATED, httplib.NO_CONTENT):
             raise cls.BadResponse('Bad response fetching %s %s: %d %s' % (classname, url, response.status, response.reason))
         if response.get('content-type') != 'application/json':
             raise cls.BadResponse('Bad response fetching %s %s: content-type is %s, not JSON' % (classname, url, response.get('content-type')))
@@ -332,3 +332,27 @@ class RemoteObject(DataObject):
             body=body, headers=headers)
         logging.debug('Yay saved my obj, now turning %s into new content' % (content,))
         self.update_from_response(response, content)
+
+    def delete(self, http=None):
+        """Delete the remote resource represented by a RemoteObject.
+
+        If the RemoteObject was fetched with a `get()` call, it is deleted
+        through an HTTP `DELETE` to the resource's URL.
+
+        Optional parameter `http` is the user agent object to use. `http`
+        objects should be compatible with `httplib2.Http` objects.
+
+        """
+        if getattr(self, '_id', None) is None:
+            raise ValueError, 'Cannot delete %r with no URL to DELETE' % (self,)
+
+        headers = {}
+        if hasattr(self, '_etag') and self._etag is not None:
+            headers['if-match'] = self._etag
+
+        response, content = self.get_response(self._id, http=http,
+            method='DELETE', headers=headers)
+        logging.debug('Yay deleted the obj, now... something something')
+
+        # No more resource, no more URL.
+        del self._id
