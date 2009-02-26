@@ -18,16 +18,27 @@ def todo(fn):
     return testReverse
 
 class MockedHttp(object):
-    def __init__(self, url, content, **kwargs):
-        resp = httplib2.Response({
+    def __init__(self, request, response, **kwargs):
+        response_info = {
             'status': 200,
             'etag': '7',
             'content-type': 'application/json',
-            'content-location': url,
-        })
+            'content-location': request,
+        }
+        if isinstance(response, dict):
+            if 'content' in response:
+                content = response['content']
+                del response['content']
+            else:
+                content = ''
+            response_info.update(response)
+        else:
+            content = response
+
+        response_obj = httplib2.Response(response_info)
         self.mock = mox.MockObject(httplib2.Http)
 
-        self.mock.request(url, **kwargs).AndReturn((resp, content))
+        self.mock.request(request, **kwargs).AndReturn((response_obj, content))
 
     def __enter__(self):
         mox.Replay(self.mock)

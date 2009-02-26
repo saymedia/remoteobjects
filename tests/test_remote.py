@@ -36,6 +36,20 @@ class TestLinks(unittest.TestCase):
         self.assertEquals(w._id, 'http://example.com/asf', "stuff's What knows its _id")
 
 
+    def testNotFound(self):
+        self.assert_(remote.RemoteObject.NotFound)
+
+        class Huh(remote.RemoteObject):
+            pass
+
+        self.assert_(Huh.NotFound)
+
+        headers = { 'accept': 'application/json' }
+        response = {'content': '', 'status': 404}
+        with tests.MockedHttp('http://example.com/bwuh', response, headers=headers) as http:
+            self.assertRaises(Huh.NotFound, lambda: Huh.get('http://example.com/bwuh', http=http))
+
+
     def testCallable(self):
 
         class What(remote.RemoteObject):

@@ -21,38 +21,6 @@ BASE_URL = 'http://127.0.0.1:8000/'
 
 userAgent = httplib2.Http()
 
-class NotFound(httplib.HTTPException):
-    """An HTTPException thrown when the server reports that the requested
-    resource was not found."""
-    pass
-
-class Unauthorized(httplib.HTTPException):
-    """An HTTPException thrown when the server reports that the requested
-    resource is not available through an unauthenticated request.
-
-    This exception corresponds to the HTTP status code 401. Thus when this
-    exception is received, the caller may need to try again using the
-    available authentication credentials.
-
-    """
-    pass
-
-class Forbidden(httplib.HTTPException):
-    """An HTTPException thrown when the server reports that the client, as
-    authenticated, is not authorized to request the requested resource.
-
-    This exception corresponds to the HTTP status code 403. Thus when this
-    exception is received, nothing the caller (as currently authenticated) can
-    do will make the requested resource available.
-
-    """
-    pass
-
-class BadResponse(httplib.HTTPException):
-    """An HTTPException thrown when the client receives some other non-success
-    HTTP response."""
-    pass
-
 def omit_nulls(data):
     if not isinstance(data, dict):
         if not hasattr(data, '__dict__'):
@@ -220,20 +188,53 @@ class RemoteObject(DataObject):
 
     __metaclass__ = RemoteObjectMetaclass
 
-    @staticmethod
-    def _raise_response(response, classname, url):
+    class NotFound(httplib.HTTPException):
+        """An HTTPException thrown when the server reports that the requested
+        resource was not found."""
+        pass
+
+    class Unauthorized(httplib.HTTPException):
+        """An HTTPException thrown when the server reports that the requested
+        resource is not available through an unauthenticated request.
+
+        This exception corresponds to the HTTP status code 401. Thus when this
+        exception is received, the caller may need to try again using the
+        available authentication credentials.
+
+        """
+        pass
+
+    class Forbidden(httplib.HTTPException):
+        """An HTTPException thrown when the server reports that the client, as
+        authenticated, is not authorized to request the requested resource.
+
+        This exception corresponds to the HTTP status code 403. Thus when this
+        exception is received, nothing the caller (as currently authenticated) can
+        do will make the requested resource available.
+
+        """
+        pass
+
+    class BadResponse(httplib.HTTPException):
+        """An HTTPException thrown when the client receives some other non-success
+        HTTP response."""
+        pass
+
+    @classmethod
+    def _raise_response(cls, response, url):
         # Turn exceptional httplib2 responses into exceptions.
+        classname = cls.__name__
         if response.status == httplib.NOT_FOUND: 
-            raise NotFound('No such %s %s' % (classname, url))
+            raise cls.NotFound('No such %s %s' % (classname, url))
         if response.status == httplib.UNAUTHORIZED:
-            raise Unauthorized('Not authorized to fetch %s %s' % (classname, url))
+            raise cls.Unauthorized('Not authorized to fetch %s %s' % (classname, url))
         if response.status == httplib.FORBIDDEN:
-            raise Forbidden('Forbidden from fetching %s %s' % (classname, url))
+            raise cls.Forbidden('Forbidden from fetching %s %s' % (classname, url))
         # catch other unhandled
         if (response.status != httplib.OK) and (response.status != 201): # 201 = CREATED
-            raise BadResponse('Bad response fetching %s %s: %d %s' % (classname, url, response.status, response.reason))
+            raise cls.BadResponse('Bad response fetching %s %s: %d %s' % (classname, url, response.status, response.reason))
         if response.get('content-type') != 'application/json':
-            raise BadResponse('Bad response fetching %s %s: content-type is %s, not JSON' % (classname, url, response.get('content-type')))
+            raise cls.BadResponse('Bad response fetching %s %s: content-type is %s, not JSON' % (classname, url, response.get('content-type')))
 
     @classmethod
     def get_response(cls, url, http=None, headers=None, **kwargs):
@@ -247,7 +248,7 @@ class RemoteObject(DataObject):
         if http is None:
             http = userAgent
         response, content = http.request(url, headers=headers, **kwargs)
-        cls._raise_response(response, classname=cls.__name__, url=url)
+        cls._raise_response(response, url)
         logging.debug('Got content %s' % (content,))
 
         return response, content
