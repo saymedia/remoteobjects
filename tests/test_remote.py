@@ -50,6 +50,26 @@ class TestLinks(unittest.TestCase):
             self.assertRaises(Huh.NotFound, lambda: Huh.get('http://example.com/bwuh', http=http))
 
 
+    @tests.todo
+    def testNotFoundDiscrete(self):
+
+        class Huh(remote.RemoteObject):
+            pass
+
+        class What(remote.RemoteObject):
+            pass
+
+        def tryThat(http):
+            try:
+                What.get('http://example.com/bwuh', http=http)
+            # Let through What.NotFound only if it's not equivalent to Huh.NotFound.
+            except Huh.NotFound:
+                pass
+
+        with tests.MockedHttp('http://example.com/bwuh', response, headers=headers) as http:
+            self.assertRaises(What.NotFound, lambda: tryThat(http))
+
+
     def testCallable(self):
 
         class What(remote.RemoteObject):
