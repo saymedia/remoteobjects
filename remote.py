@@ -325,7 +325,7 @@ class RemoteObject(DataObject):
         body = json.dumps(self.to_dict(), default=omit_nulls)
 
         headers = {}
-        if hasattr(self, _etag) and self._etag is not None:
+        if hasattr(self, '_etag') and self._etag is not None:
             headers['if-match'] = self._etag
 
         response, content = self.get_response(self._id, http=http, method='PUT',

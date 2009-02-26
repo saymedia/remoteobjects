@@ -33,7 +33,6 @@ class TestBasic(unittest.TestCase):
         self.assertEquals(b.value, 7)
 
 
-    @tests.todo
     def testPut(self):
 
         class BasicMost(RemoteObject):
@@ -48,9 +47,13 @@ class TestBasic(unittest.TestCase):
         with tests.MockedHttp('http://example.com/bwuh', content, headers=headers) as h:
             b = BasicMost.get('http://example.com/bwuh', http=h)
 
-        request = dict(url='http://example.com/bwuh', method='PUT', headers=headers)
+        headers = {
+            'accept':   'application/json',
+            'if-match': '7',  # default etag
+        }
+        request = dict(url='http://example.com/bwuh', method='PUT', headers=headers, body=content)
         with tests.MockedHttp(request, content) as h:
-            b.put()
+            b.put(http=h)
 
 
     def testNotFound(self):
