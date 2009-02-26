@@ -8,9 +8,14 @@ from remoteobjects import tests, DataObject, fields
 
 class TestDataObjects(unittest.TestCase):
 
+    @property
+    def cls(self):
+        return DataObject
+
+
     def testBasic(self):
 
-        class BasicMost(DataObject):
+        class BasicMost(self.cls):
             name  = fields.Something()
             value = fields.Something()
 
@@ -29,7 +34,7 @@ class TestDataObjects(unittest.TestCase):
 
     def testTypes(self):
 
-        class WithTypes(DataObject):
+        class WithTypes(self.cls):
             name  = fields.Something()
             value = fields.Something()
             when  = fields.Datetime()
@@ -53,7 +58,7 @@ class TestDataObjects(unittest.TestCase):
 
     def testMustIgnore(self):
 
-        class BasicMost(DataObject):
+        class BasicMost(self.cls):
             name  = fields.Something()
             value = fields.Something()
 
@@ -95,10 +100,10 @@ class TestDataObjects(unittest.TestCase):
 
     def testStrongTypes(self):
 
-        class Blah(DataObject):
+        class Blah(self.cls):
             name = fields.Something()
 
-        class WithTypes(DataObject):
+        class WithTypes(self.cls):
             name  = fields.Something()
             value = fields.Something()
             when  = fields.Datetime()
@@ -122,10 +127,10 @@ class TestDataObjects(unittest.TestCase):
 
     def testComplex(self):
 
-        class Childer(DataObject):
+        class Childer(self.cls):
             name = fields.Something()
 
-        class Parentish(DataObject):
+        class Parentish(self.cls):
             name     = fields.Something()
             children = fields.List(fields.Object(Childer))
 
@@ -166,7 +171,7 @@ class TestDataObjects(unittest.TestCase):
 
     def testSelfReference(self):
 
-        class Reflexive(DataObject):
+        class Reflexive(self.cls):
             itself     = fields.Object('Reflexive')
             themselves = fields.List(fields.Object('Reflexive'))
 

@@ -5,15 +5,23 @@ import logging
 import sys
 from datetime import datetime
 
-from remoteobjects import tests, fields, remote
+from remoteobjects import tests, fields, remote, DataObject, RemoteObject
+from remoteobjects.tests import test_dataobject
+
+
+# Ensure DataObject API is preserved.
+class TestDataObjects(test_dataobject.TestDataObjects):
+    @property
+    def cls(self):
+        return remote.RemoteObject
 
 
 class TestBasic(unittest.TestCase):
 
     def testNotFound(self):
-        self.assert_(remote.RemoteObject.NotFound)
+        self.assert_(RemoteObject.NotFound)
 
-        class Huh(remote.RemoteObject):
+        class Huh(RemoteObject):
             pass
 
         self.assert_(Huh.NotFound)
@@ -27,10 +35,10 @@ class TestBasic(unittest.TestCase):
     @tests.todo
     def testNotFoundDiscrete(self):
 
-        class Huh(remote.RemoteObject):
+        class Huh(RemoteObject):
             pass
 
-        class What(remote.RemoteObject):
+        class What(RemoteObject):
             pass
 
         def tryThat(http):
@@ -48,10 +56,10 @@ class TestLinks(unittest.TestCase):
 
     def testBasic(self):
 
-        class What(remote.RemoteObject):
+        class What(RemoteObject):
             what = fields.Something()
 
-        class Linky(remote.RemoteObject):
+        class Linky(RemoteObject):
             name  = fields.Something()
             stuff = remote.Link(r'asf', fields.Object(What))
 
@@ -74,10 +82,10 @@ class TestLinks(unittest.TestCase):
 
     def testCallable(self):
 
-        class What(remote.RemoteObject):
+        class What(RemoteObject):
             what = fields.Something()
 
-        class Linky(remote.RemoteObject):
+        class Linky(RemoteObject):
             meh   = fields.Something()
             stuff = remote.Link(lambda o: o.meh, fields.Object(What))
 
