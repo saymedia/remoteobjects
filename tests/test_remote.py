@@ -114,6 +114,7 @@ class TestBasic(unittest.TestCase):
             b.delete(http=h)
 
         self.failIf(hasattr(b, '_id'))
+        self.failIf(hasattr(b, '_etag'))
 
 
     def testNotFound(self):

@@ -372,3 +372,4 @@ class RemoteObject(DataObject):
 
         # No more resource, no more URL.
         del self._id
+        del self._etag
