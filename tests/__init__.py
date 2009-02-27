@@ -37,20 +37,29 @@ class MockedHttp(object):
         return url, request_info
 
     def make_response(self, response, url):
-        response_info = {
+        default_response = {
             'status':           200,
             'etag':             '7',
             'content-type':     'application/json',
             'content-location': url,
         }
+
         if isinstance(response, dict):
             if 'content' in response:
                 content = response['content']
                 del response['content']
             else:
                 content = ''
-            response_info.update(response)
+
+            status = response.get('status', 200)
+            if 200 <= status < 300:
+                response_info = dict(default_response)
+                response_info.update(response)
+            else:
+                # Homg all bets are off!! Use specified headers only.
+                response_info = dict(response)
         else:
+            response_info = dict(default_response)
             content = response
 
         return httplib2.Response(response_info), content

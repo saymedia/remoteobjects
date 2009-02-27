@@ -33,6 +33,11 @@ class TestBasic(unittest.TestCase):
         self.assertEquals(b.value, 7)
 
 
+    @tests.todo
+    def testPost(self):
+        raise NotImplementedError
+
+
     def testPut(self):
 
         class BasicMost(RemoteObject):
@@ -51,9 +56,38 @@ class TestBasic(unittest.TestCase):
             'accept':   'application/json',
             'if-match': '7',  # default etag
         }
-        request = dict(url='http://example.com/bwuh', method='PUT', headers=headers, body=content)
-        with tests.MockedHttp(request, content) as h:
+        request  = dict(url='http://example.com/bwuh', method='PUT', headers=headers, body=content)
+        response = dict(content=content, etag='xyz')
+        with tests.MockedHttp(request, response) as h:
             b.put(http=h)
+
+        self.assertEquals(b._etag, 'xyz')
+
+
+    def testPutFailure(self):
+
+        class BasicMost(RemoteObject):
+            name  = fields.Something()
+            value = fields.Something()
+
+        headers = {'accept': 'application/json'}
+        content = """{"name": "Molly", "value": 80}"""
+        with tests.MockedHttp('http://example.com/bwuh', content, headers=headers) as h:
+            b = BasicMost.get('http://example.com/bwuh', http=h)
+
+        b.value = 'superluminal'
+
+        headers = {
+            'if-match': '7',  # default etag
+            'accept':   'application/json',
+        }
+        content = """{"name": "Molly", "value": "superluminal"}"""
+        request = dict(url='http://example.com/bwuh', method='PUT',
+                       body=content, headers=headers)
+        # Simulate a changed resource.
+        response = dict(status=412)
+        with tests.MockedHttp(request, response) as h:
+            self.assertRaises(BasicMost.PreconditionFailed, lambda: b.put(http=h))
 
 
     def testDelete(self):
@@ -98,6 +132,21 @@ class TestBasic(unittest.TestCase):
 
     @tests.todo
     def testNotFoundDiscrete(self):
+        """Checks that the NotFound exceptions for different RemoteObjects are
+        really different classes, so you can catch them discretely and treat
+        different unfound objects differently, like:
+
+        >>> try:
+        ...     h = Huh.get(huh_url)
+        ...     w = What.get(what_url)
+        ... except Huh.NotFound:
+        ...     # oops, no Huh
+        ... except What.NotFound:
+        ...     # oops, no What
+
+        This feature is not implemented.
+
+        """
 
         class Huh(RemoteObject):
             pass

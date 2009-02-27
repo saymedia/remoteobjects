@@ -215,6 +215,17 @@ class RemoteObject(DataObject):
         """
         pass
 
+    class PreconditionFailed(httplib.HTTPException):
+        """An HTTPException thrown when the server reports that some of the
+        conditions in a conditional request were not true.
+
+        This exception corresponds to the HTTP status code 412. The most
+        common cause of this status is an attempt to `PUT` a resource that has
+        already changed on the server.
+
+        """
+        pass
+
     class BadResponse(httplib.HTTPException):
         """An HTTPException thrown when the client receives some other non-success
         HTTP response."""
@@ -230,9 +241,14 @@ class RemoteObject(DataObject):
             raise cls.Unauthorized('Not authorized to fetch %s %s' % (classname, url))
         if response.status == httplib.FORBIDDEN:
             raise cls.Forbidden('Forbidden from fetching %s %s' % (classname, url))
+        if response.status == httplib.PRECONDITION_FAILED:
+            raise cls.PreconditionFailed('Precondition failed for %s request to %s' % (classname, url))
+
         # catch other unhandled
         if response.status not in (httplib.OK, httplib.CREATED, httplib.NO_CONTENT):
             raise cls.BadResponse('Bad response fetching %s %s: %d %s' % (classname, url, response.status, response.reason))
+
+        # check that the response body was json
         if response.get('content-type') != 'application/json':
             raise cls.BadResponse('Bad response fetching %s %s: content-type is %s, not JSON' % (classname, url, response.get('content-type')))
 
