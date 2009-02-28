@@ -33,9 +33,33 @@ class TestBasic(unittest.TestCase):
         self.assertEquals(b.value, 7)
 
 
-    @tests.todo
     def testPost(self):
-        raise NotImplementedError
+
+        class BasicMost(RemoteObject):
+            name  = fields.Something()
+            value = fields.Something()
+
+        class ContainerMost(RemoteObject):
+            name = fields.Something()
+
+        headers = {'accept': 'application/json'}
+        content = """{"name": "CBS"}"""
+        with tests.MockedHttp('http://example.com/asfdasf', content, headers=headers) as h:
+            c = ContainerMost.get('http://example.com/asfdasf', http=h)
+
+        b = BasicMost(name='Fred Friendly', value=True)
+
+        headers = {'accept': 'application/json'}
+        content = """{"name": "Fred Friendly", "value": true}"""
+        request = dict(url='http://example.com/asfdasf', method='POST',
+                       body=content, headers=headers)
+        response = dict(content=content, status=201, etag='xyz',
+                        location='http://example.com/fred')
+        with tests.MockedHttp(request, response) as h:
+            c.post(b, http=h)
+
+        tests.todo(lambda: self.assertEquals(b._id, 'http://example.com/fred'))()
+        tests.todo(lambda: self.assertEquals(b._etag, 'xyz'))()
 
 
     def testPut(self):

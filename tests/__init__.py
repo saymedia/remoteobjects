@@ -1,6 +1,7 @@
 import logging
 import httplib2
 import mox
+import functools
 
 def skip(fn):
     def testNothing(self):
@@ -8,13 +9,14 @@ def skip(fn):
     return testNothing
 
 def todo(fn):
-    def testReverse(self):
+    def testReverse(*args, **kwargs):
         try:
-            fn(self)
+            fn(*args, **kwargs)
         except:
-            self.assert_(True, 'expected this test to fail')
+            pass
         else:
-            self.assert_(False, 'test unexpectedly succeeded')
+            raise AssertionError, 'test %s unexpectedly succeeded' % fn.__name__
+    functools.update_wrapper(testReverse, fn)
     return testReverse
 
 class MockedHttp(object):
