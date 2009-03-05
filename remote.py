@@ -249,7 +249,7 @@ class RemoteObject(DataObject):
             raise cls.BadResponse('Bad response fetching %s %s: %d %s' % (classname, url, response.status, response.reason))
 
         # check that the response body was json
-        if response.get('content-type') != 'application/json':
+        if response.get('content-type') and response.get('content-type') != 'application/json':
             raise cls.BadResponse('Bad response fetching %s %s: content-type is %s, not JSON' % (classname, url, response.get('content-type')))
 
     @classmethod
