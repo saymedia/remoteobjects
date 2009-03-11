@@ -156,7 +156,7 @@ class RemoteObjectMetaclass(DataObjectMetaclass):
 
         for base in bases:
             if isinstance(base, RemoteObjectMetaclass):
-                links.update(base.links)
+                links.update(base._links)
 
         for attrname, link in attrs.items():
             if isinstance(link, Link):
@@ -172,7 +172,7 @@ class RemoteObjectMetaclass(DataObjectMetaclass):
                 del links[attrname]
 
         links.update(new_links)
-        attrs['links'] = links
+        attrs['_links'] = links
         obj_cls = super(RemoteObjectMetaclass, cls).__new__(cls, name, bases, attrs)
 
         # Tell the link that this class owns it.
