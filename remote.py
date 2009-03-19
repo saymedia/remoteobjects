@@ -15,9 +15,7 @@ import time
 import re
 
 from remoteobjects.dataobject import DataObject, DataObjectMetaclass
-
-# TODO configurable?
-BASE_URL = 'http://127.0.0.1:8000/'
+from remoteobjects import fields
 
 userAgent = httplib2.Http()
 
@@ -32,7 +30,7 @@ def omit_nulls(data):
             del data[key]
     return data
 
-class Link(object):
+class Link(fields.Property):
 
     """A RemoteObject attribute that links from a source object to a related
     target object.
@@ -67,6 +65,13 @@ class Link(object):
         """
         self.url = url
         self.fld = fld
+
+    def install(self, attrname):
+        linkobj = self
+        def method(self, **kwargs):
+            return linkobj(self, **kwargs)
+        method.__name__ = attrname
+        return method
 
     def _get_of_cls(self):
         return self.__dict__['of_cls']
@@ -148,45 +153,10 @@ class Link(object):
 
         return j
 
-class RemoteObjectMetaclass(DataObjectMetaclass):
-    def __new__(cls, name, bases, attrs):
-        # TODO: refactor with DataObjectMetaclass? urgh
-        links = {}
-        new_links = {}
-
-        for base in bases:
-            if isinstance(base, RemoteObjectMetaclass):
-                links.update(base._links)
-
-        for attrname, link in attrs.items():
-            if isinstance(link, Link):
-                new_links[attrname] = link
-                # Replace the Link with a new method instead of deleting it.
-                def make_method(linkobj):
-                    def method(self, **kwargs):
-                        return linkobj(self, **kwargs)
-                    method.__name__ = attrname
-                    return method
-                attrs[attrname] = make_method(link)
-            elif attrname in links:
-                del links[attrname]
-
-        links.update(new_links)
-        attrs['_links'] = links
-        obj_cls = super(RemoteObjectMetaclass, cls).__new__(cls, name, bases, attrs)
-
-        # Tell the link that this class owns it.
-        for link in new_links.values():
-            link.of_cls = obj_cls
-
-        return obj_cls
-
 class RemoteObject(DataObject):
 
     """A DataObject that can be fetched and put over HTTP through a REST
     API."""
-
-    __metaclass__ = RemoteObjectMetaclass
     
     def __cmp__(self, obj):
         """Compare ids of API objects."""
@@ -256,8 +226,20 @@ class RemoteObject(DataObject):
         if response.get('content-type') and response.get('content-type') != 'application/json':
             raise cls.BadResponse('Bad response fetching %s %s: content-type is %s, not JSON' % (classname, url, response.get('content-type')))
 
+    def get_request(self, headers=None, **kwargs):
+        if headers is None:
+            headers = {}
+        if 'accept' not in headers:
+            headers['accept'] = 'application/json'
+
+        # Use 'uri' because httplib2.request does.
+        request = dict(uri=self._id, headers=headers)
+        request.update(kwargs)
+        return request
+
     @classmethod
     def get_response(cls, url, http=None, headers=None, **kwargs):
+        # TODO: reconcile this with get_request... which is an instance method.
         logging.debug('Fetching %s' % (url,))
 
         if headers is None:
@@ -320,13 +302,9 @@ class RemoteObject(DataObject):
             raise ValueError, 'Cannot add %r to %r with no URL to POST to' % (obj, self)
 
         body = json.dumps(obj.to_dict(), default=omit_nulls)
-        response, content = self.get_response(self._id, http=http,
+        response, content = obj.get_response(self._id, http=http,
             method='POST', body=body)
-        # TODO: wtf this is not a new object
-        # obj.update_from_response(response, content)
-        new_obj = obj.__class__()
-        new_obj.update_from_response(response, content)
-        return new_obj
+        obj.update_from_response(response, content)
 
     def put(self, http=None):
         """Save a RemoteObject to a remote resource.

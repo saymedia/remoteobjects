@@ -22,9 +22,14 @@ class DataObjectMetaclass(type):
 
         # Move all the class's attributes that are Fields to the fields set.
         for attrname, field in attrs.items():
-            if isinstance(field, remoteobjects.fields.Field):
+            if isinstance(field, remoteobjects.fields.Property):
                 new_fields[attrname] = field
-                del attrs[attrname]
+                try:
+                    repl = field.install(attrname)
+                except NotImplementedError:
+                    del attrs[attrname]
+                else:
+                    attrs[attrname] = repl
             elif attrname in fields:
                 # Throw out any parent fields that the subclass defined as
                 # something other than a Field.
@@ -80,7 +85,8 @@ class DataObject(object):
             data = {}
 
         for field_name, field in self.fields.iteritems():
-            field.encode_into(self, data, field_name=field_name)
+            if hasattr(field, 'encode_into'):
+                field.encode_into(self, data, field_name=field_name)
         return data
 
     @classmethod
@@ -109,4 +115,5 @@ class DataObject(object):
         self._originaldata.update(data)
 
         for field_name, field in self.fields.iteritems():
-            field.decode_into(data, self, field_name=field_name)
+            if hasattr(field, 'decode_into'):
+                field.decode_into(data, self, field_name=field_name)

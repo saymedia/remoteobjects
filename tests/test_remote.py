@@ -13,14 +13,19 @@ from remoteobjects.tests import test_dataobject
 class TestDataObjects(test_dataobject.TestDataObjects):
     @property
     def cls(self):
-        return remote.RemoteObject
+        return RemoteObject
 
 
-class TestBasic(unittest.TestCase):
+class TestRemoteObjects(unittest.TestCase):
+
+    @property
+    def cls(self):
+        return RemoteObject
+
 
     def testGet(self):
 
-        class BasicMost(RemoteObject):
+        class BasicMost(self.cls):
             name  = fields.Something()
             value = fields.Something()
 
@@ -28,24 +33,24 @@ class TestBasic(unittest.TestCase):
         content = """{"name": "Fred", "value": 7}"""
         with tests.MockedHttp('http://example.com/ohhai', content, headers=headers) as h:
             b = BasicMost.get('http://example.com/ohhai', http=h)
-
-        self.assertEquals(b.name, 'Fred')
-        self.assertEquals(b.value, 7)
+            self.assertEquals(b.name, 'Fred')
+            self.assertEquals(b.value, 7)
 
 
     def testPost(self):
 
-        class BasicMost(RemoteObject):
+        class BasicMost(self.cls):
             name  = fields.Something()
             value = fields.Something()
 
-        class ContainerMost(RemoteObject):
+        class ContainerMost(self.cls):
             name = fields.Something()
 
         headers = {'accept': 'application/json'}
         content = """{"name": "CBS"}"""
         with tests.MockedHttp('http://example.com/asfdasf', content, headers=headers) as h:
             c = ContainerMost.get('http://example.com/asfdasf', http=h)
+            self.assertEquals(c.name, 'CBS')
 
         b = BasicMost(name='Fred Friendly', value=True)
 
@@ -59,12 +64,12 @@ class TestBasic(unittest.TestCase):
             c.post(b, http=h)
 
         tests.todo(lambda: self.assertEquals(b._id, 'http://example.com/fred'))()
-        tests.todo(lambda: self.assertEquals(b._etag, 'xyz'))()
+        self.assertEquals(b._etag, 'xyz')
 
 
     def testPut(self):
 
-        class BasicMost(RemoteObject):
+        class BasicMost(self.cls):
             name  = fields.Something()
             value = fields.Something()
 
@@ -75,6 +80,7 @@ class TestBasic(unittest.TestCase):
         content = """{"name": "Molly", "value": 80}"""
         with tests.MockedHttp('http://example.com/bwuh', content, headers=headers) as h:
             b = BasicMost.get('http://example.com/bwuh', http=h)
+            self.assertEquals(b.name, 'Molly')
 
         headers = {
             'accept':   'application/json',
@@ -90,7 +96,7 @@ class TestBasic(unittest.TestCase):
 
     def testPutFailure(self):
 
-        class BasicMost(RemoteObject):
+        class BasicMost(self.cls):
             name  = fields.Something()
             value = fields.Something()
 
@@ -98,6 +104,7 @@ class TestBasic(unittest.TestCase):
         content = """{"name": "Molly", "value": 80}"""
         with tests.MockedHttp('http://example.com/bwuh', content, headers=headers) as h:
             b = BasicMost.get('http://example.com/bwuh', http=h)
+            self.assertEquals(b.value, 80)
 
         b.value = 'superluminal'
 
@@ -116,7 +123,7 @@ class TestBasic(unittest.TestCase):
 
     def testDelete(self):
 
-        class BasicMost(RemoteObject):
+        class BasicMost(self.cls):
             name  = fields.Something()
             value = fields.Something()
 
@@ -127,6 +134,7 @@ class TestBasic(unittest.TestCase):
         content = """{"name": "Molly", "value": 80}"""
         with tests.MockedHttp('http://example.com/bwuh', content, headers=headers) as h:
             b = BasicMost.get('http://example.com/bwuh', http=h)
+            self.assertEquals(b.value, 80)
 
         headers = {
             'accept':   'application/json',
@@ -142,17 +150,17 @@ class TestBasic(unittest.TestCase):
 
 
     def testNotFound(self):
-        self.assert_(RemoteObject.NotFound)
+        self.assert_(self.cls.NotFound)
 
-        class Huh(RemoteObject):
-            pass
+        class Huh(self.cls):
+            name = fields.Something()
 
         self.assert_(Huh.NotFound)
 
         headers = { 'accept': 'application/json' }
         response = {'content': '', 'status': 404}
         with tests.MockedHttp('http://example.com/bwuh', response, headers=headers) as http:
-            self.assertRaises(Huh.NotFound, lambda: Huh.get('http://example.com/bwuh', http=http))
+            self.assertRaises(Huh.NotFound, lambda: Huh.get('http://example.com/bwuh', http=http).name)
 
 
     @tests.todo
@@ -173,10 +181,10 @@ class TestBasic(unittest.TestCase):
 
         """
 
-        class Huh(RemoteObject):
+        class Huh(self.cls):
             pass
 
-        class What(RemoteObject):
+        class What(self.cls):
             pass
 
         def tryThat(http):
@@ -201,9 +209,10 @@ class TestLinks(unittest.TestCase):
             name  = fields.Something()
             stuff = remote.Link(r'asf', fields.Object(What))
 
-        l = Linky(name='awesome')
+        l = Linky.from_dict({'name': 'awesome'})
 
         self.assertRaises(ValueError, l.stuff)
+        self.assert_('stuff' not in l.to_dict())
 
         l._id = 'http://example.com/dwar'
 

@@ -1,3 +1,4 @@
 from remoteobjects.dataobject import DataObject
-from remoteobjects import fields, remote
-from remoteobjects.remote import RemoteObject
+from remoteobjects import fields
+from remoteobjects.remote import RemoteObject, Link
+from remoteobjects.promise import PromiseObject, View

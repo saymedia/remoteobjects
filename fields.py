@@ -4,10 +4,23 @@ import time
 
 import remoteobjects.dataobject
 
-__all__ = ('Field', 'Something', 'List', 'Object', 'Datetime')
+__all__ = ('Property', 'Field', 'Something', 'List', 'Object', 'Datetime')
+
+class Property(object):
+
+    def install(self, attrname):
+        """Produces the replacement object to be installed as a class
+        attribute where this field is declared.
+
+        Override this method to install an attribute on DataObject classes
+        where your field is declared. This implementation installs no
+        attribute (by raising a `NotImplementedError`).
+
+        """
+        raise NotImplementedError()
 
 
-class Field(object):
+class Field(Property):
 
     """A field for encoding object attributes as JSON values and decoding JSON
     values into object attributes.
@@ -102,6 +115,41 @@ class Something(Field):
         """Encodes a DataObject attribute value into a dictionary value."""
         return value
 
+class Constant(Field):
+
+    """A field for data that always has a certain value for all instances of
+    the owning class.
+
+    Use this field when a class is designed to represent only some resources
+    in a set, such as those of a certain subtype, and one of the object's
+    fields indicates that unchanging type.
+
+    """
+
+    def __init__(self, value, **kwargs):
+        """Sets the field's constant value to parameter `value`."""
+        super(Constant, self).__init__(**kwargs)
+        self.value = value
+
+    def decode(self, value):
+        if value != self.value:
+            raise ValueError, 'Value %r is not expected value %r' % (value, self.value)
+        return self.value
+
+    def encode(self, value):
+        # Don't even bother caring what we were given; it's our constant.
+        return self.value
+
+    def encode_into(self, obj, data, field_name=None):
+        value = getattr(obj, field_name, None)
+        value = self.encode(value)
+        data[self.api_name or field_name] = self.encode(value)
+
+    def decode_into(self, data, obj, field_name=None):
+        value = data.get(self.api_name or field_name)
+        value = self.decode(value)
+        setattr(obj, field_name, value)
+
 class List(Field):
 
     """A field representing a homogeneous list of data."""
@@ -139,8 +187,16 @@ class List(Field):
         values) into a dictionary value (a list of dictionary values)."""
         return [self.fld.encode(v) for v in value]
 
-class Object(Field):
+class Dict(List):
+    """A field representing a homogeneous mapping of data."""
 
+    def decode(self, value):
+        return dict([(k, self.fld.decode(v)) for k, v in value.iteritems()])
+
+    def encode(self, value):
+        return dict([(k, self.fld.encode(v)) for k, v in value.iteritems()])
+
+class Object(Field):
     """A field representing another DataObject."""
 
     def __init__(self, cls, **kwargs):
