@@ -18,13 +18,17 @@ class PromiseObject(RemoteObject):
 
     """
 
+    def __init__(self, **kwargs):
+        self._delivered = False
+        self._http = None
+        super(PromiseObject, self).__init__(**kwargs)
+
     @classmethod
     def get(cls, url, http=None, **kwargs):
         # Make a fake empty instance of this class.
         self = cls()
         self._id = url
         self._http = http
-        self._delivered = False
 
         return self
 
@@ -49,7 +53,7 @@ class PromiseObject(RemoteObject):
 
 class View(PromiseObject, Property):
 
-    def __init__(self, api_name=None):
+    def __init__(self, api_name=None, **kwargs):
         self.api_name = api_name
 
     def install(self, attrname):
