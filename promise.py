@@ -48,6 +48,9 @@ class PromiseObject(RemoteObject):
             raise PromiseError('%s instance %r has already been delivered' % (type(self).__name__, self))
         self._delivered = True  # ambitious
 
+        if self._id is None:
+            raise PromiseError('Instance %r has no URL from which to deliver' % (self,))
+
         response, content = self.get_response(self._id, self._http)
         self.update_from_response(response, content)
 
