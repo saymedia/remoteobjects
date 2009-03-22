@@ -263,4 +263,4 @@ class Datetime(Field):
             raise TypeError('Value to encode %r is not a datetime' % (value,))
         if value.tzinfo is not None:
             raise TypeError("Value to encode %r is a datetime, but it has timezone information and we don't want to deal with timezone information" % (value,))
-        return '%sZ' % (value.isoformat(),)
+        return '%sZ' % (value.replace(microsecond=0).isoformat(),)
