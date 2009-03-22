@@ -54,10 +54,12 @@ class PromiseObject(RemoteObject):
         response, content = self.get_response(self._id, self._http)
         self.update_from_response(response, content)
 
-class View(PromiseObject, Property):
+class Link(Property):
 
-    def __init__(self, api_name=None, **kwargs):
+    def __init__(self, cls, api_name=None, **kwargs):
+        self.cls = cls
         self.api_name = api_name
+        super(Link, self).__init__(**kwargs)
 
     def install(self, attrname):
         if self.api_name is None:
@@ -66,9 +68,11 @@ class View(PromiseObject, Property):
 
     def __get__(self, instance, owner):
         if instance._id is None:
-            raise AttributeError('Cannot find URL of %s relative to URL-less %s' % (type(self).__name__, owner.__name__))
+            raise AttributeError('Cannot find URL of %s relative to URL-less %s' % (self.cls.__name__, owner.__name__))
         newurl = urlparse.urljoin(instance._id, self.api_name)
-        return type(self).get(newurl)
+        return self.cls.get(newurl)
+
+class ListObject(PromiseObject):
 
     def filter(self, **kwargs):
         parts = list(urlparse.urlparse(self._id))
@@ -83,3 +87,10 @@ class View(PromiseObject, Property):
         if isinstance(key, slice):
             return self.filter(offset=key.start, limit=key.stop - key.start)
         raise IndexError('Items in a %s are not directly accessible' % (type(self).__name__,))
+
+# TODO: get rid of this weird hybrid
+class View(Link, ListObject):
+
+    def __init__(self, api_name=None, **kwargs):
+        super(View, self).__init__(api_name=api_name, cls=type(self), **kwargs)
+
