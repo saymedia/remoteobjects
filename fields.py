@@ -141,14 +141,10 @@ class Constant(Field):
         return self.value
 
     def encode_into(self, obj, data, field_name=None):
-        value = getattr(obj, field_name, None)
-        value = self.encode(value)
-        data[self.api_name or field_name] = self.encode(value)
+        data[self.api_name or field_name] = self.value
 
     def decode_into(self, data, obj, field_name=None):
-        value = data.get(self.api_name or field_name)
-        value = self.decode(value)
-        setattr(obj, field_name, value)
+        setattr(obj, field_name, self.value)
 
 class List(Field):
 
