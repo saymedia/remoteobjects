@@ -353,5 +353,5 @@ class RemoteObject(DataObject):
         logging.debug('Yay deleted the obj, now... something something')
 
         # No more resource, no more URL.
-        del self._id
+        self._id = None
         del self._etag
