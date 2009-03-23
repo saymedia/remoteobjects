@@ -157,7 +157,7 @@ class RemoteObject(DataObject):
 
     """A DataObject that can be fetched and put over HTTP through a REST
     API."""
-    
+
     def __cmp__(self, obj):
         """Compare ids of API objects."""
         return cmp(self.id, obj.id)
@@ -209,7 +209,7 @@ class RemoteObject(DataObject):
     def _raise_response(cls, response, url):
         # Turn exceptional httplib2 responses into exceptions.
         classname = cls.__name__
-        if response.status == httplib.NOT_FOUND: 
+        if response.status == httplib.NOT_FOUND:
             raise cls.NotFound('No such %s %s' % (classname, url))
         if response.status == httplib.UNAUTHORIZED:
             raise cls.Unauthorized('Not authorized to fetch %s %s' % (classname, url))
