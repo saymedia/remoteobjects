@@ -273,7 +273,7 @@ class RemoteObject(DataObject):
 
         if http is None:
             http = userAgent
-        response, content = http.request(url, headers=headers, **kwargs)
+        response, content = http.request(uri=url, headers=headers, **kwargs)
         cls._raise_response(response, url)
         logging.debug('Got content %s' % (content,))
 

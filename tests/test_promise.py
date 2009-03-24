@@ -37,7 +37,7 @@ class TestPromiseObjects(unittest.TestCase):
         mox.Verify(h)
 
         headers = {"accept": "application/json"}
-        request = dict(url=url, headers=headers)
+        request = dict(uri=url, headers=headers)
         content = """{"name": "Mollifred"}"""
         with tests.MockedHttp(request, content) as h:
             t._http = h  # inject, oops
