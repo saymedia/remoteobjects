@@ -63,7 +63,7 @@ class TestRemoteObjects(unittest.TestCase):
         with tests.MockedHttp(request, response) as h:
             c.post(b, http=h)
 
-        tests.todo(lambda: self.assertEquals(b._id, 'http://example.com/fred'))()
+        self.assertEquals(b._id, 'http://example.com/fred')
         self.assertEquals(b._etag, 'xyz')
 
 
