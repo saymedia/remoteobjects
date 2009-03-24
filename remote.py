@@ -158,6 +158,15 @@ class RemoteObject(DataObject):
     """A DataObject that can be fetched and put over HTTP through a REST
     API."""
 
+    location_headers = {
+        httplib.CREATED:           'Location',
+        httplib.MOVED_PERMANENTLY: 'Location',
+        httplib.FOUND:             'Location',
+        httplib.OK:                'Content-Location',
+        httplib.NOT_MODIFIED:      'Content-Location',
+        httplib.NO_CONTENT:        None,
+    }
+
     def __cmp__(self, obj):
         """Compare ids of API objects."""
         return cmp(self.id, obj.id)
@@ -218,13 +227,28 @@ class RemoteObject(DataObject):
         if response.status == httplib.PRECONDITION_FAILED:
             raise cls.PreconditionFailed('Precondition failed for %s request to %s' % (classname, url))
 
-        # catch other unhandled
-        if response.status not in (httplib.OK, httplib.CREATED, httplib.NO_CONTENT):
-            raise cls.BadResponse('Bad response fetching %s %s: %d %s' % (classname, url, response.status, response.reason))
+        try:
+            location_header = cls.location_headers[response.status]
+        except KeyError:
+            # we only expect the statuses that have location headers defined
+            raise cls.BadResponse('Unexpected response requesting %s %s: %d %s'
+                % (classname, url, response.status, response.reason))
+
+        if location_header is None:
+            # then there's no content-type either, so we're done
+            return
+
+        if location_header.lower() not in response:
+            raise cls.BadResponse(
+                "%r header missing from %d %s response requesting %s %s"
+                % (location_header, response.status, response.reason,
+                   classname, url))
 
         # check that the response body was json
-        if response.get('content-type') and response.get('content-type') != 'application/json':
-            raise cls.BadResponse('Bad response fetching %s %s: content-type is %s, not JSON' % (classname, url, response.get('content-type')))
+        if response.get('content-type') != 'application/json':
+            raise cls.BadResponse(
+                'Bad response fetching %s %s: content-type is %s, not JSON'
+                % (classname, url, response.get('content-type')))
 
     def get_request(self, headers=None, **kwargs):
         if headers is None:
@@ -265,9 +289,11 @@ class RemoteObject(DataObject):
         """
         data = json.loads(content)
         self.update_from_dict(data)
-        # TODO: when is there ever no content-location? for unfollowed redirects?
-        if 'content-location' in response:
-            self._id = response['content-location']  # follow redirects
+
+        location_header = self.location_headers.get(response.status)
+        if location_header is not None:
+            self._id = response[location_header]
+
         if 'etag' in response:
             self._etag = response['etag']
 
