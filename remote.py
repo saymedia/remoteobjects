@@ -292,7 +292,7 @@ class RemoteObject(DataObject):
 
         location_header = self.location_headers.get(response.status)
         if location_header is not None:
-            self._id = response[location_header]
+            self._id = response[location_header.lower()]
 
         if 'etag' in response:
             self._etag = response['etag']
