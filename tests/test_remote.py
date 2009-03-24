@@ -145,7 +145,7 @@ class TestRemoteObjects(unittest.TestCase):
         with tests.MockedHttp(request, response) as h:
             b.delete(http=h)
 
-        self.failIf(hasattr(b, '_id'))
+        self.failIf(b._id is not None)
         self.failIf(hasattr(b, '_etag'))
 
 
