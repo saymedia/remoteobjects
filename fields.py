@@ -72,7 +72,7 @@ class Field(Property):
         to encode from.
 
         """
-        value = obj.__dict__.get(field_name)
+        value = getattr(obj, field_name)
         if value is not None:
             value = self.encode(value)
             # only put in data if defined
