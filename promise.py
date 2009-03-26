@@ -63,7 +63,7 @@ class Link(Property):
     is itself available at a relative URL to it. By default the target object's
     URL should be available at the property name relative to the owning
     instance's URL.
-    
+
     For example:
 
     >>> class Item(RemoteObject):
