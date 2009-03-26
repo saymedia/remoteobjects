@@ -137,7 +137,8 @@ class ListObject(PromiseObject):
         queryargs.update(kwargs)
         parts[4] = urllib.urlencode(queryargs)
         newurl = urlparse.urlunparse(parts)
-        return type(self).get(newurl, http=self._http)
+
+        return self.get(newurl, http=self._http)
 
     def __getitem__(self, key):
         """Translates slice notation on a ListObject into `limit` and `offset` parameters."""
