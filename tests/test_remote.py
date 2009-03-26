@@ -221,61 +221,6 @@ class TestRemoteObjects(unittest.TestCase):
             self.assertRaises(What.NotFound, lambda: tryThat(http))
 
 
-class TestLinks(unittest.TestCase):
-
-    def testBasic(self):
-
-        class What(RemoteObject):
-            what = fields.Something()
-
-        class Linky(RemoteObject):
-            name  = fields.Something()
-            stuff = remote.Link(r'asf', fields.Object(What))
-
-        l = Linky.from_dict({'name': 'awesome'})
-
-        self.assertRaises(ValueError, l.stuff)
-        self.assert_('stuff' not in l.to_dict())
-
-        l._id = 'http://example.com/dwar'
-
-        self.assert_(callable(l.stuff), "Linky instance's stuff is a method")
-
-        request = {
-            'uri': 'http://example.com/asf',
-            'headers': {'accept': 'application/json'},
-        }
-        content = """{ "what": "what!" }"""
-        with tests.MockedHttp(request, content) as h:
-            w = l.stuff(http=h)
-        self.assert_(isinstance(w, What), 'stuff method gave us a What')
-        self.assertEquals(w.what, 'what!', "stuff's What seems viable")
-        self.assertEquals(w._id, 'http://example.com/asf', "stuff's What knows its _id")
-
-
-    def testCallable(self):
-
-        class What(RemoteObject):
-            what = fields.Something()
-
-        class Linky(RemoteObject):
-            meh   = fields.Something()
-            stuff = remote.Link(lambda o: o.meh, fields.Object(What))
-
-        l = Linky(meh='http://example.com/bwuh')
-
-        content = """{ "what": "wha-hay?" }"""
-        request = {
-            'uri': 'http://example.com/bwuh',
-            'headers': {'accept': 'application/json'},
-        }
-        with tests.MockedHttp(request, content) as h:
-            w = l.stuff(http=h)
-        self.assert_(w)
-        self.assertEquals(w.what, 'wha-hay?')
-        self.assertEquals(w._id, 'http://example.com/bwuh')
-
-
 if __name__ == '__main__':
     tests.log()
     unittest.main()
