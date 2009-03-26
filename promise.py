@@ -144,10 +144,3 @@ class ListObject(PromiseObject):
         if isinstance(key, slice):
             return self.filter(offset=key.start, limit=key.stop - key.start)
         raise IndexError('Items in a %s are not directly accessible' % (type(self).__name__,))
-
-# TODO: get rid of this weird hybrid
-class View(Link, ListObject):
-
-    def __init__(self, api_name=None, **kwargs):
-        super(View, self).__init__(api_name=api_name, cls=type(self), **kwargs)
-

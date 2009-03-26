@@ -50,7 +50,7 @@ class TestViews(unittest.TestCase):
         class Toy(PromiseObject):
             name = fields.Something()
 
-        class Toybox(promise.View):
+        class Toybox(promise.ListObject):
             entries = fields.List(fields.Object(Toy))
 
         h = mox.MockObject(httplib2.Http)
@@ -87,11 +87,11 @@ class TestViews(unittest.TestCase):
         class Toy(PromiseObject):
             name = fields.Something()
 
-        class Toybox(promise.View):
+        class Toybox(promise.ListObject):
             entries = fields.List(fields.Object(Toy))
 
         class Room(PromiseObject):
-            toybox = Toybox()
+            toybox = promise.Link(Toybox)
 
         r = Room.get('http://example.com/bwuh/')
         b = r.toybox
