@@ -40,7 +40,8 @@ class DataObjectMetaclass(type):
         obj_cls = super(DataObjectMetaclass, cls).__new__(cls, name, bases, attrs)
 
         # Register the new class so Object fields can have forward-referenced it.
-        all_classes['.'.join((obj_cls.__module__, name))] = obj_cls
+        all_classes[name] = obj_cls
+
         # Tell this class's fields what this class is, so they can find their
         # forward references later.
         for field in new_fields.values():

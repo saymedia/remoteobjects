@@ -214,8 +214,7 @@ class Object(Field):
         cls = self.__dict__['cls']
         if not callable(cls):
             # Assume the name is sibling to our owner class.
-            clsname = '.'.join((self.of_cls.__module__, cls))
-            cls = remoteobjects.dataobject.find_by_name(clsname)
+            cls = remoteobjects.dataobject.find_by_name(cls)
         return cls
 
     def set_cls(self, cls):
