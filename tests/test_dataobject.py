@@ -186,6 +186,32 @@ class TestDataObjects(unittest.TestCase):
         self.assert_(isinstance(r.themselves[0], Reflexive))
 
 
+    def testPostReference(self):
+
+        from remoteobjects.tests import extra_dataobject
+
+        class Referencive(extra_dataobject.Referencive):
+            pass
+
+        class Related(extra_dataobject.Related):
+            pass
+
+        class NotRelated(extra_dataobject.OtherRelated):
+            pass
+
+        r = Referencive.from_dict({ 'related': {}, 'other': {} })
+
+        self.assert_(isinstance(r, Referencive))
+        self.assert_(isinstance(r.related, Related))  # not extra_dataobject.Related
+        self.assert_(isinstance(r.other,   extra_dataobject.OtherRelated))  # not NotRelated
+
+        r = extra_dataobject.Referencive.from_dict({ 'related': {}, 'other': {} })
+
+        self.assert_(isinstance(r, extra_dataobject.Referencive))
+        self.assert_(isinstance(r.related, Related))  # not extra_dataobject.Related
+        self.assert_(isinstance(r.other,   extra_dataobject.OtherRelated))  # not NotRelated
+
+
     def testFieldOverride(self):
 
         class Parent(DataObject):
