@@ -225,15 +225,11 @@ class Object(Field):
     def decode(self, value):
         """Decodes the dictionary value into an instance of the field's
         DataObject class."""
-        if not isinstance(value, dict):
-            raise TypeError('Value to decode into a %s %r is not a dict' % (self.cls.__name__, value))
         return self.cls.from_dict(value)
 
     def encode(self, value):
         """Encodes an instance of the field's DataObject class into its
         representative dictionary value."""
-        if not isinstance(value, self.cls):
-            raise TypeError('Value to encode %r is not a %s' % (value, self.cls.__name__))
         return value.to_dict()
 
 class Datetime(Field):
