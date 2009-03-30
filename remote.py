@@ -44,10 +44,6 @@ class RemoteObject(DataObject):
         httplib.NO_CONTENT:        None,
     }
 
-    def __cmp__(self, obj):
-        """Compare ids of API objects."""
-        return cmp(self.id, obj.id)
-
     class NotFound(httplib.HTTPException):
         """An HTTPException thrown when the server reports that the requested
         resource was not found."""

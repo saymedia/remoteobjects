@@ -76,6 +76,17 @@ class DataObject(object):
         self._id = None
         self.__dict__.update(kwargs)
 
+    def __eq__(self, other):
+        if type(self) != type(other):
+            return False
+        for x in self.fields.keys():
+            if getattr(self, x) != getattr(other, x):
+                return False
+        return True
+
+    def __ne__(self, other):
+        return not self == other
+
     def to_dict(self):
         """Encodes the DataObject to a dictionary."""
         try:
