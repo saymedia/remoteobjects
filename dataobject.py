@@ -79,9 +79,10 @@ class DataObject(object):
     def __eq__(self, other):
         if type(self) != type(other):
             return False
-        for x in self.fields.keys():
-            if getattr(self, x) != getattr(other, x):
-                return False
+        for k, v in self.fields.iteritems():
+            if isinstance(v, remoteobjects.fields.Field):
+                if getattr(self, k) != getattr(other, k):
+                    return False
         return True
 
     def __ne__(self, other):
