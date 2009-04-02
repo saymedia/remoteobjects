@@ -46,13 +46,16 @@ class PromiseObject(RemoteObject):
     def deliver(self):
         if self._delivered:
             raise PromiseError('%s instance %r has already been delivered' % (type(self).__name__, self))
-        self._delivered = True  # ambitious
-
         if self._id is None:
             raise PromiseError('Instance %r has no URL from which to deliver' % (self,))
 
         response, content = self.get_response(self._id, self._http)
         self.update_from_response(response, content)
+
+    def update_from_response(self, response, content):
+        super(PromiseObject, self).update_from_response(response, content)
+        # Any updating from a response constitutes delivery.
+        self._delivered = True
 
 class Link(Property):
 
@@ -144,4 +147,4 @@ class ListObject(PromiseObject):
         """Translates slice notation on a ListObject into `limit` and `offset` parameters."""
         if isinstance(key, slice):
             return self.filter(offset=key.start, limit=key.stop - key.start)
-        raise IndexError('Items in a %s are not directly accessible' % (type(self).__name__,))
+        return super(ListObject, self).__getitem__(key)
