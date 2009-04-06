@@ -1,12 +1,24 @@
-import logging
-import httplib2
-import mox
 import functools
+import httplib2
+import logging
+import os
+
+import mox
+import nose
 
 def skip(fn):
     def testNothing(self):
-        self.assert_(True, 'skip this test')
+        raise nose.SkipTest('skip this test')
+    functools.update_wrapper(testNothing, fn)
     return testNothing
+
+def are_automated():
+    return bool(os.getenv('AUTOMATED_TESTING'))
+
+def skip_if_automated(fn):
+    if are_automated():
+        return skip(fn)
+    return fn
 
 def todo(fn):
     def testReverse(*args, **kwargs):
