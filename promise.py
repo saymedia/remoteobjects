@@ -147,4 +147,11 @@ class ListObject(PromiseObject):
         """Translates slice notation on a ListObject into `limit` and `offset` parameters."""
         if isinstance(key, slice):
             return self.filter(offset=key.start, limit=key.stop - key.start)
-        return super(ListObject, self).__getitem__(key)
+
+        try:
+            getitem = super(ListObject, self).__getitem__
+        except AttributeError:
+            raise TypeError("'%s' object is unsubscriptable except by slices"
+                % (type(self).__name__,))
+        else:
+            return getitem(key)

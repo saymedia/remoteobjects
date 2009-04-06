@@ -77,7 +77,8 @@ class TestViews(unittest.TestCase):
         self.assert_(isinstance(j, Toybox))
         self.assertEquals(q._id, 'http://example.com/foo?limit=70&offset=300')
 
-        self.assertRaises(IndexError, lambda: b[7])
+        # Can't use a non-slice on a plain ListObject
+        self.assertRaises(TypeError, lambda: b[7])
 
         # Nobody did any HTTP, right?
         mox.Verify(h)
