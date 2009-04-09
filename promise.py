@@ -50,10 +50,10 @@ class PromiseObject(RemoteObject):
             raise PromiseError('Instance %r has no URL from which to deliver' % (self,))
 
         response, content = self.get_response(self._location, self._http)
-        self.update_from_response(response, content)
+        self.update_from_response(self._location, response, content)
 
-    def update_from_response(self, response, content):
-        super(PromiseObject, self).update_from_response(response, content)
+    def update_from_response(self, url, response, content):
+        super(PromiseObject, self).update_from_response(url, response, content)
         # Any updating from a response constitutes delivery.
         self._delivered = True
 

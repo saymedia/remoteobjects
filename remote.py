@@ -151,19 +151,21 @@ class RemoteObject(DataObject):
         if http is None:
             http = userAgent
         response, content = http.request(uri=url, headers=headers, **kwargs)
-        cls._raise_response(response, url)
         logging.debug('Got content %s' % (content,))
 
         return response, content
 
-    def update_from_response(self, response, content):
-        """Adds the content of this HTTP response and message body to this RemoteObject.
+    def update_from_response(self, url, response, content):
+        """Adds the content of this HTTP response and message body to this
+        RemoteObject.
 
         Use `update_from_response()` only when you would use
         `DataObject.update_from_dict()`: when decoding outside content (in
         this case an HTTP response) into an existing RemoteObject.
 
         """
+        self._raise_response(response, url)
+
         data = json.loads(content)
         self.update_from_dict(data)
 
@@ -187,7 +189,7 @@ class RemoteObject(DataObject):
         # Make a new instance and use update_from_response(), rather than
         # having a superfluous from_response() classmethod for this one call.
         self = cls()
-        self.update_from_response(response, content)
+        self.update_from_response(url, response, content)
         return self
 
     def post(self, obj, http=None):
@@ -207,7 +209,7 @@ class RemoteObject(DataObject):
         body = json.dumps(obj.to_dict(), default=omit_nulls)
         response, content = obj.get_response(self._location, http=http,
             method='POST', body=body)
-        obj.update_from_response(response, content)
+        obj.update_from_response(self._location, response, content)
 
     def put(self, http=None):
         """Save a RemoteObject to a remote resource.
@@ -232,7 +234,7 @@ class RemoteObject(DataObject):
         response, content = self.get_response(self._location, http=http, method='PUT',
             body=body, headers=headers)
         logging.debug('Yay saved my obj, now turning %s into new content' % (content,))
-        self.update_from_response(response, content)
+        self.update_from_response(self._location, response, content)
 
     def delete(self, http=None):
         """Delete the remote resource represented by a RemoteObject.
