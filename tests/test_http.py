@@ -5,7 +5,7 @@ import logging
 import sys
 from datetime import datetime
 
-from remoteobjects import tests, fields, remote, DataObject, RemoteObject
+from remoteobjects import tests, fields, http
 from remoteobjects.tests import test_dataobject
 
 
@@ -13,14 +13,14 @@ from remoteobjects.tests import test_dataobject
 class TestDataObjects(test_dataobject.TestDataObjects):
     @property
     def cls(self):
-        return RemoteObject
+        return http.HttpObject
 
 
-class TestRemoteObjects(unittest.TestCase):
+class TestHttpObjects(unittest.TestCase):
 
     @property
     def cls(self):
-        return RemoteObject
+        return http.HttpObject
 
 
     def testGet(self):
@@ -183,7 +183,7 @@ class TestRemoteObjects(unittest.TestCase):
 
     @tests.todo
     def testNotFoundDiscrete(self):
-        """Checks that the NotFound exceptions for different RemoteObjects are
+        """Checks that the NotFound exceptions for different HttpObjects are
         really different classes, so you can catch them discretely and treat
         different unfound objects differently, like:
 

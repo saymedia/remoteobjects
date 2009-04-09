@@ -31,7 +31,7 @@ def omit_nulls(data):
             del data[key]
     return data
 
-class RemoteObject(DataObject):
+class HttpObject(DataObject):
 
     """A `DataObject` that can be fetched and put over HTTP through a RESTful
     JSON API."""
@@ -90,7 +90,7 @@ class RemoteObject(DataObject):
 
     def __init__(self, **kwargs):
         self._location = None
-        super(RemoteObject, self).__init__(**kwargs)
+        super(HttpObject, self).__init__(**kwargs)
 
     @classmethod
     def raise_for_response(cls, response, url):

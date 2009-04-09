@@ -3,14 +3,14 @@ import logging
 import sys
 from datetime import datetime
 
-from remoteobjects import tests, DataObject, fields
+from remoteobjects import tests, fields, dataobject
 
 
 class TestDataObjects(unittest.TestCase):
 
     @property
     def cls(self):
-        return DataObject
+        return dataobject.DataObject
 
 
     def testBasic(self):
@@ -214,7 +214,7 @@ class TestDataObjects(unittest.TestCase):
 
     def testFieldOverride(self):
 
-        class Parent(DataObject):
+        class Parent(dataobject.DataObject):
             fred = fields.Something()
             ted  = fields.Something()
 
@@ -229,7 +229,7 @@ class TestDataObjects(unittest.TestCase):
 
     def testFieldApiName(self):
 
-        class WeirdNames(DataObject):
+        class WeirdNames(dataobject.DataObject):
             normal    = fields.Something()
             fooBarBaz = fields.Something(api_name='foo-bar-baz')
             xyzzy     = fields.Something(api_name='plugh')
@@ -268,7 +268,7 @@ class TestDataObjects(unittest.TestCase):
             cheezCalled = True
             return 'CHEEZBURGH'
 
-        class WithDefaults(DataObject):
+        class WithDefaults(dataobject.DataObject):
             plain               = fields.Something()
             itsAlwaysSomething  = fields.Something(default=7)
             itsUsuallySomething = fields.Something(default=cheezburgh)

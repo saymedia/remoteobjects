@@ -1,11 +1,11 @@
-from remoteobjects import fields, DataObject
+from remoteobjects import fields, dataobject
 
-class Referencive(DataObject):
+class Referencive(dataobject.DataObject):
     related = fields.Object('Related')
     other   = fields.Object('OtherRelated')
 
-class Related(DataObject):
+class Related(dataobject.DataObject):
     pass
 
-class OtherRelated(DataObject):
+class OtherRelated(dataobject.DataObject):
     pass

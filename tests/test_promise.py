@@ -4,23 +4,23 @@ import httplib2
 import unittest
 import mox
 
-from remoteobjects import tests, fields, remote, promise, PromiseObject
-from remoteobjects.tests import test_dataobject, test_remote
+from remoteobjects import tests, fields, http, promise
+from remoteobjects.tests import test_dataobject, test_http
 
 class TestDataObjects(test_dataobject.TestDataObjects):
     @property
     def cls(self):
-        return PromiseObject
+        return promise.PromiseObject
 
-class TestRemoteObjects(test_remote.TestRemoteObjects):
+class TestHttpObjects(test_http.TestHttpObjects):
     @property
     def cls(self):
-        return PromiseObject
+        return promise.PromiseObject
 
 class TestPromiseObjects(unittest.TestCase):
     @property
     def cls(self):
-        return PromiseObject
+        return promise.PromiseObject
 
     def testBasic(self):
 
@@ -47,7 +47,7 @@ class TestViews(unittest.TestCase):
 
     def testBasic(self):
 
-        class Toy(PromiseObject):
+        class Toy(promise.PromiseObject):
             name = fields.Something()
 
         class Toybox(promise.ListObject):
@@ -85,14 +85,14 @@ class TestViews(unittest.TestCase):
 
     def testAwesome(self):
 
-        class Toy(PromiseObject):
+        class Toy(promise.PromiseObject):
             name = fields.Something()
 
         class Toybox(promise.ListObject):
             entries = fields.List(fields.Object(Toy))
 
-        class Room(PromiseObject):
-            toybox = promise.Link(Toybox)
+        class Room(promise.PromiseObject):
+            toybox = fields.Link(Toybox)
 
         r = Room.get('http://example.com/bwuh/')
         b = r.toybox

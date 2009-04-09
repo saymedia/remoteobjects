@@ -2,7 +2,7 @@ import urlparse
 import urllib
 import cgi
 
-from remoteobjects.remote import RemoteObject
+from remoteobjects.http import HttpObject
 from remoteobjects.fields import Property
 
 class PromiseError(Exception):
@@ -10,7 +10,7 @@ class PromiseError(Exception):
     `PromiseObject` instance."""
     pass
 
-class PromiseObject(RemoteObject):
+class PromiseObject(HttpObject):
     """A `RemoteObject` that delays actual retrieval of the remote resource until
     required by the use of its data.
 
@@ -83,64 +83,6 @@ class PromiseObject(RemoteObject):
         super(PromiseObject, self).update_from_response(url, response, content)
         # Any updating from a response constitutes delivery.
         self._delivered = True
-
-# TODO: move this to fields.py?
-class Link(Property):
-
-    """A `RemoteObject` property representing a "link" from one `RemoteObject`
-    instance to another.
-
-    Use this property when related content is not *part* of a RemoteObject,
-    but is instead available at a URL relative to it. By default the target
-    object's URL should be available at the property name relative to the
-    owning instance's URL.
-
-    For example:
-
-    >>> class Item(RemoteObject):
-    ...     feed = Link(Event)
-    ...
-    >>> i = Item.get('http://example.com/item/')
-    >>> f = i.feed  # f's URL: http://example.com/item/feed
-
-    Override the `__get__` method of a `Link` subclass to customize how the
-    URLs to linked objects are constructed.
-
-    """
-
-    def __init__(self, cls, api_name=None, **kwargs):
-        """Sets the `RemoteObject` class of the target resource and,
-        optionally, the real relative URL of the resource.
-
-        Optional parameter `api_name` is used as the link's relative URL. If
-        not given, the name of the attribute to which the Link is assigned
-        will be used.
-
-        """
-        self.cls = cls
-        self.api_name = api_name
-        super(Link, self).__init__(**kwargs)
-
-    def install(self, attrname):
-        """Installs the `Link` instance as an attribute of the `RemoteObject`
-        class in which it was declared."""
-        if self.api_name is None:
-            self.api_name = attrname
-        return self
-
-    def __get__(self, instance, owner):
-        """Generates the RemoteObject for the target resource of this Link.
-
-        By default, target resources are at a URL relative to the "parent"
-        object's URL, named by the `api_name` attribute of the `Link`
-        instance. Override this method to define some other strategy for
-        building links for your target API.
-
-        """
-        if instance._location is None:
-            raise AttributeError('Cannot find URL of %s relative to URL-less %s' % (self.cls.__name__, owner.__name__))
-        newurl = urlparse.urljoin(instance._location, self.api_name)
-        return self.cls.get(newurl)
 
 class ListObject(PromiseObject):
 

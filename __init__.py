@@ -1,4 +1,10 @@
-from remoteobjects.dataobject import DataObject
-from remoteobjects import fields
-from remoteobjects.remote import RemoteObject
-from remoteobjects.promise import PromiseObject, Link, ListObject
+import remoteobjects.dataobject
+import remoteobjects.fields as fields
+import remoteobjects.http
+import remoteobjects.promise
+from remoteobjects.promise import ListObject
+
+__all__ = ('RemoteObject', 'fields', 'ListObject')
+
+class RemoteObject(remoteobjects.promise.PromiseObject):
+    pass
