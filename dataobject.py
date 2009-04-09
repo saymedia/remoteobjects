@@ -5,13 +5,27 @@ all_classes = {}
 def find_by_name(name):
     """Finds and returns the DataObject subclass with the given name.
 
-    Parameter `name` should be a full dotted module and class name.
+    Parameter `name` should be a bare class name with no module. If there is
+    no class by that name, raises `KeyError`.
 
     """
     return all_classes[name]
 
 class DataObjectMetaclass(type):
+    """Metaclass for `DataObject` classes.
+
+    This metaclass installs all `remoteobjects.fields.Property` instances
+    declared as attributes of the new class, including all `Field` and `Link`
+    instances.
+
+    This metaclass also makes the new class findable through the
+    `dataobject.find_by_name()` function.
+
+    """
+
     def __new__(cls, name, bases, attrs):
+        """Creates and returns a new `DataObject` class with its declared
+        fields and name."""
         fields = {}
         new_fields = {}
 
@@ -51,8 +65,7 @@ class DataObjectMetaclass(type):
 
 class DataObject(object):
 
-    """An object that can be decoded from or encoded as a dictionary, suitable
-    for serializing to or deserializing from JSON.
+    """An object that can be decoded from or encoded as a dictionary.
 
     DataObject subclasses should be declared with their different data
     attributes defined as instances of fields from the `remoteobjects.fields`
@@ -73,9 +86,16 @@ class DataObject(object):
     __metaclass__ = DataObjectMetaclass
 
     def __init__(self, **kwargs):
+        """Initializes a new `DataObject` with the given field values."""
         self.__dict__.update(kwargs)
 
     def __eq__(self, other):
+        """Returns whether two `DataObject` instances are equivalent.
+
+        If the `DataObject` instances are of the same type and contain the
+        same data in all their fields, the objects are equivalent.
+
+        """
         if type(self) != type(other):
             return False
         for k, v in self.fields.iteritems():
@@ -85,6 +105,12 @@ class DataObject(object):
         return True
 
     def __ne__(self, other):
+        """Returns whether two `DataObject` instances are different.
+
+        `DataObject` instances are different if they are not equivalent as
+        determined through `__eq__`.
+
+        """
         return not self == other
 
     def to_dict(self):
@@ -103,7 +129,7 @@ class DataObject(object):
 
     @classmethod
     def from_dict(cls, data):
-        """Decodes a dictionary into an instance of the DataObject class."""
+        """Decodes a dictionary into a new `DataObject` instance."""
         self = cls()
         self.update_from_dict(data)
         return self
@@ -115,10 +141,10 @@ class DataObject(object):
 
         Use this only when receiving newly updated or partial content for a
         DataObject; that is, when the data is from the outside data source and
-        needs decoded through the object's fields. Data from "inside" should
-        be added to an object manually by setting the object's attributes.
-        Data that constitutes a new object should be turned into another
-        object with `from_dict()`.
+        needs decoded through the object's fields. Data from "inside" your
+        application should be added to an object manually by setting the
+        object's attributes. Data that constitutes a new object should be
+        turned into another object with `from_dict()`.
 
         """
         # Remember this extra data, so we can play it back later.

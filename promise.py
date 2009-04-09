@@ -6,10 +6,12 @@ from remoteobjects.remote import RemoteObject
 from remoteobjects.fields import Property
 
 class PromiseError(Exception):
+    """An exception representing an error promising or delivering a
+    `PromiseObject` instance."""
     pass
 
 class PromiseObject(RemoteObject):
-    """A RemoteObject that delays actual retrieval of the remote resource until
+    """A `RemoteObject` that delays actual retrieval of the remote resource until
     required by the use of its data.
 
     A PromiseObject is only "promised" to the caller until its data is used.
@@ -19,12 +21,15 @@ class PromiseObject(RemoteObject):
     """
 
     def __init__(self, **kwargs):
+        """Initializes a `PromiseObject` as undelivered."""
         self._delivered = False
         self._http = None
         super(PromiseObject, self).__init__(**kwargs)
 
     @classmethod
     def get(cls, url, http=None, **kwargs):
+        """Creates a new `PromiseObject` instance that, when delivered, will
+        contain the data at the given URL."""
         # Make a fake empty instance of this class.
         self = cls()
         self._location = url
@@ -33,6 +38,18 @@ class PromiseObject(RemoteObject):
         return self
 
     def __getattr__(self, attr):
+        """Returns the value of the requested attribute, after attempting to
+        deliver the `PromiseObject` if necessary.
+
+        If the instance is undelivered and the requested attribute is a
+        declared field of the instance's class, `__getattr__` attempts to
+        deliver the object before 
+
+        Because delivery is only attempted on an attribute "miss," all the
+        exceptions that `RemoteObject.get()` may raise may be raised through
+        attribute access on a `PromiseObject`.
+
+        """
         if attr in self.fields:
             # Oops, that's data. Try delivering it?
             if not self._delivered:
@@ -44,6 +61,14 @@ class PromiseObject(RemoteObject):
         raise AttributeError, 'Instance %r has no such attribute %r' % (self, attr)
 
     def deliver(self):
+        """Attempts to fill the instance with the data it represents.
+
+        If the instance has already been delivered or the instance has no URL
+        from which to fetch data, `deliver()` raises a `PromiseError`. Other
+        exceptions from requesting and decoding a `RemoteObject` that might
+        normally result from a `RemoteObject.get()` may also be thrown.
+
+        """
         if self._delivered:
             raise PromiseError('%s instance %r has already been delivered' % (type(self).__name__, self))
         if self._location is None:
@@ -53,19 +78,22 @@ class PromiseObject(RemoteObject):
         self.update_from_response(self._location, response, content)
 
     def update_from_response(self, url, response, content):
+        """Fills the `PromiseObject` instance with the data from the given
+        HTTP response and if successful marks the instance delivered."""
         super(PromiseObject, self).update_from_response(url, response, content)
         # Any updating from a response constitutes delivery.
         self._delivered = True
 
+# TODO: move this to fields.py?
 class Link(Property):
 
-    """A RemoteObject property that lets RemoteObjects have attributes that are
-    other unloaded RemoteObjects.
+    """A `RemoteObject` property representing a "link" from one `RemoteObject`
+    instance to another.
 
-    Use this property when related content is not *part* of a RemoteObject, but
-    is itself available at a relative URL to it. By default the target object's
-    URL should be available at the property name relative to the owning
-    instance's URL.
+    Use this property when related content is not *part* of a RemoteObject,
+    but is instead available at a URL relative to it. By default the target
+    object's URL should be available at the property name relative to the
+    owning instance's URL.
 
     For example:
 
@@ -75,18 +103,18 @@ class Link(Property):
     >>> i = Item.get('http://example.com/item/')
     >>> f = i.feed  # f's URL: http://example.com/item/feed
 
-    Override a Link's `__get__` method to customize how the URLs to linked
-    objects are constructed.
+    Override the `__get__` method of a `Link` subclass to customize how the
+    URLs to linked objects are constructed.
 
     """
 
     def __init__(self, cls, api_name=None, **kwargs):
-        """Sets the RemoteObject class of the target resource (`cls`) and
-        optionally the real relative URL of the resource.
+        """Sets the `RemoteObject` class of the target resource and,
+        optionally, the real relative URL of the resource.
 
         Optional parameter `api_name` is used as the link's relative URL. If
-        not given, the name of the attribute to which the Link is assigned will
-        be used.
+        not given, the name of the attribute to which the Link is assigned
+        will be used.
 
         """
         self.cls = cls
@@ -94,7 +122,8 @@ class Link(Property):
         super(Link, self).__init__(**kwargs)
 
     def install(self, attrname):
-        """Installs the Link as a RemoteObject Property of the owning class."""
+        """Installs the `Link` instance as an attribute of the `RemoteObject`
+        class in which it was declared."""
         if self.api_name is None:
             self.api_name = attrname
         return self
@@ -103,10 +132,9 @@ class Link(Property):
         """Generates the RemoteObject for the target resource of this Link.
 
         By default, target resources are at a URL relative to the "parent"
-        object's URL, named by the Link's `api_name`. Customize this method to
-        define some other strategy for building links for your target API. The
-        Link instance's `api_name` attribute will contain the specified in the
-        declaration of the Link property.
+        object's URL, named by the `api_name` attribute of the `Link`
+        instance. Override this method to define some other strategy for
+        building links for your target API.
 
         """
         if instance._location is None:
@@ -116,22 +144,26 @@ class Link(Property):
 
 class ListObject(PromiseObject):
 
-    """A RemoteObject representing a list of other RemoteObjects.
+    """A `RemoteObject` representing a list of other `RemoteObject` instances.
 
-    ListObjects are for list endpoints in your target API that can be filtered
-    by query parameter. A list of recent objects or a search can be modeled as
-    ListObjects. Filtering a ListObject by a parameter returns a new copy of
-    that ListObject that includes the new parameter.
+    `ListObject` instances can be filtered by options that are passed to your
+    target API, such as a list of recent objects or a search. Filtering a
+    ListObject by a parameter returns a new copy of that ListObject that
+    includes the new parameter.
 
     """
 
     def filter(self, **kwargs):
-        """Returns a new ListObject that includes the current ListObject's
-        filter, plus all the named parameters as query parameters.
+        """Returns a new `ListObject` instance that uses the filter of the
+        current `ListObject` instance plus all the given keyword parameters.
+
+        By default, all filter parameters are given as named parameters in the
+        query string.
 
         If your endpoint takes only certain parameters, or accepts parameters
         in some way other than query parameters in the URL, override this
-        method to enforce your requirements.
+        method to build the URL and return the new `ListObject` instance as
+        you require.
 
         """
         parts = list(urlparse.urlparse(self._location))
@@ -144,8 +176,10 @@ class ListObject(PromiseObject):
         return self.get(newurl, http=self._http)
 
     def __getitem__(self, key):
-        """Translates slice notation on a ListObject into `limit` and `offset` parameters."""
+        """Translates slice notation on a `ListObject` instance into `limit`
+        and `offset` filter parameters."""
         if isinstance(key, slice):
+            # TODO: handle partial slice notation? there's a fuller implementation of this somewhere
             return self.filter(offset=key.start, limit=key.stop - key.start)
 
         try:

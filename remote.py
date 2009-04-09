@@ -20,6 +20,7 @@ from remoteobjects import fields
 userAgent = httplib2.Http()
 
 def omit_nulls(data):
+    """Strips `None` values from a dictionary or `RemoteObject` instance."""
     if not isinstance(data, dict):
         if not hasattr(data, '__dict__'):
             return str(data)
@@ -32,8 +33,8 @@ def omit_nulls(data):
 
 class RemoteObject(DataObject):
 
-    """A DataObject that can be fetched and put over HTTP through a REST
-    API."""
+    """A `DataObject` that can be fetched and put over HTTP through a RESTful
+    JSON API."""
 
     location_headers = {
         httplib.CREATED:           'Location',
@@ -137,6 +138,15 @@ class RemoteObject(DataObject):
                 % (classname, url, response.get('content-type')))
 
     def get_request(self, headers=None, **kwargs):
+        """Returns the parameters for requesting this `RemoteObject` instance
+        as a dictionary of keyword arguments suitable for passing to
+        `httplib2.Http.request()`.
+
+        Optional parameter `headers` are also included in the request as HTTP
+        headers. Other optional keyword parameters are also included as
+        specified.
+
+        """
         if headers is None:
             headers = {}
         if 'accept' not in headers:
@@ -149,6 +159,18 @@ class RemoteObject(DataObject):
 
     @classmethod
     def get_response(cls, url, http=None, headers=None, **kwargs):
+        """Requests the given URL using the specified settings.
+
+        Optional parameter `http` is the user agent instance to use. User
+        agent instances should be compatible with `httplib2.Http` instances.
+        If not specified, the request is made through the instance at
+        `remoteobjects.remote.userAgent`.
+
+        Optional parameter `headers` are also included in the request as HTTP
+        headers. Other optional keyword parameters are also included in the
+        request as specified.
+
+        """
         # TODO: reconcile this with get_request... which is an instance method.
         logging.debug('Fetching %s' % (url,))
 
@@ -166,11 +188,20 @@ class RemoteObject(DataObject):
 
     def update_from_response(self, url, response, content):
         """Adds the content of this HTTP response and message body to this
-        RemoteObject.
+        `RemoteObject` instance.
 
         Use `update_from_response()` only when you would use
         `DataObject.update_from_dict()`: when decoding outside content (in
-        this case an HTTP response) into an existing RemoteObject.
+        this case an HTTP response) into an existing `RemoteObject` instance.
+
+        If the response is not a successful response from which the
+        `RemoteObject` instance can be updated, an appropriate exception will
+        be raised (as determined by the instance's `raise_from_response()`
+        method).
+
+        If the response includes a new location URL in the appropriate header
+        (depending on the response status), the location of the `RemoteObject`
+        instance is updated as well.
 
         """
         self.raise_for_response(response, url)
@@ -187,11 +218,11 @@ class RemoteObject(DataObject):
 
     @classmethod
     def get(cls, url, http=None, **kwargs):
-        """Fetches a RemoteObject from a URL.
+        """Fetches a new `RemoteObject` instance from a URL.
 
-        Parameter `url` is the URL from which the object should be gotten.
+        Parameter `url` is the URL from which the object should be requested.
         Optional parameter `http` is the user agent object to use for
-        fetching. `http` should be compatible with `httplib2.Http` objects.
+        fetching. `http` should be compatible with `httplib2.Http` instances.
 
         """
         response, content = cls.get_response(url, http)
@@ -202,11 +233,12 @@ class RemoteObject(DataObject):
         return self
 
     def post(self, obj, http=None):
-        """Add another RemoteObject to this remote resource with a `POST`.
+        """Add another `RemoteObject` to this remote resource through an HTTP
+        `POST` request.
 
-        Parameter `obj` is a RemoteObject to save to this RemoteObject's
-        resource. For example, this (`self`) may be a collection to which you
-        want to post an asset (`obj`).
+        Parameter `obj` is a `RemoteObject` instance to save to this
+        instance's resource. For example, this (`self`) may be a collection to
+        which you want to post an asset (`obj`).
 
         Optional parameter `http` is the user agent object to use for posting.
         `http` should be compatible with `httplib2.Http` objects.
@@ -221,11 +253,8 @@ class RemoteObject(DataObject):
         obj.update_from_response(self._location, response, content)
 
     def put(self, http=None):
-        """Save a RemoteObject to a remote resource.
-
-        If the RemoteObject was fetched with a `get()` call, it is saved by
-        HTTP `PUT` to the resource's URL. If the RemoteObject is new, it is
-        saved through a `POST` to its parent collection.
+        """Save a previously requested `RemoteObject` back to its remote
+        resource through an HTTP `PUT` request.
 
         Optional `http` parameter is the user agent object to use. `http`
         objects should be compatible with `httplib2.Http` objects.
@@ -246,10 +275,8 @@ class RemoteObject(DataObject):
         self.update_from_response(self._location, response, content)
 
     def delete(self, http=None):
-        """Delete the remote resource represented by a RemoteObject.
-
-        If the RemoteObject was fetched with a `get()` call, it is deleted
-        through an HTTP `DELETE` to the resource's URL.
+        """Delete the remote resource represented by the `RemoteObject`
+        instance through an HTTP `DELETE` request.
 
         Optional parameter `http` is the user agent object to use. `http`
         objects should be compatible with `httplib2.Http` objects.
