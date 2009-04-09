@@ -27,7 +27,7 @@ def todo(fn):
         except:
             pass
         else:
-            raise AssertionError, 'test %s unexpectedly succeeded' % fn.__name__
+            raise AssertionError('test %s unexpectedly succeeded' % fn.__name__)
     functools.update_wrapper(testReverse, fn)
     return testReverse
 

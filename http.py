@@ -245,7 +245,8 @@ class HttpObject(DataObject):
 
         """
         if getattr(self, '_location', None) is None:
-            raise ValueError, 'Cannot add %r to %r with no URL to POST to' % (obj, self)
+            raise ValueError('Cannot add %r to %r with no URL to POST to'
+                % (obj, self))
 
         body = json.dumps(obj.to_dict(), default=omit_nulls)
         response, content = obj.get_response(self._location, http=http,
@@ -261,7 +262,7 @@ class HttpObject(DataObject):
 
         """
         if getattr(self, '_location', None) is None:
-            raise ValueError, 'Cannot save %r with no URL to PUT to' % (self,)
+            raise ValueError('Cannot save %r with no URL to PUT to' % self)
 
         body = json.dumps(self.to_dict(), default=omit_nulls)
 
@@ -283,7 +284,7 @@ class HttpObject(DataObject):
 
         """
         if getattr(self, '_location', None) is None:
-            raise ValueError, 'Cannot delete %r with no URL to DELETE' % (self,)
+            raise ValueError('Cannot delete %r with no URL to DELETE' % self)
 
         headers = {}
         if hasattr(self, '_etag') and self._etag is not None:

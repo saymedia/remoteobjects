@@ -58,7 +58,8 @@ class PromiseObject(HttpObject):
                     return self.__dict__[attr]
 
         # attr is not a field, or even delivering the object didn't set it.
-        raise AttributeError, 'Instance %r has no such attribute %r' % (self, attr)
+        raise AttributeError('Instance %r has no such attribute %r'
+            % (self, attr))
 
     def deliver(self):
         """Attempts to fill the instance with the data it represents.

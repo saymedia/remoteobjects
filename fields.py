@@ -70,11 +70,11 @@ class Field(Property):
 
     def decode(self, value):
         """Decodes a dictionary value into a `DataObject` attribute value."""
-        raise NotImplementedError, 'Decoding for this field is not implemented'
+        raise NotImplementedError('Decoding for this field is not implemented')
 
     def encode(self, value):
         """Encodes a `DataObject` attribute value into a dictionary value."""
-        raise NotImplementedError, 'Encoding for this field is not implemented'
+        raise NotImplementedError('Encoding for this field is not implemented')
 
     def encode_into(self, obj, data, field_name=None):
         """Encodes the attribute the field represents out of `DataObject`
@@ -150,7 +150,8 @@ class Constant(Field):
 
     def decode(self, value):
         if value != self.value:
-            raise ValueError, 'Value %r is not expected value %r' % (value, self.value)
+            raise ValueError('Value %r is not expected value %r'
+                % (value, self.value))
         return self.value
 
     def encode(self, value):
