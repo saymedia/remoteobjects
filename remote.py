@@ -83,8 +83,8 @@ class RemoteObject(DataObject):
         pass
 
     class BadResponse(httplib.HTTPException):
-        """An HTTPException thrown when the client receives some other non-success
-        HTTP response."""
+        """An HTTPException thrown when the client receives some other
+        non-success HTTP response."""
         pass
 
     def __init__(self, **kwargs):
@@ -92,7 +92,16 @@ class RemoteObject(DataObject):
         super(RemoteObject, self).__init__(**kwargs)
 
     @classmethod
-    def _raise_response(cls, response, url):
+    def raise_for_response(cls, response, url):
+        """Raises exceptions corresponding to invalid HTTP responses that
+        instances of this class can't be updated from.
+
+        Override this method to customize the error handling behavior of
+        `RemoteObject` for your target API. For example, if your API illegally
+        omits `Location` headers from 201 Created responses, override this
+        method to check for and allow them.
+
+        """
         # Turn exceptional httplib2 responses into exceptions.
         classname = cls.__name__
         if response.status == httplib.NOT_FOUND:
@@ -164,7 +173,7 @@ class RemoteObject(DataObject):
         this case an HTTP response) into an existing RemoteObject.
 
         """
-        self._raise_response(response, url)
+        self.raise_for_response(response, url)
 
         data = json.loads(content)
         self.update_from_dict(data)
