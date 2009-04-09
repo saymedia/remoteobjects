@@ -69,7 +69,7 @@ class TestRemoteObjects(unittest.TestCase):
         with tests.MockedHttp(request, response) as h:
             c.post(b, http=h)
 
-        self.assertEquals(b._id, 'http://example.com/fred')
+        self.assertEquals(b._location, 'http://example.com/fred')
         self.assertEquals(b._etag, 'xyz')
 
 
@@ -160,7 +160,7 @@ class TestRemoteObjects(unittest.TestCase):
         with tests.MockedHttp(request, response) as h:
             b.delete(http=h)
 
-        self.failIf(b._id is not None)
+        self.failIf(b._location is not None)
         self.failIf(hasattr(b, '_etag'))
 
 

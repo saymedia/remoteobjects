@@ -73,7 +73,6 @@ class DataObject(object):
     __metaclass__ = DataObjectMetaclass
 
     def __init__(self, **kwargs):
-        self._id = None
         self.__dict__.update(kwargs)
 
     def __eq__(self, other):

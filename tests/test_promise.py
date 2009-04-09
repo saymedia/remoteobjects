@@ -57,25 +57,25 @@ class TestViews(unittest.TestCase):
         mox.Replay(h)
 
         b = Toybox.get('http://example.com/foo', http=h)
-        self.assertEquals(b._id, 'http://example.com/foo')
+        self.assertEquals(b._location, 'http://example.com/foo')
 
         x = b.filter(limit=10, offset=7)
         self.assert_(x is not b)
-        self.assertEquals(b._id, 'http://example.com/foo')
-        self.assertEquals(x._id, 'http://example.com/foo?limit=10&offset=7')
+        self.assertEquals(b._location, 'http://example.com/foo')
+        self.assertEquals(x._location, 'http://example.com/foo?limit=10&offset=7')
 
         y = b.filter(awesome='yes')
-        self.assertEquals(y._id, 'http://example.com/foo?awesome=yes')
+        self.assertEquals(y._location, 'http://example.com/foo?awesome=yes')
         y = y.filter(awesome='no')
-        self.assertEquals(y._id, 'http://example.com/foo?awesome=no')
+        self.assertEquals(y._location, 'http://example.com/foo?awesome=no')
 
         j = b[0:10]
         self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._id, 'http://example.com/foo?limit=10&offset=0')
+        self.assertEquals(j._location, 'http://example.com/foo?limit=10&offset=0')
 
         q = b[300:370]
         self.assert_(isinstance(j, Toybox))
-        self.assertEquals(q._id, 'http://example.com/foo?limit=70&offset=300')
+        self.assertEquals(q._location, 'http://example.com/foo?limit=70&offset=300')
 
         # Can't use a non-slice on a plain ListObject
         self.assertRaises(TypeError, lambda: b[7])
@@ -97,4 +97,4 @@ class TestViews(unittest.TestCase):
         r = Room.get('http://example.com/bwuh/')
         b = r.toybox
         self.assert_(isinstance(b, Toybox))
-        self.assertEquals(b._id, 'http://example.com/bwuh/toybox')
+        self.assertEquals(b._location, 'http://example.com/bwuh/toybox')

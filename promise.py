@@ -27,7 +27,7 @@ class PromiseObject(RemoteObject):
     def get(cls, url, http=None, **kwargs):
         # Make a fake empty instance of this class.
         self = cls()
-        self._id = url
+        self._location = url
         self._http = http
 
         return self
@@ -46,10 +46,10 @@ class PromiseObject(RemoteObject):
     def deliver(self):
         if self._delivered:
             raise PromiseError('%s instance %r has already been delivered' % (type(self).__name__, self))
-        if self._id is None:
+        if self._location is None:
             raise PromiseError('Instance %r has no URL from which to deliver' % (self,))
 
-        response, content = self.get_response(self._id, self._http)
+        response, content = self.get_response(self._location, self._http)
         self.update_from_response(response, content)
 
     def update_from_response(self, response, content):
@@ -109,9 +109,9 @@ class Link(Property):
         declaration of the Link property.
 
         """
-        if instance._id is None:
+        if instance._location is None:
             raise AttributeError('Cannot find URL of %s relative to URL-less %s' % (self.cls.__name__, owner.__name__))
-        newurl = urlparse.urljoin(instance._id, self.api_name)
+        newurl = urlparse.urljoin(instance._location, self.api_name)
         return self.cls.get(newurl)
 
 class ListObject(PromiseObject):
@@ -134,7 +134,7 @@ class ListObject(PromiseObject):
         method to enforce your requirements.
 
         """
-        parts = list(urlparse.urlparse(self._id))
+        parts = list(urlparse.urlparse(self._location))
         queryargs = cgi.parse_qs(parts[4], keep_blank_values=True)
         queryargs = dict([(k, v[0]) for k, v in queryargs.iteritems()])
         queryargs.update(kwargs)

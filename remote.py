@@ -87,6 +87,10 @@ class RemoteObject(DataObject):
         HTTP response."""
         pass
 
+    def __init__(self, **kwargs):
+        self._location = None
+        super(RemoteObject, self).__init__(**kwargs)
+
     @classmethod
     def _raise_response(cls, response, url):
         # Turn exceptional httplib2 responses into exceptions.
@@ -130,7 +134,7 @@ class RemoteObject(DataObject):
             headers['accept'] = 'application/json'
 
         # Use 'uri' because httplib2.request does.
-        request = dict(uri=self._id, headers=headers)
+        request = dict(uri=self._location, headers=headers)
         request.update(kwargs)
         return request
 
@@ -165,7 +169,7 @@ class RemoteObject(DataObject):
 
         location_header = self.location_headers.get(response.status)
         if location_header is not None:
-            self._id = response[location_header.lower()]
+            self._location = response[location_header.lower()]
 
         if 'etag' in response:
             self._etag = response['etag']
@@ -197,11 +201,11 @@ class RemoteObject(DataObject):
         `http` should be compatible with `httplib2.Http` objects.
 
         """
-        if getattr(self, '_id', None) is None:
+        if getattr(self, '_location', None) is None:
             raise ValueError, 'Cannot add %r to %r with no URL to POST to' % (obj, self)
 
         body = json.dumps(obj.to_dict(), default=omit_nulls)
-        response, content = obj.get_response(self._id, http=http,
+        response, content = obj.get_response(self._location, http=http,
             method='POST', body=body)
         obj.update_from_response(response, content)
 
@@ -216,7 +220,7 @@ class RemoteObject(DataObject):
         objects should be compatible with `httplib2.Http` objects.
 
         """
-        if getattr(self, '_id', None) is None:
+        if getattr(self, '_location', None) is None:
             raise ValueError, 'Cannot save %r with no URL to PUT to' % (self,)
 
         body = json.dumps(self.to_dict(), default=omit_nulls)
@@ -225,7 +229,7 @@ class RemoteObject(DataObject):
         if hasattr(self, '_etag') and self._etag is not None:
             headers['if-match'] = self._etag
 
-        response, content = self.get_response(self._id, http=http, method='PUT',
+        response, content = self.get_response(self._location, http=http, method='PUT',
             body=body, headers=headers)
         logging.debug('Yay saved my obj, now turning %s into new content' % (content,))
         self.update_from_response(response, content)
@@ -240,17 +244,17 @@ class RemoteObject(DataObject):
         objects should be compatible with `httplib2.Http` objects.
 
         """
-        if getattr(self, '_id', None) is None:
+        if getattr(self, '_location', None) is None:
             raise ValueError, 'Cannot delete %r with no URL to DELETE' % (self,)
 
         headers = {}
         if hasattr(self, '_etag') and self._etag is not None:
             headers['if-match'] = self._etag
 
-        response, content = self.get_response(self._id, http=http,
+        response, content = self.get_response(self._location, http=http,
             method='DELETE', headers=headers)
         logging.debug('Yay deleted the obj, now... something something')
 
         # No more resource, no more URL.
-        self._id = None
+        self._location = None
         del self._etag
