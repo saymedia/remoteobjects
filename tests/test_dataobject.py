@@ -16,8 +16,8 @@ class TestDataObjects(unittest.TestCase):
     def testBasic(self):
 
         class BasicMost(self.cls):
-            name  = fields.Something()
-            value = fields.Something()
+            name  = fields.Field()
+            value = fields.Field()
 
         b = BasicMost.from_dict({ 'name': 'foo', 'value': '4' })
         self.assert_(b, 'from_dict() returned something True')
@@ -35,8 +35,8 @@ class TestDataObjects(unittest.TestCase):
     def testTypes(self):
 
         class WithTypes(self.cls):
-            name  = fields.Something()
-            value = fields.Something()
+            name  = fields.Field()
+            value = fields.Field()
             when  = fields.Datetime()
 
         w = WithTypes.from_dict({
@@ -59,8 +59,8 @@ class TestDataObjects(unittest.TestCase):
     def testMustIgnore(self):
 
         class BasicMost(self.cls):
-            name  = fields.Something()
-            value = fields.Something()
+            name  = fields.Field()
+            value = fields.Field()
 
         b = BasicMost.from_dict({
             'name':   'foo',
@@ -101,11 +101,11 @@ class TestDataObjects(unittest.TestCase):
     def testStrongTypes(self):
 
         class Blah(self.cls):
-            name = fields.Something()
+            name = fields.Field()
 
         class WithTypes(self.cls):
-            name  = fields.Something()
-            value = fields.Something()
+            name  = fields.Field()
+            value = fields.Field()
             when  = fields.Datetime()
             bleh  = fields.Object(Blah)
 
@@ -128,10 +128,10 @@ class TestDataObjects(unittest.TestCase):
     def testComplex(self):
 
         class Childer(self.cls):
-            name = fields.Something()
+            name = fields.Field()
 
         class Parentish(self.cls):
-            name     = fields.Something()
+            name     = fields.Field()
             children = fields.List(fields.Object(Childer))
 
         p = Parentish.from_dict({
@@ -215,8 +215,8 @@ class TestDataObjects(unittest.TestCase):
     def testFieldOverride(self):
 
         class Parent(dataobject.DataObject):
-            fred = fields.Something()
-            ted  = fields.Something()
+            fred = fields.Field()
+            ted  = fields.Field()
 
         class Child(Parent):
             ted = fields.Datetime()
@@ -230,9 +230,9 @@ class TestDataObjects(unittest.TestCase):
     def testFieldApiName(self):
 
         class WeirdNames(dataobject.DataObject):
-            normal    = fields.Something()
-            fooBarBaz = fields.Something(api_name='foo-bar-baz')
-            xyzzy     = fields.Something(api_name='plugh')
+            normal    = fields.Field()
+            fooBarBaz = fields.Field(api_name='foo-bar-baz')
+            xyzzy     = fields.Field(api_name='plugh')
 
         w = WeirdNames.from_dict({
             'normal': 'asfdasf',
@@ -269,9 +269,9 @@ class TestDataObjects(unittest.TestCase):
             return 'CHEEZBURGH'
 
         class WithDefaults(dataobject.DataObject):
-            plain               = fields.Something()
-            itsAlwaysSomething  = fields.Something(default=7)
-            itsUsuallySomething = fields.Something(default=cheezburgh)
+            plain               = fields.Field()
+            itsAlwaysSomething  = fields.Field(default=7)
+            itsUsuallySomething = fields.Field(default=cheezburgh)
 
         w = WithDefaults.from_dict({
             'plain': 'awesome',

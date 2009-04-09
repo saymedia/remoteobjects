@@ -73,7 +73,7 @@ class DataObject(object):
 
     >>> from remoteobjects import DataObject, fields
     >>> class Asset(DataObject):
-    ...     name    = fields.Something()
+    ...     name    = fields.Field()
     ...     updated = fields.Datetime()
     ...     author  = fields.Object('Author')
     ...

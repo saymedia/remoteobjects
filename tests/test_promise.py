@@ -25,7 +25,7 @@ class TestPromiseObjects(unittest.TestCase):
     def testBasic(self):
 
         class Tiny(self.cls):
-            name = fields.Something()
+            name = fields.Field()
 
         h = mox.MockObject(httplib2.Http)
         mox.Replay(h)
@@ -48,7 +48,7 @@ class TestViews(unittest.TestCase):
     def testBasic(self):
 
         class Toy(promise.PromiseObject):
-            name = fields.Something()
+            name = fields.Field()
 
         class Toybox(promise.ListObject):
             entries = fields.List(fields.Object(Toy))
@@ -86,7 +86,7 @@ class TestViews(unittest.TestCase):
     def testAwesome(self):
 
         class Toy(promise.PromiseObject):
-            name = fields.Something()
+            name = fields.Field()
 
         class Toybox(promise.ListObject):
             entries = fields.List(fields.Object(Toy))

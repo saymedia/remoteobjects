@@ -34,10 +34,18 @@ class Field(Property):
     Declare a `Field` instance for each attribute of a `DataObject` that
     should be encoded to or decoded from a dictionary.
 
+    Use a `Field` instance directly for simple `DataObject` attributes that
+    can be the same type as their dictionary values. That is, use `Field`
+    fields for strings, numbers, and boolean values.
+
+    If your attribute data does need converted, use one of the `Field`
+    subclasses from the `remoteobjects.fields` module to encode and decode
+    your data as appropriate.
+
     If your attribute needs converted specially, override the `decode` and
-    `encode` methods in a subclass. For example, the `fields.Datetime`
-    subclass of `Field` encodes Python `datetime` instances in a dictionary as
-    timestamp strings.
+    `encode` methods in a new subclass of `Field`. For example, the
+    `fields.Datetime` subclass of `Field` encodes Python `datetime` instances
+    in a dictionary as timestamp strings.
 
     """
 
@@ -69,12 +77,26 @@ class Field(Property):
         self.default  = default
 
     def decode(self, value):
-        """Decodes a dictionary value into a `DataObject` attribute value."""
-        raise NotImplementedError('Decoding for this field is not implemented')
+        """Decodes a dictionary value into a `DataObject` attribute value.
+
+        This implementation returns the `value` parameter unchanged. This is
+        generally only appropriate for strings, numbers, and boolean values.
+        Use another `Field` class (or a custom `Field` implementation that
+        overrides this method) if you need to convert objects.
+
+        """
+        return value
 
     def encode(self, value):
-        """Encodes a `DataObject` attribute value into a dictionary value."""
-        raise NotImplementedError('Encoding for this field is not implemented')
+        """Encodes a `DataObject` attribute value into a dictionary value.
+
+        This implementation returns the `value` parameter unchanged. This is
+        generally only appropriate for strings, numbers, and boolean values.
+        Use another `Field` class (or a custom `Field` implementation that
+        overrides this method) if you need to convert objects.
+
+        """
+        return value
 
     def encode_into(self, obj, data, field_name=None):
         """Encodes the attribute the field represents out of `DataObject`
@@ -109,25 +131,6 @@ class Field(Property):
                 value = self.default
         # always set the attribute, even if it's still None
         setattr(obj, field_name, value)
-
-class Something(Field):
-
-    """A generic field for data that doesn't need converted between dictionary
-    content and DataObject values.
-
-    Use this generic field for simple `DataObject` parameters that can be the
-    same type as their dictionary values. That is, use this `Field` for
-    strings, numbers, and boolean values.
-
-    """
-
-    def decode(self, value):
-        """Decodes a dictionary value into a DataObject attribute value."""
-        return value
-
-    def encode(self, value):
-        """Encodes a DataObject attribute value into a dictionary value."""
-        return value
 
 class Constant(Field):
 

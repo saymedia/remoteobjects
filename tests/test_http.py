@@ -26,8 +26,8 @@ class TestHttpObjects(unittest.TestCase):
     def testGet(self):
 
         class BasicMost(self.cls):
-            name  = fields.Something()
-            value = fields.Something()
+            name  = fields.Field()
+            value = fields.Field()
 
         request = {
             'uri': 'http://example.com/ohhai',
@@ -43,11 +43,11 @@ class TestHttpObjects(unittest.TestCase):
     def testPost(self):
 
         class BasicMost(self.cls):
-            name  = fields.Something()
-            value = fields.Something()
+            name  = fields.Field()
+            value = fields.Field()
 
         class ContainerMost(self.cls):
-            name = fields.Something()
+            name = fields.Field()
 
         request = {
             'uri': 'http://example.com/asfdasf',
@@ -76,8 +76,8 @@ class TestHttpObjects(unittest.TestCase):
     def testPut(self):
 
         class BasicMost(self.cls):
-            name  = fields.Something()
-            value = fields.Something()
+            name  = fields.Field()
+            value = fields.Field()
 
         b = BasicMost()
         self.assertRaises(ValueError, lambda: b.put())
@@ -106,8 +106,8 @@ class TestHttpObjects(unittest.TestCase):
     def testPutFailure(self):
 
         class BasicMost(self.cls):
-            name  = fields.Something()
-            value = fields.Something()
+            name  = fields.Field()
+            value = fields.Field()
 
         request = {
             'uri': 'http://example.com/bwuh',
@@ -136,8 +136,8 @@ class TestHttpObjects(unittest.TestCase):
     def testDelete(self):
 
         class BasicMost(self.cls):
-            name  = fields.Something()
-            value = fields.Something()
+            name  = fields.Field()
+            value = fields.Field()
 
         b = BasicMost()
         self.assertRaises(ValueError, lambda: b.put())
@@ -168,7 +168,7 @@ class TestHttpObjects(unittest.TestCase):
         self.assert_(self.cls.NotFound)
 
         class Huh(self.cls):
-            name = fields.Something()
+            name = fields.Field()
 
         self.assert_(Huh.NotFound)
 
