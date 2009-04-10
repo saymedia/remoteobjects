@@ -43,7 +43,7 @@ class PromiseObject(HttpObject):
 
         If the instance is undelivered and the requested attribute is a
         declared field of the instance's class, `__getattr__` attempts to
-        deliver the object before 
+        deliver the object before returning the value of that attribute.
 
         Because delivery is only attempted on an attribute "miss," all the
         exceptions that `RemoteObject.get()` may raise may be raised through
