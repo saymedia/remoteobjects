@@ -92,51 +92,6 @@ class HttpObject(DataObject):
         self._location = None
         super(HttpObject, self).__init__(**kwargs)
 
-    @classmethod
-    def raise_for_response(cls, response, url):
-        """Raises exceptions corresponding to invalid HTTP responses that
-        instances of this class can't be updated from.
-
-        Override this method to customize the error handling behavior of
-        `RemoteObject` for your target API. For example, if your API illegally
-        omits `Location` headers from 201 Created responses, override this
-        method to check for and allow them.
-
-        """
-        # Turn exceptional httplib2 responses into exceptions.
-        classname = cls.__name__
-        if response.status == httplib.NOT_FOUND:
-            raise cls.NotFound('No such %s %s' % (classname, url))
-        if response.status == httplib.UNAUTHORIZED:
-            raise cls.Unauthorized('Not authorized to fetch %s %s' % (classname, url))
-        if response.status == httplib.FORBIDDEN:
-            raise cls.Forbidden('Forbidden from fetching %s %s' % (classname, url))
-        if response.status == httplib.PRECONDITION_FAILED:
-            raise cls.PreconditionFailed('Precondition failed for %s request to %s' % (classname, url))
-
-        try:
-            location_header = cls.location_headers[response.status]
-        except KeyError:
-            # we only expect the statuses that have location headers defined
-            raise cls.BadResponse('Unexpected response requesting %s %s: %d %s'
-                % (classname, url, response.status, response.reason))
-
-        if location_header is None:
-            # then there's no content-type either, so we're done
-            return
-
-        if location_header.lower() not in response:
-            raise cls.BadResponse(
-                "%r header missing from %d %s response requesting %s %s"
-                % (location_header, response.status, response.reason,
-                   classname, url))
-
-        # check that the response body was json
-        if response.get('content-type') != 'application/json':
-            raise cls.BadResponse(
-                'Bad response fetching %s %s: content-type is %s, not JSON'
-                % (classname, url, response.get('content-type')))
-
     def get_request(self, headers=None, **kwargs):
         """Returns the parameters for requesting this `RemoteObject` instance
         as a dictionary of keyword arguments suitable for passing to
@@ -185,6 +140,51 @@ class HttpObject(DataObject):
         logging.debug('Got content %s' % (content,))
 
         return response, content
+
+    @classmethod
+    def raise_for_response(cls, response, url):
+        """Raises exceptions corresponding to invalid HTTP responses that
+        instances of this class can't be updated from.
+
+        Override this method to customize the error handling behavior of
+        `RemoteObject` for your target API. For example, if your API illegally
+        omits `Location` headers from 201 Created responses, override this
+        method to check for and allow them.
+
+        """
+        # Turn exceptional httplib2 responses into exceptions.
+        classname = cls.__name__
+        if response.status == httplib.NOT_FOUND:
+            raise cls.NotFound('No such %s %s' % (classname, url))
+        if response.status == httplib.UNAUTHORIZED:
+            raise cls.Unauthorized('Not authorized to fetch %s %s' % (classname, url))
+        if response.status == httplib.FORBIDDEN:
+            raise cls.Forbidden('Forbidden from fetching %s %s' % (classname, url))
+        if response.status == httplib.PRECONDITION_FAILED:
+            raise cls.PreconditionFailed('Precondition failed for %s request to %s' % (classname, url))
+
+        try:
+            location_header = cls.location_headers[response.status]
+        except KeyError:
+            # we only expect the statuses that have location headers defined
+            raise cls.BadResponse('Unexpected response requesting %s %s: %d %s'
+                % (classname, url, response.status, response.reason))
+
+        if location_header is None:
+            # then there's no content-type either, so we're done
+            return
+
+        if location_header.lower() not in response:
+            raise cls.BadResponse(
+                "%r header missing from %d %s response requesting %s %s"
+                % (location_header, response.status, response.reason,
+                   classname, url))
+
+        # check that the response body was json
+        if response.get('content-type') != 'application/json':
+            raise cls.BadResponse(
+                'Bad response fetching %s %s: content-type is %s, not JSON'
+                % (classname, url, response.get('content-type')))
 
     def update_from_response(self, url, response, content):
         """Adds the content of this HTTP response and message body to this
