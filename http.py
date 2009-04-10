@@ -83,6 +83,13 @@ class HttpObject(DataObject):
         """
         pass
 
+    class ServerError(httplib.HTTPException):
+        """An HTTPException thrown when the server reports an unexpected error.
+
+        This exception corresponds to the HTTP status code 500.
+
+        """
+
     class BadResponse(httplib.HTTPException):
         """An HTTPException thrown when the client receives some other
         non-success HTTP response."""
@@ -142,7 +149,7 @@ class HttpObject(DataObject):
         return response, content
 
     @classmethod
-    def raise_for_response(cls, response, url):
+    def raise_for_response(cls, url, response, content):
         """Raises exceptions corresponding to invalid HTTP responses that
         instances of this class can't be updated from.
 
@@ -162,6 +169,16 @@ class HttpObject(DataObject):
             raise cls.Forbidden('Forbidden from fetching %s %s' % (classname, url))
         if response.status == httplib.PRECONDITION_FAILED:
             raise cls.PreconditionFailed('Precondition failed for %s request to %s' % (classname, url))
+
+        if response.status == httplib.INTERNAL_SERVER_ERROR:
+            # Pull out an error if we can.
+            if response.get('content-type') == 'text/plain':
+                error = content.split('\n', 2)[0]
+                raise cls.ServerError('%d %s requesting %s %s: %s'
+                    % (response.status, response.reason, classname, url,
+                       error))
+            raise cls.ServerError('%d %s requesting %s %s'
+                % (response.status, response.reason, classname, url))
 
         try:
             location_header = cls.location_headers[response.status]
@@ -204,7 +221,7 @@ class HttpObject(DataObject):
         instance is updated as well.
 
         """
-        self.raise_for_response(response, url)
+        self.raise_for_response(url, response, content)
 
         data = json.loads(content)
         self.update_from_dict(data)
