@@ -42,10 +42,10 @@ class Field(Property):
     subclasses from the `remoteobjects.fields` module to encode and decode
     your data as appropriate.
 
-    If your attribute needs converted specially, override the `decode` and
-    `encode` methods in a new subclass of `Field`. For example, the
-    `fields.Datetime` subclass of `Field` encodes Python `datetime` instances
-    in a dictionary as timestamp strings.
+    If your attribute needs converted specially, override the `decode()` and
+    `encode()` methods in a new subclass of `Field`. For example, the
+    `fields.Datetime` subclass of `Field` encodes Python `datetime.datetime`
+    instances in a dictionary as timestamp strings.
 
     """
 
@@ -276,8 +276,8 @@ class Datetime(Field):
         """Decodes a timestamp string into a `DataObject` attribute (a Python
         `datetime` instance).
 
-        Timestamp strings should be of the format `YYYY-MM-DDTHH:MM:SSZ`. The
-        resulting `datetime` will have no time zone.
+        Timestamp strings should be of the format ``YYYY-MM-DDTHH:MM:SSZ``.
+        The resulting `datetime` will have no time zone.
 
         """
         try:
@@ -290,7 +290,7 @@ class Datetime(Field):
         into a timestamp string.
 
         The `datetime` instance should have no time zone set. Timestamp
-        strings will be of the format `YYYY-MM-DDTHH:MM:SSZ`.
+        strings will be of the format ``YYYY-MM-DDTHH:MM:SSZ``.
 
         """
         if not isinstance(value, datetime):
@@ -301,7 +301,7 @@ class Datetime(Field):
 
 class Link(Property):
 
-    """A `RemoteObject` property representing a "link" from one `RemoteObject`
+    """A `RemoteObject` property representing a link from one `RemoteObject`
     instance to another.
 
     Use this property when related content is not *part* of a RemoteObject,

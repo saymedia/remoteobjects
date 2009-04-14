@@ -42,7 +42,7 @@ class PromiseObject(HttpObject):
         deliver the `PromiseObject` if necessary.
 
         If the instance is undelivered and the requested attribute is a
-        declared field of the instance's class, `__getattr__` attempts to
+        declared field of the instance's class, `__getattr__()` attempts to
         deliver the object before returning the value of that attribute.
 
         Because delivery is only attempted on an attribute "miss," all the
@@ -119,8 +119,8 @@ class ListObject(PromiseObject):
         return self.get(newurl, http=self._http)
 
     def __getitem__(self, key):
-        """Translates slice notation on a `ListObject` instance into `limit`
-        and `offset` filter parameters."""
+        """Translates slice notation on a `ListObject` instance into ``limit``
+        and ``offset`` filter parameters."""
         if isinstance(key, slice):
             # TODO: handle partial slice notation? there's a fuller implementation of this somewhere
             return self.filter(offset=key.start, limit=key.stop - key.start)

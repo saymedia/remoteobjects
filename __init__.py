@@ -1,3 +1,11 @@
+"""
+remoteobjects provides easy coding and transfer between Python objects and a
+JSON REST API.
+
+
+
+"""
+
 import remoteobjects.dataobject
 import remoteobjects.fields as fields
 import remoteobjects.http

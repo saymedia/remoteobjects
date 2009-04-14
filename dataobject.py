@@ -108,7 +108,7 @@ class DataObject(object):
         """Returns whether two `DataObject` instances are different.
 
         `DataObject` instances are different if they are not equivalent as
-        determined through `__eq__`.
+        determined through `__eq__()`.
 
         """
         return not self == other

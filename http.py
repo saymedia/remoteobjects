@@ -77,8 +77,8 @@ class HttpObject(DataObject):
         conditions in a conditional request were not true.
 
         This exception corresponds to the HTTP status code 412. The most
-        common cause of this status is an attempt to `PUT` a resource that has
-        already changed on the server.
+        common cause of this status is an attempt to ``PUT`` a resource that
+        has already changed on the server.
 
         """
         pass
@@ -155,7 +155,7 @@ class HttpObject(DataObject):
 
         Override this method to customize the error handling behavior of
         `RemoteObject` for your target API. For example, if your API illegally
-        omits `Location` headers from 201 Created responses, override this
+        omits ``Location`` headers from 201 Created responses, override this
         method to check for and allow them.
 
         """
@@ -251,7 +251,7 @@ class HttpObject(DataObject):
 
     def post(self, obj, http=None):
         """Add another `RemoteObject` to this remote resource through an HTTP
-        `POST` request.
+        ``POST`` request.
 
         Parameter `obj` is a `RemoteObject` instance to save to this
         instance's resource. For example, this (`self`) may be a collection to
@@ -272,7 +272,7 @@ class HttpObject(DataObject):
 
     def put(self, http=None):
         """Save a previously requested `RemoteObject` back to its remote
-        resource through an HTTP `PUT` request.
+        resource through an HTTP ``PUT`` request.
 
         Optional `http` parameter is the user agent object to use. `http`
         objects should be compatible with `httplib2.Http` objects.
@@ -294,7 +294,7 @@ class HttpObject(DataObject):
 
     def delete(self, http=None):
         """Delete the remote resource represented by the `RemoteObject`
-        instance through an HTTP `DELETE` request.
+        instance through an HTTP ``DELETE`` request.
 
         Optional parameter `http` is the user agent object to use. `http`
         objects should be compatible with `httplib2.Http` objects.
