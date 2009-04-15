@@ -19,6 +19,7 @@ from remoteobjects import fields
 
 userAgent = httplib2.Http()
 
+
 def omit_nulls(data):
     """Strips `None` values from a dictionary or `RemoteObject` instance."""
     if not isinstance(data, dict):
@@ -30,6 +31,7 @@ def omit_nulls(data):
         if data[key] is None or key == 'etag':
             del data[key]
     return data
+
 
 class HttpObject(DataObject):
 

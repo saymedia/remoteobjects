@@ -5,10 +5,12 @@ import cgi
 from remoteobjects.http import HttpObject
 from remoteobjects.fields import Property
 
+
 class PromiseError(Exception):
     """An exception representing an error promising or delivering a
     `PromiseObject` instance."""
     pass
+
 
 class PromiseObject(HttpObject):
     """A `RemoteObject` that delays actual retrieval of the remote resource until
@@ -84,6 +86,7 @@ class PromiseObject(HttpObject):
         super(PromiseObject, self).update_from_response(url, response, content)
         # Any updating from a response constitutes delivery.
         self._delivered = True
+
 
 class ListObject(PromiseObject):
 

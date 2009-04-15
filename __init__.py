@@ -55,5 +55,6 @@ from remoteobjects.promise import ListObject
 
 __all__ = ('RemoteObject', 'fields', 'ListObject')
 
+
 class RemoteObject(remoteobjects.promise.PromiseObject):
     pass

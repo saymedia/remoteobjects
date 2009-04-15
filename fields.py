@@ -5,6 +5,7 @@ import urlparse
 
 import remoteobjects.dataobject
 
+
 class Property(object):
 
     """An attribute that can be installed declaratively on a `DataObject` to
@@ -25,6 +26,7 @@ class Property(object):
 
         """
         raise NotImplementedError()
+
 
 class Field(Property):
 
@@ -132,6 +134,7 @@ class Field(Property):
         # always set the attribute, even if it's still None
         setattr(obj, field_name, value)
 
+
 class Constant(Field):
 
     """A field for data that always has a certain value for all instances of
@@ -166,6 +169,7 @@ class Constant(Field):
 
     def decode_into(self, data, obj, field_name=None):
         setattr(obj, field_name, self.value)
+
 
 class List(Field):
 
@@ -207,6 +211,7 @@ class List(Field):
         values) into a dictionary value (a list of dictionary values)."""
         return [self.fld.encode(v) for v in value]
 
+
 class Dict(List):
     """A field representing a homogeneous mapping of data.
 
@@ -226,6 +231,7 @@ class Dict(List):
         `DataObject` attribute values for values) into a dictionary value (a
         dictionary with encoded dictionary values for values)."""
         return dict([(k, self.fld.encode(v)) for k, v in value.iteritems()])
+
 
 class Object(Field):
     """A field representing a nested `DataObject`."""
@@ -268,6 +274,7 @@ class Object(Field):
         representative dictionary value."""
         return value.to_dict()
 
+
 class Datetime(Field):
 
     """A field representing a timestamp."""
@@ -298,6 +305,7 @@ class Datetime(Field):
         if value.tzinfo is not None:
             raise TypeError("Value to encode %r is a datetime, but it has timezone information and we don't want to deal with timezone information" % (value,))
         return '%sZ' % (value.replace(microsecond=0).isoformat(),)
+
 
 class Link(Property):
 

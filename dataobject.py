@@ -2,6 +2,8 @@ import logging
 import remoteobjects.fields
 
 all_classes = {}
+
+
 def find_by_name(name):
     """Finds and returns the DataObject subclass with the given name.
 
@@ -10,6 +12,7 @@ def find_by_name(name):
 
     """
     return all_classes[name]
+
 
 class DataObjectMetaclass(type):
     """Metaclass for `DataObject` classes.
@@ -62,6 +65,7 @@ class DataObjectMetaclass(type):
             field.of_cls = obj_cls
 
         return obj_cls
+
 
 class DataObject(object):
 
