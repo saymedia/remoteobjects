@@ -1,7 +1,8 @@
 import logging
 import remoteobjects.fields
 
-all_classes = {}
+classes_by_name = {}
+classes_by_constant_field = {}
 
 
 def find_by_name(name):
@@ -11,7 +12,7 @@ def find_by_name(name):
     no class by that name, raises `KeyError`.
 
     """
-    return all_classes[name]
+    return classes_by_name[name]
 
 
 class DataObjectMetaclass(type):
@@ -57,7 +58,7 @@ class DataObjectMetaclass(type):
         obj_cls = super(DataObjectMetaclass, cls).__new__(cls, name, bases, attrs)
 
         # Register the new class so Object fields can have forward-referenced it.
-        all_classes[name] = obj_cls
+        classes_by_name[name] = obj_cls
 
         # Tell this class's fields what this class is, so they can find their
         # forward references later.
@@ -159,3 +160,39 @@ class DataObject(object):
         for field_name, field in self.fields.iteritems():
             if hasattr(field, 'decode_into'):
                 field.decode_into(data, self, field_name=field_name)
+
+    @classmethod
+    def subclass_with_constant_field(cls, fieldname, value):
+        """Returns the closest subclass of this class that has a `Constant`
+        field with the given value.
+
+        Use this method in combination with the `fields.Constant` field class
+        to find the most appropriate subclass of `cls` based on a content
+        field. For example, if you have an ``Asset`` class, but want to
+        declare subclasses with special behavior based on the ``kind`` field
+        of the ``Asset`` instances, declare ``kind`` as a `Constant` field on
+        each subclass. Then when you want to create a new ``Asset`` instance
+        (as in ``Asset.from_dict()``), you can use this method to select a
+        more appropriate class to instantiate.
+
+        Parameters `fieldname` and `value` are the name and value of the
+        `Constant` field for which to search respectively.
+
+        If a subclass of `cls` has been declared with a `Constant` field of
+        the given name and value, it will be returned. If multiple subclasses
+        of `cls` declare a matching `Constant` field, one of the matching
+        subclasses will be returned, but which subclass is not defined.
+
+        """
+        try:
+            match_classes = classes_by_constant_field[fieldname][value]
+        except KeyError:
+            # No matching classes, then.
+            pass
+        else:
+            for candidate in match_classes:
+                if issubclass(candidate, cls):
+                    return candidate
+
+        raise ValueError('No such subclass of %s with field %r equivalent to %r'
+            % (cls.__name__, fieldname, value))

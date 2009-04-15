@@ -154,6 +154,35 @@ class Constant(Field):
         super(Constant, self).__init__(**kwargs)
         self.value = value
 
+    def install(self, attrname):
+        """Records the attribute name used for this field."""
+        self.attrname = attrname
+        return super(Constant, self).install(attrname)  # raises NotImplementedError
+
+    def get_of_cls(self):
+        return self.__dict__['of_cls']
+
+    def set_of_cls(self, of_cls):
+        """Records the class that owns this field.
+
+        This implementation also registers the owning class by this constant
+        field's value, so that `DataObject.subclass_with_constant_field()`
+        will find this field's class.
+
+        """
+        self.__dict__['of_cls'] = of_cls
+
+        # Register class by this field.
+        cf = remoteobjects.dataobject.classes_by_constant_field
+        attrname, value = self.attrname, self.value
+        if attrname not in cf:
+            cf[attrname] = dict()
+        if value not in cf[attrname]:
+            cf[attrname][value] = list()
+        cf[attrname][value].append(of_cls)
+
+    of_cls = property(get_of_cls, set_of_cls)
+
     def decode(self, value):
         if value != self.value:
             raise ValueError('Value %r is not expected value %r'
