@@ -170,6 +170,9 @@ class HttpObject(DataObject):
         if response.status == httplib.PRECONDITION_FAILED:
             raise cls.PreconditionFailed('Precondition failed for %s request to %s' % (classname, url))
 
+        # TODO: handle 400s here too, like 500s, once we have an idea what JSON errors
+        # look like
+
         if response.status == httplib.INTERNAL_SERVER_ERROR:
             # Pull out an error if we can.
             if response.get('content-type') == 'text/plain':
