@@ -177,7 +177,8 @@ class HttpObject(DataObject):
 
         if response.status == httplib.INTERNAL_SERVER_ERROR:
             # Pull out an error if we can.
-            if response.get('content-type') == 'text/plain':
+            content_type = response.get('content-type').split(';', 1)[0].strip()
+            if content_type == 'text/plain':
                 error = content.split('\n', 2)[0]
                 raise cls.ServerError('%d %s requesting %s %s: %s'
                     % (response.status, response.reason, classname, url,
@@ -203,7 +204,8 @@ class HttpObject(DataObject):
                    classname, url))
 
         # check that the response body was json
-        if response.get('content-type') != 'application/json':
+        content_type = response.get('content-type').split(';', 1)[0].strip()
+        if content_type != 'application/json':
             raise cls.BadResponse(
                 'Bad response fetching %s %s: content-type is %s, not JSON'
                 % (classname, url, response.get('content-type')))
