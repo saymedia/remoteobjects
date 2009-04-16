@@ -177,9 +177,7 @@ class Constant(Field):
         attrname, value = self.attrname, self.value
         if attrname not in cf:
             cf[attrname] = dict()
-        if value not in cf[attrname]:
-            cf[attrname][value] = list()
-        cf[attrname][value].append(of_cls)
+        cf[attrname][value] = of_cls.__name__
 
     of_cls = property(get_of_cls, set_of_cls)
 

@@ -185,14 +185,12 @@ class DataObject(object):
 
         """
         try:
-            match_classes = classes_by_constant_field[fieldname][value]
+            clsname = classes_by_constant_field[fieldname][tuple(value)]
         except KeyError:
             # No matching classes, then.
             pass
         else:
-            for candidate in match_classes:
-                if issubclass(candidate, cls):
-                    return candidate
+            return find_by_name(clsname)
 
         raise ValueError('No such subclass of %s with field %r equivalent to %r'
             % (cls.__name__, fieldname, value))
