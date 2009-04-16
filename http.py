@@ -241,6 +241,13 @@ class HttpObject(DataObject):
             self._etag = response['etag']
 
     @classmethod
+    def from_response(cls, url, response, content):
+        # The class of the new instance doesn't vary by response content.
+        self = cls()
+        self.update_from_response(url, response, content)
+        return self
+
+    @classmethod
     def get(cls, url, http=None, **kwargs):
         """Fetches a new `RemoteObject` instance from a URL.
 
@@ -250,11 +257,7 @@ class HttpObject(DataObject):
 
         """
         response, content = cls.get_response(url, http)
-        # Make a new instance and use update_from_response(), rather than
-        # having a superfluous from_response() classmethod for this one call.
-        self = cls()
-        self.update_from_response(url, response, content)
-        return self
+        return cls.from_response(url, response, content)
 
     def post(self, obj, http=None):
         """Add another `RemoteObject` to this remote resource through an HTTP
