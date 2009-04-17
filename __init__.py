@@ -37,8 +37,8 @@ For example, you can build a simplified Twitter API library in the shell::
     ...
     >>> class Timeline(remoteobjects.ListObject):
     ...     entries = fields.List(fields.Object(Tweet))
-    ...     def from_dict(self, data):
-    ...         super(Timeline, self).from_dict({ 'entries': data })
+    ...     def update_from_dict(self, data):
+    ...         super(Timeline, self).update_from_dict({ 'entries': data })
     ...
     >>> t = Timeline.get('http://twitter.com/statuses/public_timeline.json')
     >>> [tweet.tweeter.screen_name for tweet in t.entries[0:3]]
