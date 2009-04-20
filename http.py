@@ -85,12 +85,22 @@ class HttpObject(DataObject):
         """
         pass
 
+    class RequestError(httplib.HTTPException):
+        """An HTTPException thrown when the server reports an error in the
+        client's request.
+
+        This exception corresponds to the HTTP status code 400.
+        
+        """
+        pass
+
     class ServerError(httplib.HTTPException):
         """An HTTPException thrown when the server reports an unexpected error.
 
         This exception corresponds to the HTTP status code 500.
 
         """
+        pass
 
     class BadResponse(httplib.HTTPException):
         """An HTTPException thrown when the client receives some other
@@ -172,18 +182,19 @@ class HttpObject(DataObject):
         if response.status == httplib.PRECONDITION_FAILED:
             raise cls.PreconditionFailed('Precondition failed for %s request to %s' % (classname, url))
 
-        # TODO: handle 400s here too, like 500s, once we have an idea what JSON errors
-        # look like
-
-        if response.status == httplib.INTERNAL_SERVER_ERROR:
+        if response.status in (httplib.INTERNAL_SERVER_ERROR, httplib.BAD_REQUEST):
+            if response.status == httplib.BAD_REQUEST:
+                err_cls = cls.RequestError
+            else:
+                err_cls = cls.ServerError
             # Pull out an error if we can.
             content_type = response.get('content-type').split(';', 1)[0].strip()
             if content_type == 'text/plain':
                 error = content.split('\n', 2)[0]
-                raise cls.ServerError('%d %s requesting %s %s: %s'
+                raise err_cls('%d %s requesting %s %s: %s'
                     % (response.status, response.reason, classname, url,
                        error))
-            raise cls.ServerError('%d %s requesting %s %s'
+            raise err_cls('%d %s requesting %s %s'
                 % (response.status, response.reason, classname, url))
 
         try:
