@@ -4,8 +4,10 @@ import httplib2
 import unittest
 import mox
 
-from remoteobjects import tests, fields, http, promise
+from remoteobjects import fields, http, promise
 from remoteobjects.tests import test_dataobject, test_http
+from remoteobjects.tests import utils
+
 
 class TestDataObjects(test_dataobject.TestDataObjects):
     @property
@@ -39,7 +41,7 @@ class TestPromiseObjects(unittest.TestCase):
         headers = {"accept": "application/json"}
         request = dict(uri=url, headers=headers)
         content = """{"name": "Mollifred"}"""
-        with tests.MockedHttp(request, content) as h:
+        with utils.MockedHttp(request, content) as h:
             t._http = h  # inject, oops
             self.assertEquals(t.name, 'Mollifred')
 

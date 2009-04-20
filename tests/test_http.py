@@ -5,8 +5,9 @@ import logging
 import sys
 from datetime import datetime
 
-from remoteobjects import tests, fields, http
+from remoteobjects import fields, http
 from remoteobjects.tests import test_dataobject
+from remoteobjects.tests import utils
 
 
 # Ensure DataObject API is preserved.
@@ -34,7 +35,7 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         content = """{"name": "Fred", "value": 7}"""
-        with tests.MockedHttp(request, content) as h:
+        with utils.MockedHttp(request, content) as h:
             b = BasicMost.get('http://example.com/ohhai', http=h)
             self.assertEquals(b.name, 'Fred')
             self.assertEquals(b.value, 7)
@@ -54,7 +55,7 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         content = """{"name": "CBS"}"""
-        with tests.MockedHttp(request, content) as h:
+        with utils.MockedHttp(request, content) as h:
             c = ContainerMost.get('http://example.com/asfdasf', http=h)
             self.assertEquals(c.name, 'CBS')
 
@@ -66,7 +67,7 @@ class TestHttpObjects(unittest.TestCase):
                        body=content, headers=headers)
         response = dict(content=content, status=201, etag='xyz',
                         location='http://example.com/fred')
-        with tests.MockedHttp(request, response) as h:
+        with utils.MockedHttp(request, response) as h:
             c.post(b, http=h)
 
         self.assertEquals(b._location, 'http://example.com/fred')
@@ -87,7 +88,7 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         content = """{"name": "Molly", "value": 80}"""
-        with tests.MockedHttp(request, content) as h:
+        with utils.MockedHttp(request, content) as h:
             b = BasicMost.get('http://example.com/bwuh', http=h)
             self.assertEquals(b.name, 'Molly')
 
@@ -97,7 +98,7 @@ class TestHttpObjects(unittest.TestCase):
         }
         request  = dict(uri='http://example.com/bwuh', method='PUT', headers=headers, body=content)
         response = dict(content=content, etag='xyz')
-        with tests.MockedHttp(request, response) as h:
+        with utils.MockedHttp(request, response) as h:
             b.put(http=h)
 
         self.assertEquals(b._etag, 'xyz')
@@ -114,7 +115,7 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         content = """{"name": "Molly", "value": 80}"""
-        with tests.MockedHttp(request, content) as h:
+        with utils.MockedHttp(request, content) as h:
             b = BasicMost.get('http://example.com/bwuh', http=h)
             self.assertEquals(b.value, 80)
 
@@ -129,7 +130,7 @@ class TestHttpObjects(unittest.TestCase):
                        body=content, headers=headers)
         # Simulate a changed resource.
         response = dict(status=412)
-        with tests.MockedHttp(request, response) as h:
+        with utils.MockedHttp(request, response) as h:
             self.assertRaises(BasicMost.PreconditionFailed, lambda: b.put(http=h))
 
 
@@ -147,7 +148,7 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         content = """{"name": "Molly", "value": 80}"""
-        with tests.MockedHttp(request, content) as h:
+        with utils.MockedHttp(request, content) as h:
             b = BasicMost.get('http://example.com/bwuh', http=h)
             self.assertEquals(b.value, 80)
 
@@ -157,7 +158,7 @@ class TestHttpObjects(unittest.TestCase):
         }
         request  = dict(uri='http://example.com/bwuh', method='DELETE', headers=headers)
         response = dict(status=204)
-        with tests.MockedHttp(request, response) as h:
+        with utils.MockedHttp(request, response) as h:
             b.delete(http=h)
 
         self.failIf(b._location is not None)
@@ -177,11 +178,11 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         response = {'content': '', 'status': 404}
-        with tests.MockedHttp(request, response) as http:
+        with utils.MockedHttp(request, response) as http:
             self.assertRaises(Huh.NotFound, lambda: Huh.get('http://example.com/bwuh', http=http).name)
 
 
-    @tests.todo
+    @utils.todo
     def testNotFoundDiscrete(self):
         """Checks that the NotFound exceptions for different HttpObjects are
         really different classes, so you can catch them discretely and treat
@@ -217,10 +218,10 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         response = dict(status=404)
-        with tests.MockedHttp(request, response) as http:
+        with utils.MockedHttp(request, response) as http:
             self.assertRaises(What.NotFound, lambda: tryThat(http))
 
 
 if __name__ == '__main__':
-    tests.log()
+    utils.log()
     unittest.main()

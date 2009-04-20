@@ -3,7 +3,8 @@ import logging
 import sys
 from datetime import datetime
 
-from remoteobjects import tests, fields, dataobject
+from remoteobjects import fields, dataobject
+from remoteobjects.tests import utils
 
 
 class TestDataObjects(unittest.TestCase):
@@ -293,5 +294,5 @@ class TestDataObjects(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    tests.log()
+    utils.log()
     unittest.main()
