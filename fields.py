@@ -240,6 +240,7 @@ class List(Field):
 
 
 class Dict(List):
+
     """A field representing a homogeneous mapping of data.
 
     The elements of the mapping are decoded through another field specified
@@ -261,6 +262,7 @@ class Dict(List):
 
 
 class Object(Field):
+
     """A field representing a nested `DataObject`."""
 
     def __init__(self, cls, **kwargs):
