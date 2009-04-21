@@ -1,3 +1,14 @@
+"""
+
+Fields are class attributes for `RemoteObject` subclasses that provide data
+coding functionality for your properties.
+
+The `remoteobjects.fields` module also provides functionality for other
+field-like properties through the `Property` class, and a `Property` subclass
+that offers links between `RemoteObject` instances, `Link`.
+
+"""
+
 from datetime import datetime
 import logging
 import time
@@ -38,11 +49,10 @@ class Field(Property):
 
     Use a `Field` instance directly for simple `DataObject` attributes that
     can be the same type as their dictionary values. That is, use `Field`
-    fields for strings, numbers, and boolean values.
-
-    If your attribute data does need converted, use one of the `Field`
-    subclasses from the `remoteobjects.fields` module to encode and decode
-    your data as appropriate.
+    fields for strings, numbers, and boolean values. If your attribute data
+    does need converted, use one of the `Field` subclasses from the
+    `remoteobjects.fields` module to encode and decode your data as
+    appropriate.
 
     If your attribute needs converted specially, override the `decode()` and
     `encode()` methods in a new subclass of `Field`. For example, the

@@ -1,3 +1,16 @@
+"""
+
+`DataObject` is a class of object that provides coding between object
+attributes and dictionaries, suitable for
+
+In `DataObject` is the mechanism for converting between dictionaries and
+objects. These conversions are performed with aid of `Field` instances
+declared on `DataObject` subclasses. `Field` classes reside in the
+`remoteobjects.field` module.
+
+"""
+
+
 import logging
 import remoteobjects.fields
 
