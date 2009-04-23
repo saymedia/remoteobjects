@@ -331,4 +331,7 @@ class HttpObject(DataObject):
 
         # No more resource, no more URL.
         self._location = None
-        del self._etag
+        try:
+            del self._etag
+        except:
+            pass
