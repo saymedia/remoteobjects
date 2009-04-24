@@ -188,7 +188,7 @@ class HttpObject(DataObject):
             else:
                 err_cls = cls.ServerError
             # Pull out an error if we can.
-            content_type = response.get('content-type').split(';', 1)[0].strip()
+            content_type = response.get('content-type', '').split(';', 1)[0].strip()
             if content_type == 'text/plain':
                 error = content.split('\n', 2)[0]
                 raise err_cls('%d %s requesting %s %s: %s'
@@ -215,7 +215,7 @@ class HttpObject(DataObject):
                    classname, url))
 
         # check that the response body was json
-        content_type = response.get('content-type').split(';', 1)[0].strip()
+        content_type = response.get('content-type', '').split(';', 1)[0].strip()
         if content_type != 'application/json':
             raise cls.BadResponse(
                 'Bad response fetching %s %s: content-type is %s, not JSON'
