@@ -333,5 +333,6 @@ class HttpObject(DataObject):
         self._location = None
         try:
             del self._etag
-        except:
+        except AttributeError:
+            # Don't mind if there's no etag.
             pass
