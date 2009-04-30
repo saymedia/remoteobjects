@@ -19,6 +19,8 @@ from remoteobjects import fields
 
 userAgent = httplib2.Http()
 
+log = logging.getLogger('remoteobjects.http')
+
 
 def omit_nulls(data):
     """Strips `None` values from a dictionary or `RemoteObject` instance."""
@@ -146,7 +148,7 @@ class HttpObject(DataObject):
 
         """
         # TODO: reconcile this with get_request... which is an instance method.
-        logging.debug('Fetching %s' % (url,))
+        log.debug('Fetching %s', url)
 
         if headers is None:
             headers = {}
@@ -156,7 +158,7 @@ class HttpObject(DataObject):
         if http is None:
             http = userAgent
         response, content = http.request(uri=url, headers=headers, **kwargs)
-        logging.debug('Got content %s' % (content,))
+        log.debug('Got content %r', content)
 
         return response, content
 
@@ -307,7 +309,7 @@ class HttpObject(DataObject):
 
         response, content = self.get_response(self._location, http=http, method='PUT',
             body=body, headers=headers)
-        logging.debug('Yay saved my obj, now turning %s into new content' % (content,))
+        log.debug('Yay saved my obj, now turning %r into new content', content)
         self.update_from_response(self._location, response, content)
 
     def delete(self, http=None):
@@ -327,7 +329,7 @@ class HttpObject(DataObject):
 
         response, content = self.get_response(self._location, http=http,
             method='DELETE', headers=headers)
-        logging.debug('Yay deleted the obj, now... something something')
+        log.debug('Yay deleted the remote resource, now disconnecting %r from it', self)
 
         # No more resource, no more URL.
         self._location = None
