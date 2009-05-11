@@ -1,12 +1,13 @@
 from __future__ import with_statement
 
-import httplib2
 import unittest
+
+import httplib2
 import mox
 
 from remoteobjects import fields, http, promise
-from remoteobjects.tests import test_dataobject, test_http
-from remoteobjects.tests import utils
+from tests import test_dataobject, test_http
+from tests import utils
 
 
 class TestDataObjects(test_dataobject.TestDataObjects):

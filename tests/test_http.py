@@ -1,13 +1,13 @@
 from __future__ import with_statement
 
-import unittest
+from datetime import datetime
 import logging
 import sys
-from datetime import datetime
+import unittest
 
 from remoteobjects import fields, http
-from remoteobjects.tests import test_dataobject
-from remoteobjects.tests import utils
+from tests import test_dataobject
+from tests import utils
 
 
 # Ensure DataObject API is preserved.

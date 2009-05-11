@@ -1,10 +1,10 @@
-import unittest
+from datetime import datetime
 import logging
 import sys
-from datetime import datetime
+import unittest
 
 from remoteobjects import fields, dataobject
-from remoteobjects.tests import utils
+from tests import utils
 
 
 class TestDataObjects(unittest.TestCase):
@@ -189,7 +189,7 @@ class TestDataObjects(unittest.TestCase):
 
     def testPostReference(self):
 
-        from remoteobjects.tests import extra_dataobject
+        from tests import extra_dataobject
 
         class Referencive(extra_dataobject.Referencive):
             pass

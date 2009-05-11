@@ -1,0 +1,2 @@
+simplejson>=2.0.0
+httplib2>=0.4.0
