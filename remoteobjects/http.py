@@ -7,12 +7,6 @@ except ImportError:
 import httplib2
 import httplib
 import logging
-from urlparse import urljoin, urlparse, urlunparse
-from urllib import quote_plus
-import types
-from datetime import datetime
-import time
-import re
 
 from remoteobjects.dataobject import DataObject, DataObjectMetaclass
 from remoteobjects import fields
