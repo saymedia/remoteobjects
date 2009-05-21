@@ -323,6 +323,7 @@ class HttpObject(DataObject):
 
         response, content = self.get_response(self._location, http=http,
             method='DELETE', headers=headers)
+        # TODO: check for success or failure here
         log.debug('Yay deleted the remote resource, now disconnecting %r from it', self)
 
         # No more resource, no more URL.
