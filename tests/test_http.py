@@ -165,6 +165,27 @@ class TestHttpObjects(unittest.TestCase):
         self.failIf(hasattr(b, '_etag'))
 
 
+    def testDeleteFailure(self):
+
+        class BasicMost(self.cls):
+            name  = fields.Field()
+            value = fields.Field()
+
+        b = BasicMost(name='Molly', value=80)
+        b._location = 'http://example.com/bwuh'
+        b._etag = 'asfdasf'
+
+        headers = {
+            'accept':   'application/json',
+            'if-match': 'asfdasf',
+        }
+        request  = dict(uri='http://example.com/bwuh', method='DELETE', headers=headers)
+        response = dict(status=412)  # Precondition Failed
+
+        with utils.MockedHttp(request, response) as h:
+            self.assertRaises(BasicMost.PreconditionFailed, lambda: b.delete(http=h))
+
+
     def testNotFound(self):
         self.assert_(self.cls.NotFound)
 
