@@ -15,10 +15,12 @@ class TestDataObjects(test_dataobject.TestDataObjects):
     def cls(self):
         return promise.PromiseObject
 
+
 class TestHttpObjects(test_http.TestHttpObjects):
     @property
     def cls(self):
         return promise.PromiseObject
+
 
 class TestPromiseObjects(unittest.TestCase):
     @property
@@ -45,6 +47,7 @@ class TestPromiseObjects(unittest.TestCase):
         with utils.MockedHttp(request, content) as h:
             t._http = h  # inject, oops
             self.assertEquals(t.name, 'Mollifred')
+
 
 class TestViews(unittest.TestCase):
 
