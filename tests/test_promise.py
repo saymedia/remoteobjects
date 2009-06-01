@@ -79,9 +79,17 @@ class TestViews(unittest.TestCase):
         self.assert_(isinstance(j, Toybox))
         self.assertEquals(j._location, 'http://example.com/foo?limit=10&offset=0')
 
-        q = b[300:370]
+        j = b[300:370]
         self.assert_(isinstance(j, Toybox))
-        self.assertEquals(q._location, 'http://example.com/foo?limit=70&offset=300')
+        self.assertEquals(j._location, 'http://example.com/foo?limit=70&offset=300')
+
+        j = b[1:]
+        self.assert_(isinstance(j, Toybox))
+        self.assertEquals(j._location, 'http://example.com/foo?offset=1')
+
+        j = b[:10]
+        self.assert_(isinstance(j, Toybox))
+        self.assertEquals(j._location, 'http://example.com/foo?limit=10')
 
         # Can't use a non-slice on a plain ListObject
         self.assertRaises(TypeError, lambda: b[7])

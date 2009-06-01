@@ -125,8 +125,14 @@ class ListObject(PromiseObject):
         """Translates slice notation on a `ListObject` instance into ``limit``
         and ``offset`` filter parameters."""
         if isinstance(key, slice):
-            # TODO: handle partial slice notation? there's a fuller implementation of this somewhere
-            return self.filter(offset=key.start, limit=key.stop - key.start)
+            args = dict()
+            if key.start is not None:
+                args['offset'] = key.start
+                if key.stop is not None:
+                    args['limit'] = key.stop - key.start
+            elif key.stop is not None:
+                args['limit'] = key.stop
+            return self.filter(**args)
 
         try:
             getitem = super(ListObject, self).__getitem__
