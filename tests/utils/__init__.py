@@ -5,9 +5,11 @@ import os
 import mox
 import nose
 
+
 def update_wrapper(wrapper, original):
     for field in ('__module__', '__name__', '__doc__'):
         setattr(wrapper, field, getattr(original, field))
+
 
 def skip(fn):
     def testNothing(self):
@@ -15,13 +17,16 @@ def skip(fn):
     update_wrapper(testNothing, fn)
     return testNothing
 
+
 def are_automated():
     return bool(os.getenv('AUTOMATED_TESTING'))
+
 
 def skip_if_automated(fn):
     if are_automated():
         return skip(fn)
     return fn
+
 
 def todo(fn):
     def testReverse(*args, **kwargs):
@@ -33,6 +38,7 @@ def todo(fn):
             raise AssertionError('test %s unexpectedly succeeded' % fn.__name__)
     update_wrapper(testReverse, fn)
     return testReverse
+
 
 class MockedHttp(object):
     def __init__(self, req, resp_or_content):
@@ -80,6 +86,7 @@ class MockedHttp(object):
         # don't really care about the mock if there was an exception
         if None in exc_info:
             mox.Verify(self.mock)
+
 
 def log():
     import sys
