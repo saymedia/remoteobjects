@@ -1,4 +1,3 @@
-import functools
 import httplib2
 import logging
 import os
@@ -6,10 +5,14 @@ import os
 import mox
 import nose
 
+def update_wrapper(wrapper, original):
+    for field in ('__module__', '__name__', '__doc__'):
+        setattr(wrapper, field, getattr(original, field))
+
 def skip(fn):
     def testNothing(self):
         raise nose.SkipTest('skip this test')
-    functools.update_wrapper(testNothing, fn)
+    update_wrapper(testNothing, fn)
     return testNothing
 
 def are_automated():
@@ -28,7 +31,7 @@ def todo(fn):
             pass
         else:
             raise AssertionError('test %s unexpectedly succeeded' % fn.__name__)
-    functools.update_wrapper(testReverse, fn)
+    update_wrapper(testReverse, fn)
     return testReverse
 
 class MockedHttp(object):
