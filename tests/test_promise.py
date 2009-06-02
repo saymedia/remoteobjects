@@ -1,5 +1,3 @@
-from __future__ import with_statement
-
 import unittest
 
 import httplib2
@@ -44,9 +42,10 @@ class TestPromiseObjects(unittest.TestCase):
         headers = {"accept": "application/json"}
         request = dict(uri=url, headers=headers)
         content = """{"name": "Mollifred"}"""
-        with utils.MockedHttp(request, content) as h:
-            t._http = h  # inject, oops
-            self.assertEquals(t.name, 'Mollifred')
+        h = utils.mock_http(request, content)
+        t._http = h  # inject, oops
+        self.assertEquals(t.name, 'Mollifred')
+        mox.Verify(h)
 
 
 class TestViews(unittest.TestCase):

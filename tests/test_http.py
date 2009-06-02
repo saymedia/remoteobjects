@@ -1,9 +1,9 @@
-from __future__ import with_statement
-
 from datetime import datetime
 import logging
 import sys
 import unittest
+
+import mox
 
 from remoteobjects import fields, http
 from tests import test_dataobject
@@ -35,10 +35,12 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         content = """{"name": "Fred", "value": 7}"""
-        with utils.MockedHttp(request, content) as h:
-            b = BasicMost.get('http://example.com/ohhai', http=h)
-            self.assertEquals(b.name, 'Fred')
-            self.assertEquals(b.value, 7)
+
+        h = utils.mock_http(request, content)
+        b = BasicMost.get('http://example.com/ohhai', http=h)
+        self.assertEquals(b.name, 'Fred')
+        self.assertEquals(b.value, 7)
+        mox.Verify(h)
 
 
     def testPost(self):
@@ -55,9 +57,10 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         content = """{"name": "CBS"}"""
-        with utils.MockedHttp(request, content) as h:
-            c = ContainerMost.get('http://example.com/asfdasf', http=h)
-            self.assertEquals(c.name, 'CBS')
+        h = utils.mock_http(request, content)
+        c = ContainerMost.get('http://example.com/asfdasf', http=h)
+        self.assertEquals(c.name, 'CBS')
+        mox.Verify(h)
 
         b = BasicMost(name='Fred Friendly', value=True)
 
@@ -67,8 +70,9 @@ class TestHttpObjects(unittest.TestCase):
                        body=content, headers=headers)
         response = dict(content=content, status=201, etag='xyz',
                         location='http://example.com/fred')
-        with utils.MockedHttp(request, response) as h:
-            c.post(b, http=h)
+        h = utils.mock_http(request, response)
+        c.post(b, http=h)
+        mox.Verify(h)
 
         self.assertEquals(b._location, 'http://example.com/fred')
         self.assertEquals(b._etag, 'xyz')
@@ -88,9 +92,10 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         content = """{"name": "Molly", "value": 80}"""
-        with utils.MockedHttp(request, content) as h:
-            b = BasicMost.get('http://example.com/bwuh', http=h)
-            self.assertEquals(b.name, 'Molly')
+        h = utils.mock_http(request, content)
+        b = BasicMost.get('http://example.com/bwuh', http=h)
+        self.assertEquals(b.name, 'Molly')
+        mox.Verify(h)
 
         headers = {
             'accept':   'application/json',
@@ -98,8 +103,9 @@ class TestHttpObjects(unittest.TestCase):
         }
         request  = dict(uri='http://example.com/bwuh', method='PUT', headers=headers, body=content)
         response = dict(content=content, etag='xyz')
-        with utils.MockedHttp(request, response) as h:
-            b.put(http=h)
+        h = utils.mock_http(request, response)
+        b.put(http=h)
+        mox.Verify(h)
 
         self.assertEquals(b._etag, 'xyz')
 
@@ -115,9 +121,10 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         content = """{"name": "Molly", "value": 80}"""
-        with utils.MockedHttp(request, content) as h:
-            b = BasicMost.get('http://example.com/bwuh', http=h)
-            self.assertEquals(b.value, 80)
+        h = utils.mock_http(request, content)
+        b = BasicMost.get('http://example.com/bwuh', http=h)
+        self.assertEquals(b.value, 80)
+        mox.Verify(h)
 
         b.value = 'superluminal'
 
@@ -130,8 +137,9 @@ class TestHttpObjects(unittest.TestCase):
                        body=content, headers=headers)
         # Simulate a changed resource.
         response = dict(status=412)
-        with utils.MockedHttp(request, response) as h:
-            self.assertRaises(BasicMost.PreconditionFailed, lambda: b.put(http=h))
+        h = utils.mock_http(request, response)
+        self.assertRaises(BasicMost.PreconditionFailed, lambda: b.put(http=h))
+        mox.Verify(h)
 
 
     def testDelete(self):
@@ -148,9 +156,10 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         content = """{"name": "Molly", "value": 80}"""
-        with utils.MockedHttp(request, content) as h:
-            b = BasicMost.get('http://example.com/bwuh', http=h)
-            self.assertEquals(b.value, 80)
+        h = utils.mock_http(request, content)
+        b = BasicMost.get('http://example.com/bwuh', http=h)
+        self.assertEquals(b.value, 80)
+        mox.Verify(h)
 
         headers = {
             'accept':   'application/json',
@@ -158,8 +167,9 @@ class TestHttpObjects(unittest.TestCase):
         }
         request  = dict(uri='http://example.com/bwuh', method='DELETE', headers=headers)
         response = dict(status=204)
-        with utils.MockedHttp(request, response) as h:
-            b.delete(http=h)
+        h = utils.mock_http(request, response)
+        b.delete(http=h)
+        mox.Verify(h)
 
         self.failIf(b._location is not None)
         self.failIf(hasattr(b, '_etag'))
@@ -182,8 +192,9 @@ class TestHttpObjects(unittest.TestCase):
         request  = dict(uri='http://example.com/bwuh', method='DELETE', headers=headers)
         response = dict(status=412)  # Precondition Failed
 
-        with utils.MockedHttp(request, response) as h:
-            self.assertRaises(BasicMost.PreconditionFailed, lambda: b.delete(http=h))
+        h = utils.mock_http(request, response)
+        self.assertRaises(BasicMost.PreconditionFailed, lambda: b.delete(http=h))
+        mox.Verify(h)
 
 
     def testNotFound(self):
@@ -199,8 +210,9 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         response = {'content': '', 'status': 404}
-        with utils.MockedHttp(request, response) as http:
-            self.assertRaises(Huh.NotFound, lambda: Huh.get('http://example.com/bwuh', http=http).name)
+        http = utils.mock_http(request, response)
+        self.assertRaises(Huh.NotFound, lambda: Huh.get('http://example.com/bwuh', http=http).name)
+        mox.Verify(http)
 
 
     @utils.todo
@@ -239,8 +251,9 @@ class TestHttpObjects(unittest.TestCase):
             'headers': {'accept': 'application/json'},
         }
         response = dict(status=404)
-        with utils.MockedHttp(request, response) as http:
-            self.assertRaises(What.NotFound, lambda: tryThat(http))
+        http = utils.MockedHttp(request, response)
+        self.assertRaises(What.NotFound, lambda: tryThat(http))
+        mox.Verify(http)
 
 
 if __name__ == '__main__':

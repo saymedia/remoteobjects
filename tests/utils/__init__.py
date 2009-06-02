@@ -40,17 +40,13 @@ def todo(fn):
     return testReverse
 
 
-class MockedHttp(object):
-    def __init__(self, req, resp_or_content):
-        self.mock = mox.MockObject(httplib2.Http)
+def mock_http(req, resp_or_content):
+    mock = mox.MockObject(httplib2.Http)
 
-        if not isinstance(req, dict):
-            req = dict(uri=req)
+    if not isinstance(req, dict):
+        req = dict(uri=req)
 
-        resp, content = self.make_response(resp_or_content, req['uri'])
-        self.mock.request(**req).AndReturn((resp, content))
-
-    def make_response(self, response, url):
+    def make_response(response, url):
         default_response = {
             'status':           200,
             'etag':             '7',
@@ -78,14 +74,10 @@ class MockedHttp(object):
 
         return httplib2.Response(response_info), content
 
-    def __enter__(self):
-        mox.Replay(self.mock)
-        return self.mock
-
-    def __exit__(self, *exc_info):
-        # don't really care about the mock if there was an exception
-        if None in exc_info:
-            mox.Verify(self.mock)
+    resp, content = make_response(resp_or_content, req['uri'])
+    mock.request(**req).AndReturn((resp, content))
+    mox.Replay(mock)
+    return mock
 
 
 def log():
