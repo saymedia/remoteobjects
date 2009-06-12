@@ -1,7 +1,6 @@
 try:
     import json
 except ImportError:
-    # TODO: require 2.0+ version of simplejson that doesn't provide unicode keys
     import simplejson as json
 
 import httplib2
