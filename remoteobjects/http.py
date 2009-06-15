@@ -22,8 +22,7 @@ def omit_nulls(data):
             return str(data)
         data = dict(data.__dict__)
     for key in data.keys():
-        # TODO: don't have etag in obj data in the first place?
-        if data[key] is None or key == 'etag':
+        if data[key] is None:
             del data[key]
     return data
 
