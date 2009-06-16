@@ -99,6 +99,39 @@ class TestDataObjects(unittest.TestCase):
         self.assertEquals(d['secret'], 'codes')
 
 
+    def testNoSpookyAction(self):
+        """Tests that an instance's content can't be changed through the data
+        structures it was created with, or a data structure pulled out of
+        it."""
+
+        class BasicMost(self.cls):
+            name  = fields.Field()
+            value = fields.Field()
+
+        initial = {
+            'name': 'foo',
+            'value': '4',
+            'secret': {
+                'code': 'uuddlrlrba'
+            },
+        }
+        x = BasicMost.from_dict(initial)
+
+        initial['name'] = 'bar'
+        self.assertEquals(x.name, 'foo',
+            "Changing initial data doesn't change instance's internal data")
+
+        initial['secret']['code'] = 'steak'
+        d = x.to_dict()
+        self.assertEquals(d['secret']['code'], 'uuddlrlrba',
+            "Changing initial data doesn't change instance's original data "
+            "for export")
+
+        d['name'] = 'baz'
+        self.assertEquals(x.name, 'foo',
+            "Changing exported data doesn't change instance's internal data")
+
+
     def testStrongTypes(self):
 
         class Blah(self.cls):

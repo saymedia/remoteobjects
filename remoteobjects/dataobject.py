@@ -11,8 +11,11 @@ declared on `DataObject` subclasses. `Field` classes reside in the
 """
 
 
+from copy import deepcopy
 import logging
+
 import remoteobjects.fields
+
 
 classes_by_name = {}
 classes_by_constant_field = {}
@@ -134,9 +137,7 @@ class DataObject(object):
     def to_dict(self):
         """Encodes the DataObject to a dictionary."""
         try:
-            # TODO: this shallow copy only prevents sticky modification of the
-            # dict's contents, not the contents' contents.
-            data = dict(self._originaldata)
+            data = deepcopy(self._originaldata)
         except AttributeError:
             data = {}
 
@@ -168,7 +169,7 @@ class DataObject(object):
         # Remember this extra data, so we can play it back later.
         if not hasattr(self, '_originaldata'):
             self._originaldata = {}
-        self._originaldata.update(data)
+        self._originaldata.update(deepcopy(data))
 
         for field_name, field in self.fields.iteritems():
             if hasattr(field, 'decode_into'):
