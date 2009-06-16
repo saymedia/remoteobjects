@@ -139,7 +139,6 @@ class HttpObject(DataObject):
         request as specified.
 
         """
-        # TODO: reconcile this with get_request... which is an instance method.
         log.debug('Fetching %s', url)
 
         if headers is None:
