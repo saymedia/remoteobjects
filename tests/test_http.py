@@ -12,16 +12,13 @@ from tests import utils
 
 # Ensure DataObject API is preserved.
 class TestDataObjects(test_dataobject.TestDataObjects):
-    @property
-    def cls(self):
-        return http.HttpObject
+
+    cls = http.HttpObject
 
 
 class TestHttpObjects(unittest.TestCase):
 
-    @property
-    def cls(self):
-        return http.HttpObject
+    cls = http.HttpObject
 
 
     def testGet(self):

@@ -9,9 +9,7 @@ from tests import utils
 
 class TestDataObjects(unittest.TestCase):
 
-    @property
-    def cls(self):
-        return dataobject.DataObject
+    cls = dataobject.DataObject
 
 
     def testBasic(self):

@@ -9,21 +9,18 @@ from tests import utils
 
 
 class TestDataObjects(test_dataobject.TestDataObjects):
-    @property
-    def cls(self):
-        return promise.PromiseObject
+
+    cls = promise.PromiseObject
 
 
 class TestHttpObjects(test_http.TestHttpObjects):
-    @property
-    def cls(self):
-        return promise.PromiseObject
+
+    cls = promise.PromiseObject
 
 
 class TestPromiseObjects(unittest.TestCase):
-    @property
-    def cls(self):
-        return promise.PromiseObject
+
+    cls = promise.PromiseObject
 
     def testBasic(self):
 
