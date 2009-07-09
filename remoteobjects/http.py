@@ -32,13 +32,19 @@ class HttpObject(DataObject):
     """A `DataObject` that can be fetched and put over HTTP through a RESTful
     JSON API."""
 
+    response_has_content = {
+        httplib.CREATED:           True,
+        httplib.MOVED_PERMANENTLY: True,
+        httplib.FOUND:             True,
+        httplib.OK:                True,
+        httplib.NOT_MODIFIED:      True,
+        httplib.NO_CONTENT:        False,
+    }
+
     location_headers = {
         httplib.CREATED:           'Location',
         httplib.MOVED_PERMANENTLY: 'Location',
         httplib.FOUND:             'Location',
-        httplib.OK:                'Content-Location',
-        httplib.NOT_MODIFIED:      'Content-Location',
-        httplib.NO_CONTENT:        None,
     }
 
     class NotFound(httplib.HTTPException):
@@ -191,21 +197,26 @@ class HttpObject(DataObject):
                 % (response.status, response.reason, classname, url))
 
         try:
-            location_header = cls.location_headers[response.status]
+            response_has_content = cls.response_has_content[response.status]
         except KeyError:
-            # we only expect the statuses that have location headers defined
+            # we only expect the statuses that we know do or don't have content
             raise cls.BadResponse('Unexpected response requesting %s %s: %d %s'
                 % (classname, url, response.status, response.reason))
 
-        if location_header is None:
+        try:
+            location_header = cls.location_headers[response.status]
+        except KeyError:
+            pass
+        else:
+            if location_header.lower() not in response:
+                raise cls.BadResponse(
+                    "%r header missing from %d %s response requesting %s %s"
+                    % (location_header, response.status, response.reason,
+                       classname, url))
+
+        if not response_has_content:
             # then there's no content-type either, so we're done
             return
-
-        if location_header.lower() not in response:
-            raise cls.BadResponse(
-                "%r header missing from %d %s response requesting %s %s"
-                % (location_header, response.status, response.reason,
-                   classname, url))
 
         # check that the response body was json
         content_type = response.get('content-type', '').split(';', 1)[0].strip()
@@ -238,7 +249,9 @@ class HttpObject(DataObject):
         self.update_from_dict(data)
 
         location_header = self.location_headers.get(response.status)
-        if location_header is not None:
+        if location_header is None:
+            self._location = url
+        else:
             self._location = response[location_header.lower()]
 
         if 'etag' in response:
