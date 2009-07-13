@@ -190,9 +190,11 @@ class HttpObject(DataObject):
             content_type = response.get('content-type', '').split(';', 1)[0].strip()
             if content_type == 'text/plain':
                 error = content.split('\n', 2)[0]
-                raise err_cls('%d %s requesting %s %s: %s'
+                exc = err_cls('%d %s requesting %s %s: %s'
                     % (response.status, response.reason, classname, url,
                        error))
+                exc.response_error = error
+                raise exc
             raise err_cls('%d %s requesting %s %s'
                 % (response.status, response.reason, classname, url))
 
