@@ -40,6 +40,26 @@ class TestHttpObjects(unittest.TestCase):
         mox.Verify(h)
 
 
+    def testGetBadEncoding(self):
+
+        class BasicMost(self.cls):
+            name  = fields.Field()
+            value = fields.Field()
+
+        request = {
+            'uri': 'http://example.com/ohhai',
+            'headers': {'accept': 'application/json'},
+        }
+        content = """{"name": "Fred", "value": "image by \xefndrew Example"}"""
+
+        h = utils.mock_http(request, content)
+        b = BasicMost.get('http://example.com/ohhai', http=h)
+        self.assertEquals(b.name, 'Fred')
+        # Bad characters are replaced with the unicode Replacement Character 0xFFFD.
+        self.assertEquals(b.value, u"image by \ufffdrew Example")
+        mox.Verify(h)
+
+
     def testPost(self):
 
         class BasicMost(self.cls):
