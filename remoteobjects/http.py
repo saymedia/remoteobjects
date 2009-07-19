@@ -247,7 +247,11 @@ class HttpObject(DataObject):
         """
         self.raise_for_response(url, response, content)
 
-        data = json.loads(content)
+        try:
+            data = json.loads(content)
+        except UnicodeDecodeError:
+            data = json.loads(content.decode('utf8', 'replace'))
+
         self.update_from_dict(data)
 
         location_header = self.location_headers.get(response.status)
