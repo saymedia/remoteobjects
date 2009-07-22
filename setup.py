@@ -4,7 +4,7 @@ setup(
     name='remoteobjects',
     version='1.0',
     description='an Object RESTational Model',
-    author='Six Apart',
+    author='Six Apart Ltd.',
     author_email='python@sixapart.com',
     url='http://code.sixapart.com/svn/remoteobjects/',
 

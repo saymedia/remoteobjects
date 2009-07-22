@@ -1,7 +1,5 @@
-try:
-    import json
-except ImportError:
-    import simplejson as json
+import simplejson as json
+from remoteobjects.json import ForgivingDecoder
 
 import httplib2
 import httplib
@@ -250,7 +248,7 @@ class HttpObject(DataObject):
         try:
             data = json.loads(content)
         except UnicodeDecodeError:
-            data = json.loads(content.decode('utf8', 'replace'))
+            data = json.loads(content, cls=ForgivingDecoder)
 
         self.update_from_dict(data)
 

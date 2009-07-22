@@ -50,11 +50,11 @@ class TestHttpObjects(unittest.TestCase):
             'uri': 'http://example.com/ohhai',
             'headers': {'accept': 'application/json'},
         }
-        content = """{"name": "Fred", "value": "image by \xefndrew Example"}"""
+        content = """{"name": "Fred\xf1", "value": "image by \xefndrew Example"}"""
 
         h = utils.mock_http(request, content)
         b = BasicMost.get('http://example.com/ohhai', http=h)
-        self.assertEquals(b.name, 'Fred')
+        self.assertEquals(b.name, u"Fred\ufffd")
         # Bad characters are replaced with the unicode Replacement Character 0xFFFD.
         self.assertEquals(b.value, u"image by \ufffdrew Example")
         mox.Verify(h)
