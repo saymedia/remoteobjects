@@ -23,45 +23,39 @@ class PromiseObject(HttpObject):
     """
 
     def __init__(self, **kwargs):
-        """Initializes a `PromiseObject` as undelivered."""
-        self._delivered = False
+        """Initializes a delivered, empty `PromiseObject`."""
+        self._delivered = True
         self._http = None
         super(PromiseObject, self).__init__(**kwargs)
 
+    def _get_api_data(self):
+        if not self._delivered:
+            self.deliver()
+        return self.__dict__['api_data']
+
+    def _set_api_data(self, value):
+        self.__dict__['api_data'] = value
+
+    def _del_api_data(self):
+        del self.__dict__['api_data']
+
+    api_data = property(_get_api_data, _set_api_data, _del_api_data)
+
+    @classmethod
+    def statefields(cls):
+        return super(PromiseObject, cls).statefields() + ['_delivered']
+
     @classmethod
     def get(cls, url, http=None, **kwargs):
-        """Creates a new `PromiseObject` instance that, when delivered, will
-        contain the data at the given URL."""
+        """Creates a new undelivered `PromiseObject` instance that, when
+        delivered, will contain the data at the given URL."""
         # Make a fake empty instance of this class.
         self = cls()
         self._location = url
         self._http = http
+        self._delivered = False
 
         return self
-
-    def __getattr__(self, attr):
-        """Returns the value of the requested attribute, after attempting to
-        deliver the `PromiseObject` if necessary.
-
-        If the instance is undelivered and the requested attribute is a
-        declared field of the instance's class, `__getattr__()` attempts to
-        deliver the object before returning the value of that attribute.
-
-        Because delivery is only attempted on an attribute "miss," all the
-        exceptions that `RemoteObject.get()` may raise may be raised through
-        attribute access on a `PromiseObject`.
-
-        """
-        if attr in self.fields:
-            # Oops, that's data. Try delivering it?
-            if not self._delivered:
-                self.deliver()
-                if attr in self.__dict__:
-                    return self.__dict__[attr]
-
-        # attr is not a field, or even delivering the object didn't set it.
-        raise AttributeError('Instance %r has no such attribute %r'
-            % (self, attr))
 
     def deliver(self):
         """Attempts to fill the instance with the data it represents.
@@ -79,6 +73,10 @@ class PromiseObject(HttpObject):
 
         response, content = self.get_response(self._location, self._http)
         self.update_from_response(self._location, response, content)
+
+    def update_from_dict(self, data):
+        # Update directly to avoid triggering delivery.
+        self.__dict__['api_data'].update(data)
 
     def update_from_response(self, url, response, content):
         """Fills the `PromiseObject` instance with the data from the given

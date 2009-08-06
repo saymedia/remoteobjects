@@ -58,12 +58,6 @@ class DataObjectMetaclass(type):
         for attrname, field in attrs.items():
             if isinstance(field, remoteobjects.fields.Property):
                 new_fields[attrname] = field
-                try:
-                    repl = field.install(attrname)
-                except NotImplementedError:
-                    del attrs[attrname]
-                else:
-                    attrs[attrname] = repl
             elif attrname in fields:
                 # Throw out any parent fields that the subclass defined as
                 # something other than a Field.
@@ -72,6 +66,9 @@ class DataObjectMetaclass(type):
         fields.update(new_fields)
         attrs['fields'] = fields
         obj_cls = super(DataObjectMetaclass, cls).__new__(cls, name, bases, attrs)
+
+        for field, value in new_fields.items():
+            obj_cls.add_to_class(field, value)
 
         # Register the new class so Object fields can have forward-referenced it.
         classes_by_name[name] = obj_cls
@@ -82,6 +79,12 @@ class DataObjectMetaclass(type):
             field.of_cls = obj_cls
 
         return obj_cls
+
+    def add_to_class(cls, name, value):
+        try:
+            value.install(name, cls)
+        except (NotImplementedError, AttributeError):
+            setattr(cls, name, value)
 
 
 class DataObject(object):
@@ -108,6 +111,7 @@ class DataObject(object):
 
     def __init__(self, **kwargs):
         """Initializes a new `DataObject` with the given field values."""
+        self.api_data = {}
         self.__dict__.update(kwargs)
 
     def __eq__(self, other):
@@ -134,16 +138,21 @@ class DataObject(object):
         """
         return not self == other
 
+    @classmethod
+    def statefields(cls):
+        return cls.fields.keys() + ['api_data']
+
+    def __getstate__(self):
+        return dict((k, self.__dict__[k]) for k in self.statefields()
+            if k in self.__dict__)
+
     def to_dict(self):
         """Encodes the DataObject to a dictionary."""
-        try:
-            data = deepcopy(self._originaldata)
-        except AttributeError:
-            data = {}
-
+        data = deepcopy(self.api_data)
         for field_name, field in self.fields.iteritems():
-            if hasattr(field, 'encode_into'):
-                field.encode_into(self, data, field_name=field_name)
+            value = self.__dict__.get(field.attrname)
+            if value is not None:
+                data[field.api_name] = field.encode(value)
         return data
 
     @classmethod
@@ -166,14 +175,7 @@ class DataObject(object):
         turned into another object with `from_dict()`.
 
         """
-        # Remember this extra data, so we can play it back later.
-        if not hasattr(self, '_originaldata'):
-            self._originaldata = {}
-        self._originaldata.update(deepcopy(data))
-
-        for field_name, field in self.fields.iteritems():
-            if hasattr(field, 'decode_into'):
-                field.decode_into(data, self, field_name=field_name)
+        self.api_data.update(data)  # shallow copy
 
     @classmethod
     def subclass_with_constant_field(cls, fieldname, value):

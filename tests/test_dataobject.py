@@ -1,7 +1,10 @@
 from datetime import datetime
 import logging
+import pickle
 import sys
 import unittest
+
+import mox
 
 from remoteobjects import fields, dataobject
 from tests import utils
@@ -97,7 +100,7 @@ class TestDataObjects(unittest.TestCase):
         self.assertEquals(d['secret'], 'codes')
 
 
-    def testNoSpookyAction(self):
+    def testSpookyAction(self):
         """Tests that an instance's content can't be changed through the data
         structures it was created with, or a data structure pulled out of
         it."""
@@ -117,17 +120,24 @@ class TestDataObjects(unittest.TestCase):
 
         initial['name'] = 'bar'
         self.assertEquals(x.name, 'foo',
-            "Changing initial data doesn't change instance's internal data")
+            "Changing shallow initial data doesn't change instance's "
+            "internal data")
 
         initial['secret']['code'] = 'steak'
         d = x.to_dict()
-        self.assertEquals(d['secret']['code'], 'uuddlrlrba',
-            "Changing initial data doesn't change instance's original data "
-            "for export")
+        self.assertEquals(d['secret']['code'], 'steak',
+            "Changing deep hidden initial data *does* change instance's "
+            "original data for export")
 
         d['name'] = 'baz'
         self.assertEquals(x.name, 'foo',
-            "Changing exported data doesn't change instance's internal data")
+            "Changing shallow exported data doesn't change instance's "
+            "internal data retroactively")
+
+        d['secret']['code'] = 'walt sent me'
+        self.assertEquals(x.to_dict()['secret']['code'], 'steak',
+            "Changing deep exported data doesn't change instance's "
+            "internal data retroactively")
 
 
     def testStrongTypes(self):
@@ -141,20 +151,25 @@ class TestDataObjects(unittest.TestCase):
             when  = fields.Datetime()
             bleh  = fields.Object(Blah)
 
-        testdata = ({
-                'name':  'foo',
-                'value': 4,
-                'when':  'magenta',
-                'bleh':  Blah(name='what'),
-            }, {
-                'name':  'foo',
-                'value': 4,
-                'when':  '2008-12-31T04:00:01Z',
-                'bleh':  True,
-            })
+        testobj = WithTypes.from_dict({
+            'name':  'foo',
+            'value': 4,
+            'when':  'magenta',
+            'bleh':  {'name': 'what'},
+        })
 
-        for d in testdata:
-            self.assertRaises(TypeError, lambda: WithTypes.from_dict(d))
+        self.assertRaises(TypeError, lambda: testobj.when)
+        self.assert_(testobj.bleh, 'Accessing properly formatted subobject raises no exceptions')
+
+        testobj = WithTypes.from_dict({
+            'name':  'foo',
+            'value': 4,
+            'when':  '2008-12-31T04:00:01Z',
+            'bleh':  True,
+        })
+
+        self.assert_(testobj.when, 'Accessing properly formatted datetime attribute raises no exceptions')
+        self.assertRaises(TypeError, lambda: testobj.bleh)
 
 
     def testComplex(self):
@@ -244,6 +259,41 @@ class TestDataObjects(unittest.TestCase):
         self.assert_(isinstance(r.other,   extra_dataobject.OtherRelated))  # not NotRelated
 
 
+    def set_up_pickling_class(self):
+        class BasicMost(self.cls):
+            name  = fields.Field()
+            value = fields.Field()
+
+        # Simulate a special module for this BasicMost, so pickle can find
+        # the class for it.
+        pickletest_module = mox.MockAnything()
+        pickletest_module.BasicMost = BasicMost
+        BasicMost.__module__ = 'remoteobjects._pickletest'
+        sys.modules['remoteobjects._pickletest'] = pickletest_module
+
+        return BasicMost
+
+
+    def testPickling(self):
+
+        BasicMost = self.set_up_pickling_class()
+
+        obj = BasicMost(name='fred', value=7)
+
+        pickled_obj = pickle.dumps(obj)
+        self.assert_(pickled_obj)
+        unpickled_obj = pickle.loads(pickled_obj)
+        self.assertEquals(unpickled_obj, obj)
+
+        obj = BasicMost.from_dict({'name': 'fred', 'value': 7})
+
+        cloned_obj = pickle.loads(pickle.dumps(obj))
+        self.assert_(cloned_obj)
+        self.assert_(hasattr(cloned_obj, 'api_data'), "unpickled instance has api_data too")
+        self.assertEquals(cloned_obj.api_data, obj.api_data,
+            "unpickled instance kept original's api_data")
+
+
     def testFieldOverride(self):
 
         class Parent(dataobject.DataObject):
@@ -293,9 +343,8 @@ class TestDataObjects(unittest.TestCase):
         global cheezCalled
         cheezCalled = False
 
-        def cheezburgh(obj, data):
+        def cheezburgh(obj):
             self.assert_(isinstance(obj, WithDefaults))
-            self.assert_(isinstance(data, dict))
             global cheezCalled
             cheezCalled = True
             return 'CHEEZBURGH'

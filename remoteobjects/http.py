@@ -109,6 +109,10 @@ class HttpObject(DataObject):
         self._location = None
         super(HttpObject, self).__init__(**kwargs)
 
+    @classmethod
+    def statefields(cls):
+        return super(HttpObject, cls).statefields() + ['_location', '_etag']
+
     def get_request(self, headers=None, **kwargs):
         """Returns the parameters for requesting this `RemoteObject` instance
         as a dictionary of keyword arguments suitable for passing to

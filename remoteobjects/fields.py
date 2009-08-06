@@ -27,16 +27,16 @@ class Property(object):
 
     """
 
-    def install(self, attrname):
-        """Produces the replacement object to be installed as a class
-        attribute where this field is declared.
+    def install(self, cls, attrname):
+        """Signals to the `Property` that it has been installed on the given
+        class as an attribute with the given name.
 
-        Override this method to install an attribute on DataObject classes
-        where your field is declared. This implementation installs no
-        attribute (by raising a `NotImplementedError`).
+        This implementation does nothing. Override this method to customize
+        the behavior to install an attribute on DataObject classes where your
+        field is declared.
 
         """
-        raise NotImplementedError()
+        pass
 
 
 class Field(Property):
@@ -88,6 +88,41 @@ class Field(Property):
         self.api_name = api_name
         self.default  = default
 
+    def install(self, attrname, cls):
+        self.attrname = attrname
+        if self.api_name is None:
+            self.api_name = attrname
+        # attrname has to be set before of_cls or Constant fields break.
+        self.of_cls = cls
+
+    def __get__(self, obj, cls):
+        """Returns the field's value on the given object instance, or the
+        field's default value if no value for the field is available.
+
+        Note the field's value will be decoded from API data if necessary,
+        raising any exceptions that the field's `decode()` method may raise.
+
+        """
+        if obj is None:
+            raise AttributeError("RemoteObject fields must be accessed via an instance")
+
+        if self.attrname not in obj.__dict__:
+            try:
+                value = obj.api_data[self.api_name]
+            except KeyError:
+                if callable(self.default):
+                    value = self.default(obj)
+                else:
+                    value = self.default
+            else:
+                value = self.decode(value)
+            obj.__dict__[self.attrname] = value
+
+        return obj.__dict__[self.attrname]
+
+    def __set__(self, obj, value):
+        obj.__dict__[self.attrname] = value
+
     def decode(self, value):
         """Decodes a dictionary value into a `DataObject` attribute value.
 
@@ -110,40 +145,6 @@ class Field(Property):
         """
         return value
 
-    def encode_into(self, obj, data, field_name=None):
-        """Encodes the attribute the field represents out of `DataObject`
-        instance `obj` into a dictionary `data`.
-
-        Parameter `field_name` specifies the name of the `DataObject` attribute
-        to encode from.
-
-        """
-        # value = getattr(obj, field_name)
-        value = obj.__dict__.get(field_name)
-        if value is not None:
-            value = self.encode(value)
-            # only put in data if defined
-            data[self.api_name or field_name] = value
-
-    def decode_into(self, data, obj, field_name=None):
-        """Decodes the attribute the field represents out of dictionary `data`
-        into a DataObject instance `obj`.
-
-        Parameter `field_name` specifies the name of the DataObject attribute
-        to encode into.
-
-        """
-        value = data.get(self.api_name or field_name)
-        if value is not None:
-            value = self.decode(value)
-        if value is None and self.default is not None:
-            if callable(self.default):
-                value = self.default(obj, data)
-            else:
-                value = self.default
-        # always set the attribute, even if it's still None
-        setattr(obj, field_name, value)
-
 
 class Constant(Field):
 
@@ -163,11 +164,6 @@ class Constant(Field):
         """Sets the field's constant value to parameter `value`."""
         super(Constant, self).__init__(**kwargs)
         self.value = value
-
-    def install(self, attrname):
-        """Records the attribute name used for this field."""
-        self.attrname = attrname
-        return super(Constant, self).install(attrname)  # raises NotImplementedError
 
     def get_of_cls(self):
         return self.__dict__['of_cls']
@@ -200,12 +196,6 @@ class Constant(Field):
     def encode(self, value):
         # Don't even bother caring what we were given; it's our constant.
         return self.value
-
-    def encode_into(self, obj, data, field_name=None):
-        data[self.api_name or field_name] = self.value
-
-    def decode_into(self, data, obj, field_name=None):
-        setattr(obj, field_name, self.value)
 
 
 class List(Field):
@@ -306,6 +296,10 @@ class Object(Field):
     def decode(self, value):
         """Decodes the dictionary value into an instance of the `DataObject`
         class the field references."""
+        if value is None:
+            if callable(self.default):
+                return self.default()
+            return self.default
         return self.cls.from_dict(value)
 
     def encode(self, value):
@@ -328,7 +322,7 @@ class Datetime(Field):
         """
         try:
             return datetime(*(time.strptime(value, '%Y-%m-%dT%H:%M:%SZ'))[0:6])
-        except ValueError:
+        except (TypeError, ValueError):
             raise TypeError('Value to decode %r is not a valid date time stamp' % (value,))
 
     def encode(self, value):
@@ -382,12 +376,13 @@ class Link(Property):
         self.api_name = api_name
         super(Link, self).__init__(**kwargs)
 
-    def install(self, attrname):
+    def install(self, attrname, cls):
         """Installs the `Link` instance as an attribute of the `RemoteObject`
         class in which it was declared."""
+        self.of_cls = cls
+        self.attrname = attrname
         if self.api_name is None:
             self.api_name = attrname
-        return self
 
     def __get__(self, instance, owner):
         """Generates the RemoteObject for the target resource of this Link.

@@ -1,0 +1,83 @@
+{
+    "kind": "tag:api.example.com,2009;Twiddle", 
+    "name": "Twiddle Dee", 
+    "frobnitz": {
+        "kind": "tag:api.example.com,2009;Frobnitz", 
+        "name": "Woozle Frobnicater", 
+        "size": "large",
+        "attr": {
+            "color": "blue", 
+            "talls": "72in", 
+            "hairs": "brown", 
+            "smell": "flowers", 
+            "fatts": "180lbs"
+        }
+    },
+    "zotz": [
+        {
+            "born": "2002-06-15T12:23:53Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "large"
+        }, 
+        {
+            "born": "2002-06-16T12:24:53Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "medium"
+        }, 
+        {
+            "born": "2002-06-18T10:23:48Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "medium"
+        }, 
+        {
+            "born": "2003-06-15T12:23:53Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "small"
+        }, 
+        {
+            "born": "2003-08-15T12:23:53Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "large"
+        }, 
+        {
+            "born": "2003-11-18T10:23:53Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "large"
+        }, 
+        {
+            "born": "2004-06-15T12:23:13Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "medium"
+        }, 
+        {
+            "born": "2004-10-15T12:23:49Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "small"
+        }, 
+        {
+            "born": "2006-06-15T12:23:21Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "small"
+        }, 
+        {
+            "born": "2006-10-15T12:23:27Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "medium"
+        }, 
+        {
+            "born": "2008-06-15T12:23:17Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "large"
+        }, 
+        {
+            "born": "2008-12-25T12:23:17Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "large"
+        }, 
+        {
+            "born": "2009-06-15T12:23:40Z", 
+            "kind": "tag:api.example.com,2009;Zot", 
+            "size": "medium"
+        }
+    ]
+}
