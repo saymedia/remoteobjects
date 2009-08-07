@@ -104,7 +104,8 @@ class Field(Property):
 
         """
         if obj is None:
-            raise AttributeError("RemoteObject fields must be accessed via an instance")
+            # Yield the real field instance when gotten through the class.
+            return self
 
         if self.attrname not in obj.__dict__:
             try:
