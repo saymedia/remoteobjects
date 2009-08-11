@@ -117,6 +117,7 @@ class Field(Property):
                     value = self.default
             else:
                 value = self.decode(value)
+            # Store the value so we need decode it only once.
             obj.__dict__[self.attrname] = value
 
         return obj.__dict__[self.attrname]
