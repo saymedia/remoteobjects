@@ -245,13 +245,13 @@ class Dict(List):
         """Decodes the dictionary value (a dictionary with dictionary values
         for values) into a `DataObject` attribute (a dictionary with
         `DataObject` attributes for values)."""
-        return dict([(k, self.fld.decode(v)) for k, v in value.iteritems()])
+        return dict((k, self.fld.decode(v)) for k, v in value.iteritems())
 
     def encode(self, value):
         """Encodes a `DataObject` attribute (a dictionary with decoded
         `DataObject` attribute values for values) into a dictionary value (a
         dictionary with encoded dictionary values for values)."""
-        return dict([(k, self.fld.encode(v)) for k, v in value.iteritems()])
+        return dict((k, self.fld.encode(v)) for k, v in value.iteritems())
 
 
 class Object(Field):
