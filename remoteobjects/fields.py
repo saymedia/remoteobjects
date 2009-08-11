@@ -166,10 +166,7 @@ class Constant(Field):
         super(Constant, self).__init__(**kwargs)
         self.value = value
 
-    def get_of_cls(self):
-        return self.__dict__['of_cls']
-
-    def set_of_cls(self, of_cls):
+    def install(self, attrname, cls):
         """Records the class that owns this field.
 
         This implementation also registers the owning class by this constant
@@ -177,16 +174,14 @@ class Constant(Field):
         will find this field's class.
 
         """
-        self.__dict__['of_cls'] = of_cls
+        super(Constant, self).install(attrname, cls)
 
         # Register class by this field.
         cf = remoteobjects.dataobject.classes_by_constant_field
         attrname, value = self.attrname, self.value
         if attrname not in cf:
             cf[attrname] = dict()
-        cf[attrname][value] = of_cls.__name__
-
-    of_cls = property(get_of_cls, set_of_cls)
+        cf[attrname][value] = cls.__name__
 
     def decode(self, value):
         if value != self.value:
@@ -219,15 +214,11 @@ class List(Field):
         super(List, self).__init__(**kwargs)
         self.fld = fld
 
-    def get_of_cls(self):
-        return self.__dict__['of_cls']
+    def install(self, attrname, cls):
+        super(List, self).install(attrname, cls)
 
-    def set_of_cls(self, of_cls):
-        self.__dict__['of_cls'] = of_cls
         # Make sure our content field knows its owner too.
-        self.fld.of_cls = of_cls
-
-    of_cls = property(get_of_cls, set_of_cls)
+        self.fld.install(attrname, cls)
 
     def decode(self, value):
         """Decodes the dictionary value (a list of dictionary values) into a
