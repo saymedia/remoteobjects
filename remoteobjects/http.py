@@ -45,6 +45,8 @@ class HttpObject(DataObject):
         httplib.FOUND:             'Location',
     }
 
+    content_types = ('application/json',)
+
     class NotFound(httplib.HTTPException):
         """An HTTPException thrown when the server reports that the requested
         resource was not found."""
@@ -126,7 +128,7 @@ class HttpObject(DataObject):
         if headers is None:
             headers = {}
         if 'accept' not in headers:
-            headers['accept'] = 'application/json'
+            headers['accept'] = ', '.join(self.content_types)
 
         # Use 'uri' because httplib2.request does.
         request = dict(uri=self._location, headers=headers)
@@ -152,7 +154,7 @@ class HttpObject(DataObject):
         if headers is None:
             headers = {}
         if 'accept' not in headers:
-            headers['accept'] = 'application/json'
+            headers['accept'] = ', '.join(cls.content_types)
 
         if http is None:
             http = userAgent
@@ -224,9 +226,9 @@ class HttpObject(DataObject):
 
         # check that the response body was json
         content_type = response.get('content-type', '').split(';', 1)[0].strip()
-        if content_type != 'application/json':
+        if content_type not in cls.content_types:
             raise cls.BadResponse(
-                'Bad response fetching %s %s: content-type is %s, not JSON'
+                'Bad response fetching %s %s: content-type %s is not an expected type'
                 % (classname, url, response.get('content-type')))
 
     def update_from_response(self, url, response, content):
