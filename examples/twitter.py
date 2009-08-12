@@ -238,6 +238,9 @@ def main(argv=None):
     opts, args = parser.parse_args()
 
     twitter = Twitter()
+
+    # We'll use regular HTTP authentication, so ask for a password and add
+    # it in the regular httplib2 way.
     if opts.username is not None:
         password = raw_input("Password (will echo): ")
         twitter.add_credentials(opts.username, password)
@@ -255,7 +258,10 @@ def main(argv=None):
             print "\nFrom my friends:"
             for tweet in twitter.friends_timeline():
                 print "%d: %s from %s" % (tweet.id, tweet.text, tweet.user.screen_name)
+
     except httplib.HTTPException, exc:
+        # The API could be down, or the credentials on an auth-only request
+        # could be wrong, so show the error to the end user.
         print >>sys.stderr, "Error making request: %s: %s" \
             % (type(exc).__name__, str(exc))
         return 1
