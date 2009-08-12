@@ -95,7 +95,7 @@ class TestDataObjects(unittest.TestCase):
         self.assertRaises(AttributeError, lambda: x.secret)
 
         d = x.to_dict()
-        self.assert_('name' in d)
+        self.assert_('name' not in d)
         self.assert_('secret' in d)
         self.assertEquals(d['secret'], 'codes')
 
@@ -119,8 +119,8 @@ class TestDataObjects(unittest.TestCase):
         x = BasicMost.from_dict(initial)
 
         initial['name'] = 'bar'
-        self.assertEquals(x.name, 'foo',
-            "Changing shallow initial data doesn't change instance's "
+        self.assertEquals(x.name, 'bar',
+            "Changing initial data does change instance's "
             "internal data")
 
         initial['secret']['code'] = 'steak'
@@ -130,7 +130,7 @@ class TestDataObjects(unittest.TestCase):
             "original data for export")
 
         d['name'] = 'baz'
-        self.assertEquals(x.name, 'foo',
+        self.assertEquals(x.name, 'bar',
             "Changing shallow exported data doesn't change instance's "
             "internal data retroactively")
 

@@ -75,8 +75,14 @@ class PromiseObject(HttpObject):
         self.update_from_response(self._location, response, content)
 
     def update_from_dict(self, data):
+        if not isinstance(data, dict):
+            raise TypeError
+        # Clear any local instance field data
+        for k in self.fields.iterkeys():
+            if k in self.__dict__:
+                del self.__dict__[k]
         # Update directly to avoid triggering delivery.
-        self.__dict__['api_data'].update(data)
+        self.__dict__['api_data'] = data
 
     def update_from_response(self, url, response, content):
         """Fills the `PromiseObject` instance with the data from the given

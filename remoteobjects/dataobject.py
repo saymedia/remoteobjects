@@ -175,7 +175,13 @@ class DataObject(object):
         turned into another object with `from_dict()`.
 
         """
-        self.api_data.update(data)  # shallow copy
+        if not isinstance(data, dict):
+            raise TypeError
+        # Clear any local instance field data
+        for k in self.fields.iterkeys():
+            if k in self.__dict__:
+                del self.__dict__[k]
+        self.api_data = data
 
     @classmethod
     def subclass_with_constant_field(cls, fieldname, value):
