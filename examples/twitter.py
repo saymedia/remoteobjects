@@ -1,15 +1,30 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
-# A Twitter API client, implemented using remoteobjects
+"""
 
+A Twitter API client, implemented using remoteobjects.
+
+"""
+
+__version__ = '1.1'
+__date__ = '17 April 2009'
+__author__ = 'Brad Choate'
+
+
+import sys
 from urllib import urlencode, quote_plus
 from urlparse import urljoin, urlunsplit
+
 from httplib2 import Http
+
 from remoteobjects import RemoteObject, fields, ListObject
+
 
 twitter = None
 
+
 class LastStatus(RemoteObject):
+
     created_at = fields.Field()
     id = fields.Field()
     text = fields.Field()
@@ -20,7 +35,9 @@ class LastStatus(RemoteObject):
     favorited = fields.Field()
     in_reply_to_screen_name = fields.Field()
 
+
 class User(RemoteObject):
+
     id = fields.Field()
     name = fields.Field()
     screen_name = fields.Field()
@@ -43,6 +60,7 @@ class User(RemoteObject):
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
 class DirectMessage(RemoteObject):
+
     id = fields.Field()
     sender_id = fields.Field()
     text = fields.Field()
@@ -53,7 +71,9 @@ class DirectMessage(RemoteObject):
     sender = fields.Object(User)
     recipient = fields.Object(User)
 
+
 class Status(RemoteObject):
+
     created_at = fields.Field()
     id = fields.Field()
     text = fields.Field()
@@ -68,7 +88,9 @@ class Status(RemoteObject):
     def get_status(cls, id, http=None):
         return cls.get(urljoin(Twitter.endpoint, "/statuses/show/%d.json" % int(id)), http=http)
 
+
 class DirectMessageList(ListObject):
+
     entries = fields.List(fields.Object(DirectMessage))
     def update_from_dict(self, data):
         super(DirectMessageList, self).update_from_dict({ 'entries': data })
@@ -90,7 +112,9 @@ class DirectMessageList(ListObject):
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
+
 class UserList(ListObject):
+
     entries = fields.List(fields.Object(User))
     def update_from_dict(self, data):
         super(UserList, self).update_from_dict({ 'entries': data })
@@ -117,7 +141,9 @@ class UserList(ListObject):
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
+
 class Timeline(ListObject):
+
     entries = fields.List(fields.Object(Status))
     def update_from_dict(self, data):
         super(Timeline, self).update_from_dict({ 'entries': data })
@@ -152,7 +178,9 @@ class Timeline(ListObject):
         url = urlunsplit((None, None, '/statuses/mentions.json', query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
+
 class Twitter(Http):
+
     endpoint = 'http://twitter.com/'
 
     @property
@@ -196,7 +224,11 @@ class Twitter(Http):
         assert self.authd, "This request requires authentication."
         return DirectMessageList.get_messages_sent(http=self, **kwargs)
 
-if __name__ == '__main__':
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+
     twitter = Twitter()
 
     print "\nPublic timeline:"
@@ -213,3 +245,9 @@ if __name__ == '__main__':
         print "\nFrom my friends:"
         for tweet in twitter.friends_timeline():
             print "%d: %s from %s" % (tweet.id, tweet.text, tweet.user.screen_name)
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
