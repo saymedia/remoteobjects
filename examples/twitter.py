@@ -11,6 +11,7 @@ __date__ = '17 April 2009'
 __author__ = 'Brad Choate'
 
 
+from optparse import OptionParser
 import sys
 from urllib import urlencode, quote_plus
 from urlparse import urljoin, urlunsplit
@@ -244,13 +245,19 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv
 
+    parser = OptionParser()
+    parser.add_option("-u", "--username", dest="username",
+        help="name of user for authentication")
+    opts, args = parser.parse_args()
+
     twitter = Twitter()
+    if opts.username is not None:
+        password = raw_input("Password (will echo): ")
+        twitter.add_credentials(opts.username, password)
 
     print "\nPublic timeline:"
     for tweet in twitter.public_timeline():
         print "%d: %s from %s" % (tweet.id, tweet.text, tweet.user.screen_name)
-
-    twitter.add_credentials("username", "password")
 
     if twitter.authd:
         print "Direct messages sent to me:"
