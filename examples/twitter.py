@@ -20,23 +20,14 @@ from httplib2 import Http
 from remoteobjects import RemoteObject, fields, ListObject
 
 
-twitter = None
-
-
-class LastStatus(RemoteObject):
-
-    created_at = fields.Field()
-    id = fields.Field()
-    text = fields.Field()
-    source = fields.Field()
-    truncated = fields.Field()
-    in_reply_to_status_id = fields.Field()
-    in_reply_to_user_id = fields.Field()
-    favorited = fields.Field()
-    in_reply_to_screen_name = fields.Field()
-
-
 class User(RemoteObject):
+
+    """A Twitter account.
+
+    A User can be retrieved from ``http://twitter.com/users/show.json`` with
+    the appropriate ``id``, ``user_id``, or ``screen_name`` parameter.
+
+    """
 
     id = fields.Field()
     name = fields.Field()
@@ -46,7 +37,7 @@ class User(RemoteObject):
     profile_image_url = fields.Field()
     protected = fields.Field()
     followers_count = fields.Field()
-    status = fields.Object(LastStatus)
+    status = fields.Object('Status')
 
     @classmethod
     def get_user(cls, http=None, **kwargs):
@@ -59,7 +50,15 @@ class User(RemoteObject):
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
+
 class DirectMessage(RemoteObject):
+
+    """A Twitter direct message.
+
+    The authenticated user's most recent direct messages are at
+    ``http://twitter.com/direct_messages.json``.
+
+    """
 
     id = fields.Field()
     sender_id = fields.Field()
@@ -74,6 +73,13 @@ class DirectMessage(RemoteObject):
 
 class Status(RemoteObject):
 
+    """A Twitter update.
+
+    Statuses can be fetched from
+    ``http://twitter.com/statuses/show/<id>.json``.
+
+    """
+
     created_at = fields.Field()
     id = fields.Field()
     text = fields.Field()
@@ -81,6 +87,7 @@ class Status(RemoteObject):
     truncated = fields.Field()
     in_reply_to_status_id = fields.Field()
     in_reply_to_user_id = fields.Field()
+    in_reply_to_screen_name = fields.Field()
     favorited = fields.Field()
     user = fields.Object(User)
 
@@ -180,6 +187,14 @@ class Timeline(ListObject):
 
 
 class Twitter(Http):
+
+    """A user agent for interacting with Twitter.
+
+    Instances of this class are full ``httplib2.Http`` HTTP user agent
+    objects, but provide convenient convenience methods for interacting with
+    Twitter and its data objects.
+
+    """
 
     endpoint = 'http://twitter.com/'
 
