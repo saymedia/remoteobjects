@@ -11,6 +11,7 @@ __date__ = '17 April 2009'
 __author__ = 'Brad Choate'
 
 
+import httplib
 from optparse import OptionParser
 import sys
 from urllib import urlencode, quote_plus
@@ -199,45 +200,31 @@ class Twitter(Http):
 
     endpoint = 'http://twitter.com/'
 
-    @property
-    def authd(self):
-        return len(self.credentials.credentials) > 0
-
     def public_timeline(self):
         return Timeline.public(http=self)
 
     def friends_timeline(self, **kwargs):
-        assert self.authd, "This request requires authentication."
         return Timeline.friends(http=self, **kwargs)
 
     def user_timeline(self, **kwargs):
-        if not set(['screen_name', 'user_id', 'id']) & set(kwargs.keys()):
-            assert self.authd, "This request requires authentication."
         return Timeline.user(http=self, **kwargs)
 
     def show(self, id):
         return Status.get_status(id, http=self)
 
     def user(self, id, **kwargs):
-        if not set(['screen_name', 'user_id', 'id']) & set(kwargs.keys()):
-            raise Exception("A screen_name, user_id or id keyword parameter is required.")
         return User.get_user(http=self, **kwargs)
 
     def mentions(self, **kwargs):
-        assert self.authd, "This request requires authentication."
         return Timeline.mentions(http=self, **kwargs)
 
     def friends(self, **kwargs):
-        if not set(['screen_name', 'user_id', 'id']) & set(kwargs.keys()):
-            assert self.authd, "This request requires authentication."
         return UserList.get_friends(http=self, **kwargs)
 
     def direct_messages_received(self, **kwargs):
-        assert self.authd, "This request requires authentication."
         return DirectMessageList.get_messages(http=self, **kwargs)
 
     def direct_messages_sent(self, **kwargs):
-        assert self.authd, "This request requires authentication."
         return DirectMessageList.get_messages_sent(http=self, **kwargs)
 
 
@@ -255,18 +242,23 @@ def main(argv=None):
         password = raw_input("Password (will echo): ")
         twitter.add_credentials(opts.username, password)
 
-    print "\nPublic timeline:"
-    for tweet in twitter.public_timeline():
-        print "%d: %s from %s" % (tweet.id, tweet.text, tweet.user.screen_name)
-
-    if twitter.authd:
-        print "Direct messages sent to me:"
-        for tweet in twitter.direct_messages_received():
-            print "%d: %s from %s" % (tweet.id, tweet.text, tweet.sender.screen_name)
-
-        print "\nFrom my friends:"
-        for tweet in twitter.friends_timeline():
+    try:
+        print "\nPublic timeline:"
+        for tweet in twitter.public_timeline():
             print "%d: %s from %s" % (tweet.id, tweet.text, tweet.user.screen_name)
+
+        if opts.username is not None:
+            print "Direct messages sent to me:"
+            for tweet in twitter.direct_messages_received():
+                print "%d: %s from %s" % (tweet.id, tweet.text, tweet.sender.screen_name)
+
+            print "\nFrom my friends:"
+            for tweet in twitter.friends_timeline():
+                print "%d: %s from %s" % (tweet.id, tweet.text, tweet.user.screen_name)
+    except httplib.HTTPException, exc:
+        print >>sys.stderr, "Error making request: %s: %s" \
+            % (type(exc).__name__, str(exc))
+        return 1
 
     return 0
 
