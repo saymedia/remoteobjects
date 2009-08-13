@@ -22,7 +22,7 @@ class TestPromiseObjects(unittest.TestCase):
 
     cls = promise.PromiseObject
 
-    def testBasic(self):
+    def test_basic(self):
 
         class Tiny(self.cls):
             name = fields.Field()
@@ -47,7 +47,7 @@ class TestPromiseObjects(unittest.TestCase):
 
 class TestViews(unittest.TestCase):
 
-    def testBasic(self):
+    def test_basic(self):
 
         class Toy(promise.PromiseObject):
             name = fields.Field()
@@ -93,7 +93,7 @@ class TestViews(unittest.TestCase):
         # Nobody did any HTTP, right?
         mox.Verify(h)
 
-    def testAwesome(self):
+    def test_awesome(self):
 
         class Toy(promise.PromiseObject):
             name = fields.Field()

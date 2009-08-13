@@ -14,8 +14,7 @@ class TestDataObjects(unittest.TestCase):
 
     cls = dataobject.DataObject
 
-
-    def testBasic(self):
+    def test_basic(self):
 
         class BasicMost(self.cls):
             name  = fields.Field()
@@ -33,8 +32,7 @@ class TestDataObjects(unittest.TestCase):
         self.assertEquals(BasicMost.__name__, 'BasicMost',
             "metaclass magic didn't break our class's name")
 
-
-    def testTypes(self):
+    def test_types(self):
 
         class WithTypes(self.cls):
             name  = fields.Field()
@@ -57,8 +55,7 @@ class TestDataObjects(unittest.TestCase):
         self.assertEquals(w, { 'name': 'hi', 'value': 99, 'when': '2009-02-03T10:44:00Z' },
             'Typething dict has proper contents')
 
-
-    def testMustIgnore(self):
+    def test_must_ignore(self):
 
         class BasicMost(self.cls):
             name  = fields.Field()
@@ -99,8 +96,7 @@ class TestDataObjects(unittest.TestCase):
         self.assert_('secret' in d)
         self.assertEquals(d['secret'], 'codes')
 
-
-    def testSpookyAction(self):
+    def test_spooky_action(self):
         """Tests that an instance's content can't be changed through the data
         structures it was created with, or a data structure pulled out of
         it."""
@@ -139,8 +135,7 @@ class TestDataObjects(unittest.TestCase):
             "Changing deep exported data doesn't change instance's "
             "internal data retroactively")
 
-
-    def testStrongTypes(self):
+    def test_strong_types(self):
 
         class Blah(self.cls):
             name = fields.Field()
@@ -171,8 +166,7 @@ class TestDataObjects(unittest.TestCase):
         self.assert_(testobj.when, 'Accessing properly formatted datetime attribute raises no exceptions')
         self.assertRaises(TypeError, lambda: testobj.bleh)
 
-
-    def testComplex(self):
+    def test_complex(self):
 
         class Childer(self.cls):
             name = fields.Field()
@@ -215,8 +209,7 @@ class TestDataObjects(unittest.TestCase):
             ],
         }, 'Parentish dict has proper contents')
 
-
-    def testSelfReference(self):
+    def test_self_reference(self):
 
         class Reflexive(self.cls):
             itself     = fields.Object('Reflexive')
@@ -232,8 +225,7 @@ class TestDataObjects(unittest.TestCase):
         self.assert_(isinstance(r.itself, Reflexive))
         self.assert_(isinstance(r.themselves[0], Reflexive))
 
-
-    def testPostReference(self):
+    def test_post_reference(self):
 
         from tests import extra_dataobject
 
@@ -258,7 +250,6 @@ class TestDataObjects(unittest.TestCase):
         self.assert_(isinstance(r.related, Related))  # not extra_dataobject.Related
         self.assert_(isinstance(r.other,   extra_dataobject.OtherRelated))  # not NotRelated
 
-
     def set_up_pickling_class(self):
         class BasicMost(self.cls):
             name  = fields.Field()
@@ -273,8 +264,7 @@ class TestDataObjects(unittest.TestCase):
 
         return BasicMost
 
-
-    def testPickling(self):
+    def test_pickling(self):
 
         BasicMost = self.set_up_pickling_class()
 
@@ -293,8 +283,7 @@ class TestDataObjects(unittest.TestCase):
         self.assertEquals(cloned_obj.api_data, obj.api_data,
             "unpickled instance kept original's api_data")
 
-
-    def testFieldOverride(self):
+    def test_field_override(self):
 
         class Parent(dataobject.DataObject):
             fred = fields.Field()
@@ -308,8 +297,7 @@ class TestDataObjects(unittest.TestCase):
         self.assert_(isinstance(Child.fields['ted'], fields.Datetime),
             'Child class has overridden ted field, yay')
 
-
-    def testFieldApiName(self):
+    def test_field_api_name(self):
 
         class WeirdNames(dataobject.DataObject):
             normal    = fields.Field()
@@ -337,8 +325,7 @@ class TestDataObjects(unittest.TestCase):
             'plugh':       'slartibartfast',
         }, 'WeirdNames dict has proper contents')
 
-
-    def testFieldDefault(self):
+    def test_field_default(self):
 
         global cheezCalled
         cheezCalled = False

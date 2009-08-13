@@ -12,10 +12,10 @@ def update_wrapper(wrapper, original):
 
 
 def skip(fn):
-    def testNothing(self):
+    def test_nothing(self):
         raise nose.SkipTest('skip this test')
-    update_wrapper(testNothing, fn)
-    return testNothing
+    update_wrapper(test_nothing, fn)
+    return test_nothing
 
 
 def are_automated():
@@ -29,15 +29,15 @@ def skip_if_automated(fn):
 
 
 def todo(fn):
-    def testReverse(*args, **kwargs):
+    def test_reverse(*args, **kwargs):
         try:
             fn(*args, **kwargs)
         except:
             pass
         else:
             raise AssertionError('test %s unexpectedly succeeded' % fn.__name__)
-    update_wrapper(testReverse, fn)
-    return testReverse
+    update_wrapper(test_reverse, fn)
+    return test_reverse
 
 
 def mock_http(req, resp_or_content):

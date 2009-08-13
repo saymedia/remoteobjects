@@ -20,8 +20,7 @@ class TestHttpObjects(unittest.TestCase):
 
     cls = http.HttpObject
 
-
-    def testGet(self):
+    def test_get(self):
 
         class BasicMost(self.cls):
             name  = fields.Field()
@@ -39,8 +38,7 @@ class TestHttpObjects(unittest.TestCase):
         self.assertEquals(b.value, 7)
         mox.Verify(h)
 
-
-    def testGetBadEncoding(self):
+    def test_get_bad_encoding(self):
 
         class BasicMost(self.cls):
             name  = fields.Field()
@@ -59,8 +57,7 @@ class TestHttpObjects(unittest.TestCase):
         self.assertEquals(b.value, u"image by \ufffdrew Example")
         mox.Verify(h)
 
-
-    def testPost(self):
+    def test_post(self):
 
         class BasicMost(self.cls):
             name  = fields.Field()
@@ -94,8 +91,7 @@ class TestHttpObjects(unittest.TestCase):
         self.assertEquals(b._location, 'http://example.com/fred')
         self.assertEquals(b._etag, 'xyz')
 
-
-    def testPut(self):
+    def test_put(self):
 
         class BasicMost(self.cls):
             name  = fields.Field()
@@ -126,8 +122,7 @@ class TestHttpObjects(unittest.TestCase):
 
         self.assertEquals(b._etag, 'xyz')
 
-
-    def testPutFailure(self):
+    def test_put_failure(self):
 
         class BasicMost(self.cls):
             name  = fields.Field()
@@ -158,8 +153,7 @@ class TestHttpObjects(unittest.TestCase):
         self.assertRaises(BasicMost.PreconditionFailed, lambda: b.put(http=h))
         mox.Verify(h)
 
-
-    def testDelete(self):
+    def test_delete(self):
 
         class BasicMost(self.cls):
             name  = fields.Field()
@@ -191,8 +185,7 @@ class TestHttpObjects(unittest.TestCase):
         self.failIf(b._location is not None)
         self.failIf(hasattr(b, '_etag'))
 
-
-    def testDeleteFailure(self):
+    def test_delete_failure(self):
 
         class BasicMost(self.cls):
             name  = fields.Field()
@@ -213,8 +206,7 @@ class TestHttpObjects(unittest.TestCase):
         self.assertRaises(BasicMost.PreconditionFailed, lambda: b.delete(http=h))
         mox.Verify(h)
 
-
-    def testNotFound(self):
+    def test_not_found(self):
         self.assert_(self.cls.NotFound)
 
         class Huh(self.cls):
@@ -231,9 +223,8 @@ class TestHttpObjects(unittest.TestCase):
         self.assertRaises(Huh.NotFound, lambda: Huh.get('http://example.com/bwuh', http=http).name)
         mox.Verify(http)
 
-
     @utils.todo
-    def testNotFoundDiscrete(self):
+    def test_not_found_discrete(self):
         """Checks that the NotFound exceptions for different HttpObjects are
         really different classes, so you can catch them discretely and treat
         different unfound objects differently, like:
@@ -256,7 +247,7 @@ class TestHttpObjects(unittest.TestCase):
         class What(self.cls):
             pass
 
-        def tryThat(http):
+        def try_that(http):
             try:
                 What.get('http://example.com/bwuh', http=http)
             # Let through What.NotFound only if it's not equivalent to Huh.NotFound.
@@ -269,7 +260,7 @@ class TestHttpObjects(unittest.TestCase):
         }
         response = dict(status=404)
         http = utils.MockedHttp(request, response)
-        self.assertRaises(What.NotFound, lambda: tryThat(http))
+        self.assertRaises(What.NotFound, lambda: try_that(http))
         mox.Verify(http)
 
 
