@@ -113,36 +113,3 @@ class PromiseObject(HttpObject):
         newurl = urlparse.urlunparse(parts)
 
         return self.get(newurl, http=self._http)
-
-
-class ListObject(PromiseObject):
-
-    """A `RemoteObject` representing a list of other `RemoteObject` instances.
-
-    `ListObject` instances can be filtered by options that are passed to your
-    target API, such as a list of recent objects or a search. Filtering a
-    ListObject by a parameter returns a new copy of that ListObject that
-    includes the new parameter.
-
-    """
-
-    def __getitem__(self, key):
-        """Translates slice notation on a `ListObject` instance into ``limit``
-        and ``offset`` filter parameters."""
-        if isinstance(key, slice):
-            args = dict()
-            if key.start is not None:
-                args['offset'] = key.start
-                if key.stop is not None:
-                    args['limit'] = key.stop - key.start
-            elif key.stop is not None:
-                args['limit'] = key.stop
-            return self.filter(**args)
-
-        try:
-            getitem = super(ListObject, self).__getitem__
-        except AttributeError:
-            raise TypeError("'%s' object is unsubscriptable except by slices"
-                % (type(self).__name__,))
-        else:
-            return getitem(key)
