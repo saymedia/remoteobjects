@@ -154,12 +154,6 @@ class ListObject(PromiseObject):
 
     entries = fields.List(fields.Field())
 
-    def update_from_dict(self, data):
-        super(ListObject, self).update_from_dict({ 'entries': data })
-
-    def to_dict(self):
-        return super(ListObject, self).to_dict()['entries']
-
     def __getitem__(self, key):
         """Translates slice notation on a `ListObject` instance into ``limit``
         and ``offset`` filter parameters."""

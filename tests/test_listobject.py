@@ -50,7 +50,7 @@ class TestListObjects(unittest.TestCase):
         url = 'http://example.com/whahay'
         headers = {"accept": "application/json"}
         request = dict(uri=url, headers=headers)
-        content = """[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"""
+        content = """{"entries":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}"""
         h = utils.mock_http(request, content)
         mox.Replay(h)
 
