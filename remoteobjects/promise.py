@@ -76,7 +76,8 @@ class PromiseObject(HttpObject):
 
     def update_from_dict(self, data):
         if not isinstance(data, dict):
-            raise TypeError
+            raise TypeError("Cannot update %r from non-dictionary data source %r"
+                % (self, data))
         # Clear any local instance field data
         for k in self.fields.iterkeys():
             if k in self.__dict__:
