@@ -44,21 +44,15 @@ class TestPromiseObjects(unittest.TestCase):
         self.assertEquals(t.name, 'Mollifred')
         mox.Verify(h)
 
+    def test_filter(self):
 
-class TestViews(unittest.TestCase):
-
-    def test_basic(self):
-
-        class Toy(promise.PromiseObject):
+        class Toy(self.cls):
             name = fields.Field()
-
-        class Toybox(promise.ListObject):
-            entries = fields.List(fields.Object(Toy))
 
         h = mox.MockObject(httplib2.Http)
         mox.Replay(h)
 
-        b = Toybox.get('http://example.com/foo', http=h)
+        b = Toy.get('http://example.com/foo', http=h)
         self.assertEquals(b._location, 'http://example.com/foo')
 
         x = b.filter(limit=10, offset=7)
@@ -71,40 +65,18 @@ class TestViews(unittest.TestCase):
         y = y.filter(awesome='no')
         self.assertEquals(y._location, 'http://example.com/foo?awesome=no')
 
-        j = b[0:10]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?limit=10&offset=0')
-
-        j = b[300:370]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?limit=70&offset=300')
-
-        j = b[1:]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?offset=1')
-
-        j = b[:10]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?limit=10')
-
-        # Can't use a non-slice on a plain ListObject
-        self.assertRaises(TypeError, lambda: b[7])
-
         # Nobody did any HTTP, right?
         mox.Verify(h)
 
     def test_awesome(self):
 
-        class Toy(promise.PromiseObject):
+        class Toy(self.cls):
             name = fields.Field()
 
-        class Toybox(promise.ListObject):
-            entries = fields.List(fields.Object(Toy))
-
-        class Room(promise.PromiseObject):
-            toybox = fields.Link(Toybox)
+        class Room(self.cls):
+            toybox = fields.Link(Toy)
 
         r = Room.get('http://example.com/bwuh/')
         b = r.toybox
-        self.assert_(isinstance(b, Toybox))
+        self.assert_(isinstance(b, Toy))
         self.assertEquals(b._location, 'http://example.com/bwuh/toybox')

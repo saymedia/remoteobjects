@@ -91,28 +91,17 @@ class PromiseObject(HttpObject):
         # Any updating from a response constitutes delivery.
         self._delivered = True
 
-
-class ListObject(PromiseObject):
-
-    """A `RemoteObject` representing a list of other `RemoteObject` instances.
-
-    `ListObject` instances can be filtered by options that are passed to your
-    target API, such as a list of recent objects or a search. Filtering a
-    ListObject by a parameter returns a new copy of that ListObject that
-    includes the new parameter.
-
-    """
-
     def filter(self, **kwargs):
-        """Returns a new `ListObject` instance that uses the filter of the
-        current `ListObject` instance plus all the given keyword parameters.
+        """Returns a new undelivered `PromiseObject` instance, equivalent to
+        this `PromiseObject` instance but further filtered by the given
+        keyword parameters.
 
-        By default, all filter parameters are given as named parameters in the
-        query string.
+        By default, all filter parameters are added as parameters to the
+        `PromiseObject` instance's query string.
 
         If your endpoint takes only certain parameters, or accepts parameters
         in some way other than query parameters in the URL, override this
-        method to build the URL and return the new `ListObject` instance as
+        method to build the URL and return the new `PromiseObject` instance as
         you require.
 
         """
@@ -124,6 +113,18 @@ class ListObject(PromiseObject):
         newurl = urlparse.urlunparse(parts)
 
         return self.get(newurl, http=self._http)
+
+
+class ListObject(PromiseObject):
+
+    """A `RemoteObject` representing a list of other `RemoteObject` instances.
+
+    `ListObject` instances can be filtered by options that are passed to your
+    target API, such as a list of recent objects or a search. Filtering a
+    ListObject by a parameter returns a new copy of that ListObject that
+    includes the new parameter.
+
+    """
 
     def __getitem__(self, key):
         """Translates slice notation on a `ListObject` instance into ``limit``
