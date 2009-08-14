@@ -8,13 +8,13 @@ from tests import test_dataobject, test_http
 from tests import utils
 
 
-class TestListObjects(unittest.TestCase):
+class TestPageObjects(unittest.TestCase):
 
-    cls = listobject.ListObject
+    cls = listobject.PageObject
 
-    def testSliceFilter(self):
+    def test_slice_filter(self):
 
-        class Toybox(listobject.ListObject):
+        class Toybox(self.cls):
             pass
 
         h = mox.MockObject(httplib2.Http)
@@ -42,7 +42,7 @@ class TestListObjects(unittest.TestCase):
         # Nobody did any HTTP, right?
         mox.Verify(h)
 
-    def testIndex(self):
+    def test_index(self):
 
         class Toybox(self.cls):
             pass

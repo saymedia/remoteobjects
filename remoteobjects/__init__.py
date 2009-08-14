@@ -87,9 +87,9 @@ import remoteobjects.dataobject
 import remoteobjects.fields as fields
 import remoteobjects.http
 import remoteobjects.promise
-from remoteobjects.listobject import ListObject
+from remoteobjects.listobject import ListObject, PageObject
 
-__all__ = ('RemoteObject', 'fields', 'ListObject', 'json')
+__all__ = ('RemoteObject', 'fields', 'ListObject', 'PageObject', 'json')
 
 
 class RemoteObject(remoteobjects.promise.PromiseObject):

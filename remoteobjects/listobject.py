@@ -39,48 +39,55 @@ class SequenceProxy(object):
     __contains__ = make_sequence_method('__contains__')
 
 
-class _ListsModule(object):
-    pass
+class OfOf(type):
 
-lists_module_name = 'remoteobjects.listobject._lists'
-lists_module = _ListsModule()
-sys.modules[lists_module_name] = lists_module
+    class _Module(object):
+        pass
+
+    def __new__(cls, name, bases, attr):
+        modulename = attr['_modulename']
+        sys.modules[modulename] = cls._Module()
+
+        attr['_subclasses'] = {}
+        attr['_basemodule'] = None
+
+        return type.__new__(cls, name, bases, attr)
 
 
-class ListOf(PromiseObject.__metaclass__):
+class PageOf(PromiseObject.__metaclass__):
 
-    """Metaclass defining a `ListObject` containing a list of some other
+    """Metaclass defining a `PageObject` containing a set of some other
     class's instances.
 
     Unlike most metaclasses, this metaclass can be called directly to define
-    new `ListObject` classes that contain objects of a specified other class,
+    new `PageObject` classes that contain objects of a specified other class,
     like so:
 
-    >>> ListOfEntry = ListOf(Entry)
+    >>> PageOfEntry = PageOf(Entry)
 
-    This is equivalent to defining ``ListOfEntry`` yourself:
+    This is equivalent to defining ``PageOfEntry`` yourself:
 
-    >>> class ListOfEntry(ListObject):
+    >>> class PageOfEntry(PageObject):
     ...     entryclass = Entry
 
-    which is a `ListObject` of ``Entry`` instances.
+    which is a `PageObject` of ``Entry`` instances.
 
     """
 
-    _subclasses = {}
+    __metaclass__ = OfOf
+
+    _modulename = 'remoteobjects.listobject._pages'
 
     def __new__(cls, name, bases=None, attr=None):
-        """Creates a new `ListObject` subclass.
+        """Creates a new `PageObject` subclass.
 
         If `bases` and `attr` are specified, as in a regular subclass
-        declaration, a new `ListObject` subclass bound to no particular
-        `RemoteObject` class is created. `name` is the declared name of the
-        new class, as usual.
+        declaration, a new class is created as per the specified settings.
 
         If only `name` is specified, that value is used as a reference to a
-        `RemoteObject` class to which the new `ListObject` class is bound.
+        `RemoteObject` class to which the new `PageObject` class is bound.
         The `name` parameter can be either a name or a `RemoteObject` class,
-        as when declaring a `fields.Object` on a class.
+        as when declaring a `remoteobjects.fields.Object` field.
 
         """
         direct = attr is None
@@ -95,62 +102,60 @@ class ListOf(PromiseObject.__metaclass__):
                 name = cls.__name__ + entryclass.__name__
             else:
                 name = cls.__name__ + entryclass
-            bases = (ListObject,)
+
+            bases = (cls._basemodule,)
+
             attr = {
-                'entryclass': entryclass,
                 'entries': fields.List(fields.Object(entryclass)),
             }
-        else:
-            # Make sure classes we create conventionally are SequenceProxies.
-            # As that includes ListObject, classes that are created directly
-            # inherit SequenceProxy behavior through ListObject.
-            bases = bases + (SequenceProxy,)
 
-        newcls = super(ListOf, cls).__new__(cls, name, bases, attr)
+        newcls = super(PageOf, cls).__new__(cls, name, bases, attr)
 
         # Save the result for later direct invocations.
         if direct:
-            orig_name = attr['entryclass']
-            cls._subclasses[orig_name] = newcls
-            newcls.__module__ = lists_module_name
-            setattr(lists_module, name, newcls)
+            cls._subclasses[entryclass] = newcls
+            newcls.__module__ = cls._modulename
+            setattr(sys.modules[cls._modulename], name, newcls)
+        elif cls._basemodule is None:
+            cls._basemodule = newcls
+
         return newcls
 
 
-class ListObject(PromiseObject):
+class PageObject(PromiseObject, SequenceProxy):
 
-    """A `RemoteObject` representing a list of other `RemoteObject` instances.
+    """A `RemoteObject` representing a set of other `RemoteObject` instances.
 
     Endpoints in APIs are often not objects themselves but lists of objects.
 
-    As with regular `PromiseObject` instances, `ListObject` instances can be
+    As with regular `PromiseObject` instances, `PageObject` instances can be
     filtered by parameters that are then passed to your target API, such as a
-    list of recent objects or a search. Filtering a `ListObject` instance by a
-    parameter returns a new copy of that `ListObject` instance that includes
+    list of recent objects or a search. Filtering a `PageObject` instance by a
+    parameter returns a new copy of that `PageObject` instance that includes
     the new parameter.
 
-    The contents of regular `ListObject` instances will be decoded as with
-    `Field` fields; that is, not decoded at all. To customize decoding, of API
-    contents, subclass `ListObject` and redefine the ``entries`` member with a
+    The contents of regular `PageObject` instances will be decoded as with
+    `Field` fields; that is, not decoded at all. To customize decoding of API
+    contents, subclass `PageObject` and redefine the ``entries`` member with a
     `Field` instance that decodes the list content as necessary.
 
-    As many API endpoints are lists of objects, to create a `ListObject`
-    subclass for those endpoints you can directly call its metaclass,
-    `ListOf`, with the class reference you would use to construct an `Object`
+    As many API endpoints are sets of objects, to create a `PageObject`
+    subclass for those endpoints, you can directly call its metaclass,
+    `PageOf`, with the class reference you would use to construct an `Object`
     field. That is, these declarations are equivalent:
 
-    >>> ListOfEntry = ListOf(Entry)
+    >>> PageOfEntry = PageOf(Entry)
 
-    >>> class ListOfEntry(ListObject):
+    >>> class PageOfEntry(PageObject):
     ...     entries = fields.List(fields.Object(Entry))
 
-    For an ``Entry`` list you then fetch with the `ListOfEntry` class's
+    For an ``Entry`` list you then fetch with the `PageOfEntry` class's
     `get()` method, all the entities in the list resource's `entries` member
     will be decoded into ``Entry`` instances.
 
     """
 
-    __metaclass__ = ListOf
+    __metaclass__ = PageOf
 
     entries = fields.List(fields.Field())
 
@@ -168,10 +173,25 @@ class ListObject(PromiseObject):
             return self.filter(**args)
 
         try:
-            getitem = super(ListObject, self).__getitem__
+            getitem = super(PageObject, self).__getitem__
         except AttributeError:
             raise TypeError("'%s' object is unsubscriptable except by slices"
                 % (type(self).__name__,))
         else:
-            print "getitem is %r" % getitem
             return getitem(key)
+
+
+class ListOf(PageOf):
+
+    _modulename = 'remoteobjects.listobject._lists'
+
+
+class ListObject(PageObject):
+
+    __metaclass__ = ListOf
+
+    def update_from_dict(self, data):
+        super(ListObject, self).update_from_dict({ 'entries': data })
+
+    def to_dict(self):
+        return super(ListObject, self).to_dict()['entries']
