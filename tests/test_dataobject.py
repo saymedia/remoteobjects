@@ -259,6 +259,9 @@ class TestDataObjects(unittest.TestCase):
         # the class for it.
         pickletest_module = mox.MockAnything()
         pickletest_module.BasicMost = BasicMost
+        # Note this pseudomodule has no file, so coverage doesn't get a mock
+        # method by mistake.
+        pickletest_module.__file__ = None
         BasicMost.__module__ = 'remoteobjects._pickletest'
         sys.modules['remoteobjects._pickletest'] = pickletest_module
 
