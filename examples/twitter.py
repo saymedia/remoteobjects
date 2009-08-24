@@ -228,6 +228,24 @@ class Twitter(Http):
         return DirectMessageList.get_messages_sent(http=self, **kwargs)
 
 
+def show_public(twitter):
+    print "## Public timeline ##"
+    for tweet in twitter.public_timeline():
+        print unicode(tweet)
+
+
+def show_dms(twitter):
+    print "## Direct messages sent to me ##"
+    for dm in twitter.direct_messages_received():
+        print unicode(dm)
+
+
+def show_friends(twitter):
+    print "## Tweets from my friends ##"
+    for tweet in twitter.friends_timeline():
+        print unicode(tweet)
+
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv
@@ -235,6 +253,13 @@ def main(argv=None):
     parser = OptionParser()
     parser.add_option("-u", "--username", dest="username",
         help="name of user for authentication")
+    parser.add_option("--public", action="store_const", const=show_public,
+        dest="action", default=show_public,
+        help="Show tweets from the public timeline")
+    parser.add_option("--dms", action="store_const", const=show_dms,
+        dest="action", help="Show DMs sent to you (requires -u)")
+    parser.add_option("--friends", action="store_const", const=show_friends,
+        dest="action", help="Show your friends' recent tweets (requires -u)")
     opts, args = parser.parse_args()
 
     twitter = Twitter()
@@ -246,22 +271,9 @@ def main(argv=None):
         twitter.add_credentials(opts.username, password)
 
     try:
-        print "## Public timeline ##"
-        for tweet in twitter.public_timeline():
-            print unicode(tweet)
         print
-
-        if opts.username is not None:
-            print "## Direct messages sent to me ##"
-            for dm in twitter.direct_messages_received():
-                print unicode(dm)
-            print
-
-            print "## Tweets from my friends ##"
-            for tweet in twitter.friends_timeline():
-                print unicode(tweet)
-            print
-
+        opts.action(twitter)
+        print
     except httplib.HTTPException, exc:
         # The API could be down, or the credentials on an auth-only request
         # could be wrong, so show the error to the end user.
