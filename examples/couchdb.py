@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+
+"""
+
+A generic example CouchDB client, implemented using remoteobjects.
+
+"""
+
+__version__ = '1.0'
+__date__ = '24 August 2009'
+__author__ = 'Mark Paschal'
+
+
 import httplib
 from optparse import OptionParser
 import simplejson as json
