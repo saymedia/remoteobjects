@@ -24,24 +24,22 @@ Example
 
 For example, you can build a simplified Twitter API library in the shell::
 
-    >>> from remoteobjects import RemoteObject, fields
-    >>> class Tweeter(remoteobjects.RemoteObject):
+    >>> from remoteobjects import RemoteObject, fields, ListObject
+    >>> class Tweeter(RemoteObject):
     ...     name        = fields.Field()
     ...     screen_name = fields.Field()
     ...     location    = fields.Field()
     ...
-    >>> class Tweet(remoteobjects.RemoteObject):
+    >>> class Tweet(RemoteObject):
     ...     text    = fields.Field()
     ...     source  = fields.Field()
     ...     tweeter = fields.Object(Tweeter, api_name='user')
     ...
-    >>> class Timeline(remoteobjects.ListObject):
+    >>> class Timeline(ListObject):
     ...     entries = fields.List(fields.Object(Tweet))
-    ...     def update_from_dict(self, data):
-    ...         super(Timeline, self).update_from_dict({'entries': data})
     ...
-    >>> t = Timeline.get('http://twitter.com/statuses/public_timeline.json')
-    >>> [tweet.tweeter.screen_name for tweet in t.entries[0:3]]
+    >>> tweets = Timeline.get('http://twitter.com/statuses/public_timeline.json')
+    >>> [t.tweeter.screen_name for t in tweets.entries[0:3]]
     ['eddeaux', 'CurtisLilly', '8email8']
 
 
