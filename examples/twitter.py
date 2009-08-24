@@ -72,6 +72,9 @@ class DirectMessage(RemoteObject):
     sender = fields.Object(User)
     recipient = fields.Object(User)
 
+    def __unicode__(self):
+        return u"%s: %s" % (self.sender.screen_name, self.text)
+
 
 class Status(RemoteObject):
 
@@ -96,6 +99,9 @@ class Status(RemoteObject):
     @classmethod
     def get_status(cls, id, http=None):
         return cls.get(urljoin(Twitter.endpoint, "/statuses/show/%d.json" % int(id)), http=http)
+
+    def __unicode__(self):
+        return u"%s: %s" % (self.user.screen_name, self.text)
 
 
 class DirectMessageList(ListObject):
@@ -240,18 +246,21 @@ def main(argv=None):
         twitter.add_credentials(opts.username, password)
 
     try:
-        print "\nPublic timeline:"
+        print "## Public timeline ##"
         for tweet in twitter.public_timeline():
-            print "%d: %s from %s" % (tweet.id, tweet.text, tweet.user.screen_name)
+            print unicode(tweet)
+        print
 
         if opts.username is not None:
-            print "Direct messages sent to me:"
-            for tweet in twitter.direct_messages_received():
-                print "%d: %s from %s" % (tweet.id, tweet.text, tweet.sender.screen_name)
+            print "## Direct messages sent to me ##"
+            for dm in twitter.direct_messages_received():
+                print unicode(dm)
+            print
 
-            print "\nFrom my friends:"
+            print "## Tweets from my friends ##"
             for tweet in twitter.friends_timeline():
-                print "%d: %s from %s" % (tweet.id, tweet.text, tweet.user.screen_name)
+                print unicode(tweet)
+            print
 
     except httplib.HTTPException, exc:
         # The API could be down, or the credentials on an auth-only request
