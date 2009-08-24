@@ -101,8 +101,6 @@ class Status(RemoteObject):
 class DirectMessageList(ListObject):
 
     entries = fields.List(fields.Object(DirectMessage))
-    def update_from_dict(self, data):
-        super(DirectMessageList, self).update_from_dict({ 'entries': data })
 
     def __getitem__(self, key):
         return self.entries.__getitem__(key)
@@ -125,8 +123,6 @@ class DirectMessageList(ListObject):
 class UserList(ListObject):
 
     entries = fields.List(fields.Object(User))
-    def update_from_dict(self, data):
-        super(UserList, self).update_from_dict({ 'entries': data })
 
     def __getitem__(self, key):
         return self.entries.__getitem__(key)
@@ -154,8 +150,6 @@ class UserList(ListObject):
 class Timeline(ListObject):
 
     entries = fields.List(fields.Object(Status))
-    def update_from_dict(self, data):
-        super(Timeline, self).update_from_dict({ 'entries': data })
 
     def __getitem__(self, key):
         return self.entries.__getitem__(key)
