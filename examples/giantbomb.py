@@ -1,18 +1,12 @@
 from cgi import parse_qs
 from datetime import datetime
+from optparse import OptionParser
+import sys
 import time
 from urllib import urlencode
 from urlparse import urljoin, urlparse, urlunparse
 
-from django.conf import settings
-from google.appengine.api.urlfetch import fetch
-from google.appengine.api import images
 from remoteobjects import RemoteObject, fields
-
-import api.encoder
-from library.conduit import conduits
-from library.conduit.models.base import Conduit, Result
-from library.models import Asset, Link
 
 
 class Bombdate(fields.Field):
@@ -36,6 +30,7 @@ class Bombdate(fields.Field):
 class Bombject(RemoteObject):
 
     content_types = ('application/json', 'text/javascript')
+    api_key = None
 
     @classmethod
     def get(cls, url, **kwargs):
@@ -43,7 +38,7 @@ class Bombject(RemoteObject):
             url = urljoin('http://api.giantbomb.com/', url)
 
         self = super(Bombject, cls).get(url, **kwargs)
-        self = self.filter(api_key=settings.GIANT_BOMB_KEY, format='json')
+        self = self.filter(api_key=cls.api_key, format='json')
         return self
 
     def filter(self, **kwargs):
@@ -64,6 +59,7 @@ class Bombject(RemoteObject):
 
 
 class Image(Bombject):
+
     tiny_url = fields.Field()
     small_url = fields.Field()
     thumb_url = fields.Field()
@@ -71,7 +67,7 @@ class Image(Bombject):
     super_url = fields.Field()
 
 
-class Game(Bombject, Result):
+class Game(Bombject):
 
     id = fields.Field()
     name = fields.Field()
@@ -90,57 +86,11 @@ class Game(Bombject, Result):
     platforms = fields.Field()
     publishers = fields.Field()
 
-    links = ()
-
     @classmethod
     def get(cls, url, **kwargs):
         res = GameResult.get(url)
         res = res.filter()
         return res.results[0]
-
-    def update_from_dict(self, data):
-        super(Game, self).update_from_dict(data)
-
-        link = Link(
-            rel="alternate",
-            content_type="text/html",
-            href=self.site_detail_url,
-        )
-        self.links = [link]
-
-        if self.image:
-            for urlspec in ('super_url', 'thumb_url', 'small_url'):
-                url = getattr(self.image, urlspec)
-
-                # Get it.
-                resp = fetch(url)
-                image = images.Image(resp.content)
-
-                self.links.append(Link(
-                    rel="thumbnail",
-                    content_type="image/jpeg",
-                    href=url,
-                    width=image.width,
-                    height=image.height,
-                ))
-
-    def save_asset(self):
-        asset = Asset(
-            object_type=Asset.object_types.game,
-            title=self.name,
-            content=self.summary,
-            content_type='text/markdown',
-            privacy_groups=['public'],
-            published=self.published,
-            updated=self.updated,
-        )
-        asset.save()
-
-        for link in self.links:
-            link.asset = asset
-            link.save()
-
-        return asset
 
 
 class GameResult(Bombject):
@@ -160,20 +110,40 @@ class GameResult(Bombject):
         super(GameResult, self).update_from_dict(data)
 
 
-class GiantBomb(Conduit):
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
 
-    @classmethod
-    def lookup(cls, id):
-        return Game.get('/game/%s/' % (id,))
+    parser = OptionParser()
+    parser.add_option("-k", "--key", dest="key",
+        help="your Giant Bomb API key")
+    opts, args = parser.parse_args()
 
-    @classmethod
-    def search(cls, query=None):
-        assert query is not None
-        obj = GameResult.get('/search/').filter(resources='game')
-        obj = obj.filter(query=query)
-        return obj.results
+    if opts.key is None:
+        print >>sys.stderr, "Option --key is required"
+        return 1
+
+    query = ' '.join(args)
+
+    Bombject.api_key = opts.key
+
+    search = GameResult.get('/search/').filter(resources='game')
+    search = search.filter(query=query)
+
+    if len(search.results) == 0:
+        print "No results for %r" % query
+    elif len(search.results) == 1:
+        (game,) = search.results
+        print "## %s ##" % game.name
+        print
+        print game.summary
+    else:
+        print "## Search results for %r ##" % query
+        for game in search.results:
+            print game.name
+
+    return 0
 
 
-conduits.add(GiantBomb)
-
-api.encoder.register(RemoteObject, 'to_dict')
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
