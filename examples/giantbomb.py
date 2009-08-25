@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+
+"""
+
+An example Giant Bomb API client, implemented using remoteobjects.
+
+"""
+
+__version__ = '1.0'
+__date__ = '24 August 2009'
+__author__ = 'Mark Paschal'
+
+
 from cgi import parse_qs
 from datetime import datetime
 from optparse import OptionParser
