@@ -1,13 +1,25 @@
+#!/usr/bin/env python
+
+"""
+
+An example Netflix API client, implemented using remoteobjects.
+
+"""
+
+__version__ = '1.0'
+__date__ = '25 August 2009'
+__author__ = 'Mark Paschal'
+
+
+import sys
 from urllib import urlencode
 from urlparse import urljoin, urlparse, urlunparse
 from xml.etree import ElementTree
 
-from django.conf import settings
 from oauth import OAuthConsumer
 from oauthclient import NetflixHttp
-from remoteobjects import RemoteObject, fields
 
-from library.conduit.models.base import Conduit, Result
+from remoteobjects import RemoteObject, fields
 
 
 class Flixject(RemoteObject):
@@ -39,7 +51,7 @@ class Flixject(RemoteObject):
         self.update_from_tree(tree)
 
 
-class Title(Flixject, Result):
+class Title(Flixject):
 
     api_url = fields.Field()
     title   = fields.Field()
@@ -53,17 +65,24 @@ class Title(Flixject, Result):
         'api_url': lambda x: x.find('id'),
     }
 
-    def save_asset(self):
-        pass
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+
+    parser = OptionParser()
+    parser.add_option("-k", "--key", dest="key",
+        help="Netflix API key (required)")
+    parser.add_option("-s", "--secret", dest="secret",
+        help="Netflix API shared secret (required)")
+    opts, args = parser.parse_args()
+
+    if opts.key is None or opts.secret is None:
+        print >>sys.stderr, "Options --key and --secret are required"
+        return 1
+
+    return 0
 
 
-class Netflix(Conduit):
-
-    @classmethod
-    def lookup(cls, id):
-        return Title()
-        pass
-
-    @classmethod
-    def search(cls, **kwargs):
-        pass
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
