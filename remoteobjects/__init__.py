@@ -79,6 +79,7 @@ __date__ = '7 August 2009'
 __author__ = 'Six Apart Ltd.'
 __credits__ = """Brad Choate
 Leah Culver
+Mike Malone
 Mark Paschal"""
 
 import remoteobjects.dataobject
