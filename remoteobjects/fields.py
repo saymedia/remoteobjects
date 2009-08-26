@@ -305,6 +305,13 @@ class Datetime(Field):
 
     """A field representing a timestamp."""
 
+    dateformat = "%Y-%m-%dT%H:%M:%SZ"
+
+    def __init__(self, dateformat=None, **kwargs):
+        super(Datetime, self).__init__(**kwargs)
+        if dateformat is not None:
+            self.dateformat = dateformat
+
     def decode(self, value):
         """Decodes a timestamp string into a `DataObject` attribute (a Python
         `datetime` instance).
@@ -314,7 +321,7 @@ class Datetime(Field):
 
         """
         try:
-            return datetime(*(time.strptime(value, '%Y-%m-%dT%H:%M:%SZ'))[0:6])
+            return datetime(*(time.strptime(value, self.dateformat))[0:6])
         except (TypeError, ValueError):
             raise TypeError('Value to decode %r is not a valid date time stamp' % (value,))
 
@@ -330,7 +337,7 @@ class Datetime(Field):
             raise TypeError('Value to encode %r is not a datetime' % (value,))
         if value.tzinfo is not None:
             raise TypeError("Value to encode %r is a datetime, but it has timezone information and we don't want to deal with timezone information" % (value,))
-        return '%sZ' % (value.replace(microsecond=0).isoformat(),)
+        return value.replace(microsecond=0).strftime(self.dateformat)
 
 
 class Link(Property):

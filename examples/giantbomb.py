@@ -22,24 +22,6 @@ from urlparse import urljoin, urlparse, urlunparse
 from remoteobjects import RemoteObject, fields
 
 
-class Bombdate(fields.Field):
-
-    timestamp_format = '%Y-%m-%d %H:%M:%S'
-
-    def decode(self, value):
-        try:
-            return datetime(*(time.strptime(value, self.timestamp_format))[0:6])
-        except ValueError:
-            raise TypeError('Value to decode %r is not a valid date time stamp' % (value,))
-
-    def encode(self, value):
-        if not isinstance(value, datetime):
-            raise TypeError('Value to encode %r is not a datetime' % (value,))
-        if value.tzinfo is not None:
-            raise TypeError("Value to encode %r is a datetime, but it has timezone information and we don't want to deal with timezone information" % (value,))
-        return value.replace(microsecond=0).strftime(self.timestamp_format)
-
-
 class Bombject(RemoteObject):
 
     content_types = ('application/json', 'text/javascript')
@@ -90,8 +72,8 @@ class Game(Bombject):
     summary = fields.Field(api_name='deck')
     description = fields.Field()
     image = fields.Object(Image)
-    published = Bombdate(api_name='date_added')
-    updated = Bombdate(api_name='date_last_updated')
+    published = fields.Datetime(dateformat='%Y-%m-%d %H:%M:%S', api_name='date_added')
+    updated = fields.Datetime(dateformat='%Y-%m-%d %H:%M:%S', api_name='date_last_updated')
 
     characters = fields.Field()
     concepts = fields.Field()
