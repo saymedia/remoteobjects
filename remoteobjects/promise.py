@@ -2,7 +2,7 @@ import urlparse
 import urllib
 import cgi
 
-from remoteobjects.http import HttpObject
+import remoteobjects.http
 from remoteobjects.fields import Property
 
 
@@ -12,7 +12,7 @@ class PromiseError(Exception):
     pass
 
 
-class PromiseObject(HttpObject):
+class PromiseObject(remoteobjects.http.HttpObject):
     """A `RemoteObject` that delays actual retrieval of the remote resource until
     required by the use of its data.
 
@@ -71,8 +71,13 @@ class PromiseObject(HttpObject):
         if self._location is None:
             raise PromiseError('Instance %r has no URL from which to deliver' % (self,))
 
-        response, content = self.get_response(self._location, self._http)
-        self.update_from_response(self._location, response, content)
+        http = self._http
+        if self._http is None:
+            http = remoteobjects.http.userAgent
+
+        request = self.get_request()
+        response, content = http.request(**request)
+        self.update_from_response(request['uri'], response, content)
 
     def update_from_dict(self, data):
         if not isinstance(data, dict):

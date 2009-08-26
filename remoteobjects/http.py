@@ -115,7 +115,7 @@ class HttpObject(DataObject):
     def statefields(cls):
         return super(HttpObject, cls).statefields() + ['_location', '_etag']
 
-    def get_request(self, headers=None, **kwargs):
+    def get_request(self, url=None, headers=None, **kwargs):
         """Returns the parameters for requesting this `RemoteObject` instance
         as a dictionary of keyword arguments suitable for passing to
         `httplib2.Http.request()`.
@@ -125,43 +125,17 @@ class HttpObject(DataObject):
         specified.
 
         """
+        if url is None:
+            url = self._location
         if headers is None:
             headers = {}
         if 'accept' not in headers:
             headers['accept'] = ', '.join(self.content_types)
 
         # Use 'uri' because httplib2.request does.
-        request = dict(uri=self._location, headers=headers)
+        request = dict(uri=url, headers=headers)
         request.update(kwargs)
         return request
-
-    @classmethod
-    def get_response(cls, url, http=None, headers=None, **kwargs):
-        """Requests the given URL using the specified settings.
-
-        Optional parameter `http` is the user agent instance to use. User
-        agent instances should be compatible with `httplib2.Http` instances.
-        If not specified, the request is made through the instance at
-        `remoteobjects.remote.userAgent`.
-
-        Optional parameter `headers` are also included in the request as HTTP
-        headers. Other optional keyword parameters are also included in the
-        request as specified.
-
-        """
-        log.debug('Fetching %s', url)
-
-        if headers is None:
-            headers = {}
-        if 'accept' not in headers:
-            headers['accept'] = ', '.join(cls.content_types)
-
-        if http is None:
-            http = userAgent
-        response, content = http.request(uri=url, headers=headers, **kwargs)
-        log.debug('Got content %r', content)
-
-        return response, content
 
     @classmethod
     def raise_for_response(cls, url, response, content):
@@ -276,10 +250,13 @@ class HttpObject(DataObject):
         fetching. `http` should be compatible with `httplib2.Http` instances.
 
         """
-        response, content = cls.get_response(url, http)
-        # Make a new instance and use update_from_response(), rather than
-        # having a superfluous from_response() classmethod for this one call.
         self = cls()
+        request = self.get_request(url=url, **kwargs)
+
+        if http is None:
+            http = userAgent
+        response, content = http.request(**request)
+
         self.update_from_response(url, response, content)
         return self
 
@@ -300,8 +277,13 @@ class HttpObject(DataObject):
                 % (obj, self))
 
         body = json.dumps(obj.to_dict(), default=omit_nulls)
-        response, content = obj.get_response(self._location, http=http,
-            method='POST', body=body)
+
+        request = obj.get_request(url=self._location, method='POST',
+            body=body)
+        if http is None:
+            http = userAgent
+        response, content = http.request(**request)
+
         obj.update_from_response(self._location, response, content)
 
     def put(self, http=None):
@@ -321,8 +303,11 @@ class HttpObject(DataObject):
         if hasattr(self, '_etag') and self._etag is not None:
             headers['if-match'] = self._etag
 
-        response, content = self.get_response(self._location, http=http, method='PUT',
-            body=body, headers=headers)
+        request = self.get_request(method='PUT', body=body, headers=headers)
+        if http is None:
+            http = userAgent
+        response, content = http.request(**request)
+
         log.debug('Yay saved my obj, now turning %r into new content', content)
         self.update_from_response(self._location, response, content)
 
@@ -341,8 +326,11 @@ class HttpObject(DataObject):
         if hasattr(self, '_etag') and self._etag is not None:
             headers['if-match'] = self._etag
 
-        response, content = self.get_response(self._location, http=http,
-            method='DELETE', headers=headers)
+        request = self.get_request(method='DELETE', headers=headers)
+        if http is None:
+            http = userAgent
+        response, content = http.request(**request)
+
         self.raise_for_response(self._location, response, content)
 
         log.debug('Yay deleted the remote resource, now disconnecting %r from it', self)
