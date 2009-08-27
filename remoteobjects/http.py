@@ -278,8 +278,10 @@ class HttpObject(DataObject):
 
         body = json.dumps(obj.to_dict(), default=omit_nulls)
 
+        headers = {'content-type': self.content_types[0]}
+
         request = obj.get_request(url=self._location, method='POST',
-            body=body)
+            body=body, headers=headers)
         if http is None:
             http = userAgent
         response, content = http.request(**request)
@@ -302,6 +304,7 @@ class HttpObject(DataObject):
         headers = {}
         if hasattr(self, '_etag') and self._etag is not None:
             headers['if-match'] = self._etag
+        headers['content-type'] = self.content_types[0]
 
         request = self.get_request(method='PUT', body=body, headers=headers)
         if http is None:
