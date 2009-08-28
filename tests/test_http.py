@@ -78,7 +78,10 @@ class TestHttpObjects(unittest.TestCase):
 
         b = BasicMost(name='Fred Friendly', value=True)
 
-        headers = {'accept': 'application/json'}
+        headers = {
+            'accept': 'application/json',
+            'content-type': 'application/json',
+        }
         content = """{"name": "Fred Friendly", "value": true}"""
         request = dict(uri='http://example.com/asfdasf', method='POST',
                        body=content, headers=headers)
@@ -111,8 +114,9 @@ class TestHttpObjects(unittest.TestCase):
         mox.Verify(h)
 
         headers = {
-            'accept':   'application/json',
-            'if-match': '7',  # default etag
+            'accept':       'application/json',
+            'content-type': 'application/json',
+            'if-match':     '7',  # default etag
         }
         request  = dict(uri='http://example.com/bwuh', method='PUT', headers=headers, body=content)
         response = dict(content=content, etag='xyz')
@@ -141,8 +145,9 @@ class TestHttpObjects(unittest.TestCase):
         b.value = 'superluminal'
 
         headers = {
-            'if-match': '7',  # default etag
-            'accept':   'application/json',
+            'accept':       'application/json',
+            'content-type': 'application/json',
+            'if-match':     '7',  # default etag
         }
         content = """{"name": "Molly", "value": "superluminal"}"""
         request = dict(uri='http://example.com/bwuh', method='PUT',
