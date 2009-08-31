@@ -32,6 +32,19 @@ class TestDataObjects(unittest.TestCase):
         self.assertEquals(BasicMost.__name__, 'BasicMost',
             "metaclass magic didn't break our class's name")
 
+    def test_descriptorwise(self):
+
+        class BasicMost(self.cls):
+            name  = fields.Field()
+            value = fields.Field()
+
+        b = BasicMost()
+        b.name = 'hi'
+        self.assertEquals(b.name, 'hi')
+
+        del b.name
+        self.assert_(b.name is None)
+
     def test_types(self):
 
         class WithTypes(self.cls):

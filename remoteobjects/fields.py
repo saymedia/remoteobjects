@@ -125,6 +125,19 @@ class Field(Property):
     def __set__(self, obj, value):
         obj.__dict__[self.attrname] = value
 
+    def __delete__(self, obj):
+        # Delete both the instance and API data, so we'll get a real
+        # attribute miss next time and return the field's default.
+        try:
+            del obj.__dict__[self.attrname]
+        except KeyError:
+            pass
+
+        try:
+            del obj.api_data[self.api_name]
+        except KeyError:
+            pass
+
     def decode(self, value):
         """Decodes a dictionary value into a `DataObject` attribute value.
 
