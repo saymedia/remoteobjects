@@ -197,6 +197,19 @@ class Constant(Field):
             cf[attrname] = dict()
         cf[attrname][value] = cls.__name__
 
+    def __get__(self, obj, cls):
+        if obj is None:
+            # Yield the real field instance when gotten through the class.
+            return self
+        # Since it's a constant, always return the same value.
+        return self.value
+    
+    def __set__(self, obj, value):
+        # If it's the correct value, do nothing. Else, raise an exception.
+        if value != self.value:
+            raise ValueError('Value %r is not expected value %r'
+                % (value, self.value))
+
     def decode(self, value):
         if value != self.value:
             raise ValueError('Value %r is not expected value %r'
