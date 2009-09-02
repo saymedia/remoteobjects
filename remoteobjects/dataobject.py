@@ -150,7 +150,7 @@ class DataObject(object):
         """Encodes the DataObject to a dictionary."""
         data = deepcopy(self.api_data)
         for field_name, field in self.fields.iteritems():
-            value = self.__dict__.get(field.attrname)
+            value = getattr(self, field.attrname, None)
             if value is not None:
                 data[field.api_name] = field.encode(value)
         return data
