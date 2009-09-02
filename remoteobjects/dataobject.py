@@ -48,6 +48,7 @@ class DataObjectMetaclass(type):
         fields and name."""
         fields = {}
         new_fields = {}
+        new_properties = {}
 
         # Inherit all the parent DataObject classes' fields.
         for base in bases:
@@ -57,7 +58,9 @@ class DataObjectMetaclass(type):
         # Move all the class's attributes that are Fields to the fields set.
         for attrname, field in attrs.items():
             if isinstance(field, remoteobjects.fields.Property):
-                new_fields[attrname] = field
+                new_properties[attrname] = field
+                if isinstance(field, remoteobjects.fields.Field):
+                    new_fields[attrname] = field
             elif attrname in fields:
                 # Throw out any parent fields that the subclass defined as
                 # something other than a Field.
@@ -67,7 +70,7 @@ class DataObjectMetaclass(type):
         attrs['fields'] = fields
         obj_cls = super(DataObjectMetaclass, cls).__new__(cls, name, bases, attrs)
 
-        for field, value in new_fields.items():
+        for field, value in new_properties.items():
             obj_cls.add_to_class(field, value)
 
         # Register the new class so Object fields can have forward-referenced it.
@@ -75,7 +78,7 @@ class DataObjectMetaclass(type):
 
         # Tell this class's fields what this class is, so they can find their
         # forward references later.
-        for field in new_fields.values():
+        for field in new_properties.values():
             field.of_cls = obj_cls
 
         return obj_cls

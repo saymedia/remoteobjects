@@ -403,6 +403,20 @@ class TestDataObjects(unittest.TestCase):
         # Just to make sure
         self.assertEquals(x.alwaysTheSame, noninconstant)
 
+    def test_field_link(self):
+
+        class Frob(dataobject.DataObject):
+            blerg = fields.Field()
+
+        class WithLink(dataobject.DataObject):
+            link = fields.Link(Frob)
+
+        x = WithLink()
+        x.link = Frob()
+        # Links don't serialize... for now anyways.
+        self.assertEquals(x.to_dict(), {})
+
+
 
 if __name__ == '__main__':
     utils.log()
