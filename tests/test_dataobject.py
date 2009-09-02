@@ -368,12 +368,16 @@ class TestDataObjects(unittest.TestCase):
         self.assertEquals(w.itsUsuallySomething, 'omg hi')
         self.failIf(cheezCalled)
 
-        x = WithDefaults.from_dict({})
+        for x in (WithDefaults.from_dict({}), WithDefaults()):
+            self.assert_(x.plain is None)
+            self.assertEquals(x.itsAlwaysSomething, 7)
+            self.assertEquals(x.itsUsuallySomething, 'CHEEZBURGH')
+            self.assert_(cheezCalled)
 
-        self.assert_(x.plain is None)
-        self.assertEquals(x.itsAlwaysSomething, 7)
-        self.assertEquals(x.itsUsuallySomething, 'CHEEZBURGH')
-        self.assert_(cheezCalled)
+        d = WithDefaults().to_dict()
+        self.assert_('plain' not in d)
+        self.assertEquals(d['itsAlwaysSomething'], 7)
+        self.assertEquals(d['itsUsuallySomething'], 'CHEEZBURGH')
 
 
 if __name__ == '__main__':
