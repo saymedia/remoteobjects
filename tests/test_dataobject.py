@@ -379,6 +379,30 @@ class TestDataObjects(unittest.TestCase):
         self.assertEquals(d['itsAlwaysSomething'], 7)
         self.assertEquals(d['itsUsuallySomething'], 'CHEEZBURGH')
 
+    def test_field_constant(self):
+
+        noninconstant = 'liono'
+
+        class WithConstant(dataobject.DataObject):
+            alwaysTheSame = fields.Constant(noninconstant)
+
+        d = WithConstant().to_dict()
+        self.assertEquals(d['alwaysTheSame'], noninconstant)
+
+        x = WithConstant()
+        self.assertEquals(x.alwaysTheSame, noninconstant)
+
+        try:
+            x.alwaysTheSame = 'snarf'
+        except ValueError:
+            pass
+        else:
+            self.fail('Set Constant field to invalid value.')
+        x.alwaysTheSame = noninconstant
+
+        # Just to make sure
+        self.assertEquals(x.alwaysTheSame, noninconstant)
+
 
 if __name__ == '__main__':
     utils.log()
