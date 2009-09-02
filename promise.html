@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Promise Objects &mdash; remoteobjects v1.0 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="remoteobjects v1.0 documentation" href="index.html" />
+    <link rel="prev" title="HTTP Objects" href="http.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="http.html" title="HTTP Objects"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">remoteobjects v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-remoteobjects.promise">
+<h1>Promise Objects<a class="headerlink" href="#module-remoteobjects.promise" title="Permalink to this headline">¶</a></h1>
+<dl class="exception">
+<dt id="remoteobjects.promise.PromiseError">
+<em class="property">
+exception </em><tt class="descclassname">remoteobjects.promise.</tt><tt class="descname">PromiseError</tt><a class="headerlink" href="#remoteobjects.promise.PromiseError" title="Permalink to this definition">¶</a></dt>
+<dd>An exception representing an error promising or delivering a
+<cite>PromiseObject</cite> instance.</dd></dl>
+
+<dl class="class">
+<dt id="remoteobjects.promise.PromiseObject">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.promise.</tt><tt class="descname">PromiseObject</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <cite>RemoteObject</cite> that delays actual retrieval of the remote resource until
+required by the use of its data.</p>
+<p>A PromiseObject is only &#8220;promised&#8221; to the caller until its data is used.
+When the caller tries to use attributes that should have data in them from
+the remote resource, only <em>then</em> is the resource actually fetched.</p>
+<dl class="method">
+<dt id="remoteobjects.promise.PromiseObject.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject.__init__" title="Permalink to this definition">¶</a></dt>
+<dd>Initializes a delivered, empty <cite>PromiseObject</cite>.</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.promise.PromiseObject.deliver">
+<tt class="descname">deliver</tt><big>(</big><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject.deliver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to fill the instance with the data it represents.</p>
+<p>If the instance has already been delivered or the instance has no URL
+from which to fetch data, <cite>deliver()</cite> raises a <cite>PromiseError</cite>. Other
+exceptions from requesting and decoding a <cite>RemoteObject</cite> that might
+normally result from a <cite>RemoteObject.get()</cite> may also be thrown.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.promise.PromiseObject.filter">
+<tt class="descname">filter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new undelivered <cite>PromiseObject</cite> instance, equivalent to
+this <cite>PromiseObject</cite> instance but further filtered by the given
+keyword parameters.</p>
+<p>By default, all filter parameters are added as parameters to the
+<cite>PromiseObject</cite> instance&#8217;s query string.</p>
+<p>If your endpoint takes only certain parameters, or accepts parameters
+in some way other than query parameters in the URL, override this
+method to build the URL and return the new <cite>PromiseObject</cite> instance as
+you require.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="remoteobjects.promise.PromiseObject.get">
+<em class="property">
+classmethod </em><tt class="descname">get</tt><big>(</big><em>url</em>, <em>http=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject.get" title="Permalink to this definition">¶</a></dt>
+<dd>Creates a new undelivered <cite>PromiseObject</cite> instance that, when
+delivered, will contain the data at the given URL.</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.promise.PromiseObject.update_from_response">
+<tt class="descname">update_from_response</tt><big>(</big><em>url</em>, <em>response</em>, <em>content</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject.update_from_response" title="Permalink to this definition">¶</a></dt>
+<dd>Fills the <cite>PromiseObject</cite> instance with the data from the given
+HTTP response and if successful marks the instance delivered.</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="http.html"
+                                  title="previous chapter">HTTP Objects</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="sources/promise.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="http.html" title="HTTP Objects"
+             >previous</a> |</li>
+        <li><a href="index.html">remoteobjects v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009 Six Apart.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

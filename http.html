@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>HTTP Objects &mdash; remoteobjects v1.0 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="remoteobjects v1.0 documentation" href="index.html" />
+    <link rel="next" title="Promise Objects" href="promise.html" />
+    <link rel="prev" title="Data Objects" href="dataobject.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="promise.html" title="Promise Objects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dataobject.html" title="Data Objects"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">remoteobjects v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-remoteobjects.http">
+<h1>HTTP Objects<a class="headerlink" href="#module-remoteobjects.http" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="remoteobjects.http.HttpObject">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.http.</tt><tt class="descname">HttpObject</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <cite>DataObject</cite> that can be fetched and put over HTTP through a RESTful
+JSON API.</p>
+<dl class="exception">
+<dt id="remoteobjects.http.HttpObject.BadResponse">
+<em class="property">
+exception </em><tt class="descname">BadResponse</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.BadResponse" title="Permalink to this definition">¶</a></dt>
+<dd>An HTTPException thrown when the client receives some other
+non-success HTTP response.</dd></dl>
+
+<dl class="exception">
+<dt id="remoteobjects.http.HttpObject.Forbidden">
+<em class="property">
+exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">Forbidden</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.Forbidden" title="Permalink to this definition">¶</a></dt>
+<dd><p>An HTTPException thrown when the server reports that the client, as
+authenticated, is not authorized to request the requested resource.</p>
+<p>This exception corresponds to the HTTP status code 403. Thus when this
+exception is received, nothing the caller (as currently authenticated) can
+do will make the requested resource available.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="remoteobjects.http.HttpObject.NotFound">
+<em class="property">
+exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">NotFound</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.NotFound" title="Permalink to this definition">¶</a></dt>
+<dd>An HTTPException thrown when the server reports that the requested
+resource was not found.</dd></dl>
+
+<dl class="exception">
+<dt id="remoteobjects.http.HttpObject.PreconditionFailed">
+<em class="property">
+exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">PreconditionFailed</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.PreconditionFailed" title="Permalink to this definition">¶</a></dt>
+<dd><p>An HTTPException thrown when the server reports that some of the
+conditions in a conditional request were not true.</p>
+<p>This exception corresponds to the HTTP status code 412. The most
+common cause of this status is an attempt to <tt class="docutils literal"><span class="pre">PUT</span></tt> a resource that
+has already changed on the server.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="remoteobjects.http.HttpObject.RequestError">
+<em class="property">
+exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">RequestError</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.RequestError" title="Permalink to this definition">¶</a></dt>
+<dd><p>An HTTPException thrown when the server reports an error in the
+client&#8217;s request.</p>
+<p>This exception corresponds to the HTTP status code 400.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="remoteobjects.http.HttpObject.ServerError">
+<em class="property">
+exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">ServerError</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.ServerError" title="Permalink to this definition">¶</a></dt>
+<dd><p>An HTTPException thrown when the server reports an unexpected error.</p>
+<p>This exception corresponds to the HTTP status code 500.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="remoteobjects.http.HttpObject.Unauthorized">
+<em class="property">
+exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">Unauthorized</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.Unauthorized" title="Permalink to this definition">¶</a></dt>
+<dd><p>An HTTPException thrown when the server reports that the requested
+resource is not available through an unauthenticated request.</p>
+<p>This exception corresponds to the HTTP status code 401. Thus when this
+exception is received, the caller may need to try again using the
+available authentication credentials.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.http.HttpObject.delete">
+<tt class="descclassname">HttpObject.</tt><tt class="descname">delete</tt><big>(</big><em>http=None</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the remote resource represented by the <cite>RemoteObject</cite>
+instance through an HTTP <tt class="docutils literal"><span class="pre">DELETE</span></tt> request.</p>
+<p>Optional parameter <cite>http</cite> is the user agent object to use. <cite>http</cite>
+objects should be compatible with <cite>httplib2.Http</cite> objects.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="remoteobjects.http.HttpObject.get">
+<em class="property">
+classmethod </em><tt class="descclassname">HttpObject.</tt><tt class="descname">get</tt><big>(</big><em>url</em>, <em>http=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches a new <cite>RemoteObject</cite> instance from a URL.</p>
+<p>Parameter <cite>url</cite> is the URL from which the object should be requested.
+Optional parameter <cite>http</cite> is the user agent object to use for
+fetching. <cite>http</cite> should be compatible with <cite>httplib2.Http</cite> instances.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.http.HttpObject.get_request">
+<tt class="descclassname">HttpObject.</tt><tt class="descname">get_request</tt><big>(</big><em>url=None</em>, <em>headers=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.get_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the parameters for requesting this <cite>RemoteObject</cite> instance
+as a dictionary of keyword arguments suitable for passing to
+<cite>httplib2.Http.request()</cite>.</p>
+<p>Optional parameter <cite>headers</cite> are also included in the request as HTTP
+headers. Other optional keyword parameters are also included as
+specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.http.HttpObject.post">
+<tt class="descclassname">HttpObject.</tt><tt class="descname">post</tt><big>(</big><em>obj</em>, <em>http=None</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add another <cite>RemoteObject</cite> to this remote resource through an HTTP
+<tt class="docutils literal"><span class="pre">POST</span></tt> request.</p>
+<p>Parameter <cite>obj</cite> is a <cite>RemoteObject</cite> instance to save to this
+instance&#8217;s resource. For example, this (<cite>self</cite>) may be a collection to
+which you want to post an asset (<cite>obj</cite>).</p>
+<p>Optional parameter <cite>http</cite> is the user agent object to use for posting.
+<cite>http</cite> should be compatible with <cite>httplib2.Http</cite> objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.http.HttpObject.put">
+<tt class="descclassname">HttpObject.</tt><tt class="descname">put</tt><big>(</big><em>http=None</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a previously requested <cite>RemoteObject</cite> back to its remote
+resource through an HTTP <tt class="docutils literal"><span class="pre">PUT</span></tt> request.</p>
+<p>Optional <cite>http</cite> parameter is the user agent object to use. <cite>http</cite>
+objects should be compatible with <cite>httplib2.Http</cite> objects.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="remoteobjects.http.HttpObject.raise_for_response">
+<em class="property">
+classmethod </em><tt class="descclassname">HttpObject.</tt><tt class="descname">raise_for_response</tt><big>(</big><em>url</em>, <em>response</em>, <em>content</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.raise_for_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raises exceptions corresponding to invalid HTTP responses that
+instances of this class can&#8217;t be updated from.</p>
+<p>Override this method to customize the error handling behavior of
+<cite>RemoteObject</cite> for your target API. For example, if your API illegally
+omits <tt class="docutils literal"><span class="pre">Location</span></tt> headers from 201 Created responses, override this
+method to check for and allow them.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.http.HttpObject.update_from_response">
+<tt class="descclassname">HttpObject.</tt><tt class="descname">update_from_response</tt><big>(</big><em>url</em>, <em>response</em>, <em>content</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.update_from_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the content of this HTTP response and message body to this
+<cite>RemoteObject</cite> instance.</p>
+<p>Use <cite>update_from_response()</cite> only when you would use
+<cite>DataObject.update_from_dict()</cite>: when decoding outside content (in
+this case an HTTP response) into an existing <cite>RemoteObject</cite> instance.</p>
+<p>If the response is not a successful response from which the
+<cite>RemoteObject</cite> instance can be updated, an appropriate exception will
+be raised (as determined by the instance&#8217;s <cite>raise_from_response()</cite>
+method).</p>
+<p>If the response includes a new location URL in the appropriate header
+(depending on the response status), the location of the <cite>RemoteObject</cite>
+instance is updated as well.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="remoteobjects.http.omit_nulls">
+<tt class="descclassname">remoteobjects.http.</tt><tt class="descname">omit_nulls</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#remoteobjects.http.omit_nulls" title="Permalink to this definition">¶</a></dt>
+<dd>Strips <cite>None</cite> values from a dictionary or <cite>RemoteObject</cite> instance.</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="dataobject.html"
+                                  title="previous chapter">Data Objects</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="promise.html"
+                                  title="next chapter">Promise Objects</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="sources/http.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="promise.html" title="Promise Objects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dataobject.html" title="Data Objects"
+             >previous</a> |</li>
+        <li><a href="index.html">remoteobjects v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009 Six Apart.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

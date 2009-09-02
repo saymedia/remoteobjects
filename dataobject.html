@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Data Objects &mdash; remoteobjects v1.0 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="remoteobjects v1.0 documentation" href="index.html" />
+    <link rel="next" title="HTTP Objects" href="http.html" />
+    <link rel="prev" title="Data Object Fields" href="fields.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="http.html" title="HTTP Objects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fields.html" title="Data Object Fields"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">remoteobjects v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-remoteobjects.dataobject">
+<h1>Data Objects<a class="headerlink" href="#module-remoteobjects.dataobject" title="Permalink to this headline">¶</a></h1>
+<p><cite>DataObject</cite> is a class of object that provides coding between object
+attributes and dictionaries, suitable for</p>
+<p>In <cite>DataObject</cite> is the mechanism for converting between dictionaries and
+objects. These conversions are performed with aid of <cite>Field</cite> instances
+declared on <cite>DataObject</cite> subclasses. <cite>Field</cite> classes reside in the
+<cite>remoteobjects.field</cite> module.</p>
+<dl class="class">
+<dt id="remoteobjects.dataobject.DataObject">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.dataobject.</tt><tt class="descname">DataObject</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object that can be decoded from or encoded as a dictionary.</p>
+<p>DataObject subclasses should be declared with their different data
+attributes defined as instances of fields from the <cite>remoteobjects.fields</cite>
+module. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">remoteobjects</span> <span class="kn">import</span> <span class="n">DataObject</span><span class="p">,</span> <span class="n">fields</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Asset</span><span class="p">(</span><span class="n">DataObject</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">name</span>    <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">updated</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Datetime</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">author</span>  <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="s">&#39;Author&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>A DataObject&#8217;s fields then provide the coding between live DataObject
+instances and dictionaries.</p>
+<dl class="method">
+<dt id="remoteobjects.dataobject.DataObject.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject.__init__" title="Permalink to this definition">¶</a></dt>
+<dd>Initializes a new <cite>DataObject</cite> with the given field values.</dd></dl>
+
+<dl class="classmethod">
+<dt id="remoteobjects.dataobject.DataObject.from_dict">
+<em class="property">
+classmethod </em><tt class="descname">from_dict</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd>Decodes a dictionary into a new <cite>DataObject</cite> instance.</dd></dl>
+
+<dl class="classmethod">
+<dt id="remoteobjects.dataobject.DataObject.subclass_with_constant_field">
+<em class="property">
+classmethod </em><tt class="descname">subclass_with_constant_field</tt><big>(</big><em>fieldname</em>, <em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject.subclass_with_constant_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the closest subclass of this class that has a <cite>Constant</cite>
+field with the given value.</p>
+<p>Use this method in combination with the <cite>fields.Constant</cite> field class
+to find the most appropriate subclass of <cite>cls</cite> based on a content
+field. For example, if you have an <tt class="docutils literal"><span class="pre">Asset</span></tt> class, but want to
+declare subclasses with special behavior based on the <tt class="docutils literal"><span class="pre">kind</span></tt> field
+of the <tt class="docutils literal"><span class="pre">Asset</span></tt> instances, declare <tt class="docutils literal"><span class="pre">kind</span></tt> as a <cite>Constant</cite> field on
+each subclass. Then when you want to create a new <tt class="docutils literal"><span class="pre">Asset</span></tt> instance
+(as in <tt class="docutils literal"><span class="pre">Asset.from_dict()</span></tt>), you can use this method to select a
+more appropriate class to instantiate.</p>
+<p>Parameters <cite>fieldname</cite> and <cite>value</cite> are the name and value of the
+<cite>Constant</cite> field for which to search respectively.</p>
+<p>If a subclass of <cite>cls</cite> has been declared with a <cite>Constant</cite> field of
+the given name and value, it will be returned. If multiple subclasses
+of <cite>cls</cite> declare a matching <cite>Constant</cite> field, one of the matching
+subclasses will be returned, but which subclass is not defined.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.dataobject.DataObject.to_dict">
+<tt class="descname">to_dict</tt><big>(</big><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd>Encodes the DataObject to a dictionary.</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.dataobject.DataObject.update_from_dict">
+<tt class="descname">update_from_dict</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject.update_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the content of a dictionary to this DataObject.</p>
+<p>Parameter <cite>data</cite> is the dictionary from which to update the object.</p>
+<p>Use this only when receiving newly updated or partial content for a
+DataObject; that is, when the data is from the outside data source and
+needs decoded through the object&#8217;s fields. Data from &#8220;inside&#8221; your
+application should be added to an object manually by setting the
+object&#8217;s attributes. Data that constitutes a new object should be
+turned into another object with <cite>from_dict()</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="helpers">
+<h2>Helpers<a class="headerlink" href="#helpers" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="remoteobjects.dataobject.find_by_name">
+<tt class="descclassname">remoteobjects.dataobject.</tt><tt class="descname">find_by_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.find_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds and returns the DataObject subclass with the given name.</p>
+<p>Parameter <cite>name</cite> should be a bare class name with no module. If there is
+no class by that name, raises <cite>KeyError</cite>.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">Data Objects</a><ul>
+<li><a class="reference external" href="#helpers">Helpers</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="fields.html"
+                                  title="previous chapter">Data Object Fields</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="http.html"
+                                  title="next chapter">HTTP Objects</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="sources/dataobject.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="http.html" title="HTTP Objects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fields.html" title="Data Object Fields"
+             >previous</a> |</li>
+        <li><a href="index.html">remoteobjects v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009 Six Apart.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

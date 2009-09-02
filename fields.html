@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Data Object Fields &mdash; remoteobjects v1.0 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="remoteobjects v1.0 documentation" href="index.html" />
+    <link rel="next" title="Data Objects" href="dataobject.html" />
+    <link rel="prev" title="remoteobjects" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="dataobject.html" title="Data Objects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="remoteobjects"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">remoteobjects v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-remoteobjects.fields">
+<h1>Data Object Fields<a class="headerlink" href="#module-remoteobjects.fields" title="Permalink to this headline">¶</a></h1>
+<p>Fields are class attributes for <cite>RemoteObject</cite> subclasses that provide data
+coding functionality for your properties.</p>
+<p>The <cite>remoteobjects.fields</cite> module also provides functionality for other
+field-like properties through the <cite>Property</cite> class, and a <cite>Property</cite> subclass
+that offers links between <cite>RemoteObject</cite> instances, <cite>Link</cite>.</p>
+<div class="section" id="fields">
+<h2>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="remoteobjects.fields.Field">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Field</tt><big>(</big><em>api_name=None</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Field" title="Permalink to this definition">¶</a></dt>
+<dd><p>A property for encoding object attributes as dictionary values and
+decoding dictionary values into object attributes.</p>
+<p>Declare a <cite>Field</cite> instance for each attribute of a <cite>DataObject</cite> that
+should be encoded to or decoded from a dictionary.</p>
+<p>Use a <cite>Field</cite> instance directly for simple <cite>DataObject</cite> attributes that
+can be the same type as their dictionary values. That is, use <cite>Field</cite>
+fields for strings, numbers, and boolean values. If your attribute data
+does need converted, use one of the <cite>Field</cite> subclasses from the
+<cite>remoteobjects.fields</cite> module to encode and decode your data as
+appropriate.</p>
+<p>If your attribute needs converted specially, override the <cite>decode()</cite> and
+<cite>encode()</cite> methods in a new subclass of <cite>Field</cite>. For example, the
+<cite>fields.Datetime</cite> subclass of <cite>Field</cite> encodes Python <cite>datetime.datetime</cite>
+instances in a dictionary as timestamp strings.</p>
+<dl class="method">
+<dt id="remoteobjects.fields.Field.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>api_name=None</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Field.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the field&#8217;s matching deserialization field and default value.</p>
+<p>Optional parameter <cite>api_name</cite> is the key of this field&#8217;s matching
+value in a dictionary. If not given, the attribute name of the field
+when its class was defined is used. (The attribute of the object
+containing the decoded value will always be the attribute name of the
+field as declared.)</p>
+<p>Optional parameter <cite>default</cite> is the default value to use for this
+attribute when the dictionary to decode does not contain a value.
+<cite>default</cite> can be a value or callable function. If <cite>default</cite> is a
+callable function, it is called when a dictionary is decoded into an
+instance, is passed the object to decode into and the dictionary to
+decode from, and should return the default value of the attribute. As
+fields are processed in no particular order, a <cite>default</cite> function
+should not set the value itself, nor should it depend on values
+already decoded into the DataObject instance.</p>
+<p>Default values are <em>not</em> special when encoding an object, so those
+values will stick on <cite>DataObject</cite> instances that are saved and
+retrieved (such as <cite>RemoteObject</cite> instances).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.fields.Field.decode">
+<tt class="descname">decode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Field.decode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes a dictionary value into a <cite>DataObject</cite> attribute value.</p>
+<p>This implementation returns the <cite>value</cite> parameter unchanged. This is
+generally only appropriate for strings, numbers, and boolean values.
+Use another <cite>Field</cite> class (or a custom <cite>Field</cite> implementation that
+overrides this method) if you need to convert objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.fields.Field.encode">
+<tt class="descname">encode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Field.encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes a <cite>DataObject</cite> attribute value into a dictionary value.</p>
+<p>This implementation returns the <cite>value</cite> parameter unchanged. This is
+generally only appropriate for strings, numbers, and boolean values.
+Use another <cite>Field</cite> class (or a custom <cite>Field</cite> implementation that
+overrides this method) if you need to convert objects.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="remoteobjects.fields.Constant">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Constant</tt><big>(</big><em>value</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field for data that always has a certain value for all instances of
+the owning class.</p>
+<p>Use this field for an attribute of an object that is always the same for
+every instance of that class. For instance, if you define subclasses for a
+<cite>DataObject</cite> that represent different kinds of search results based on
+type, and there&#8217;s a <cite>type</cite> field that says which class the result will be,
+use this field for the invariant <cite>type</cite> field with a different matching
+value for each subclass.</p>
+<dl class="method">
+<dt id="remoteobjects.fields.Constant.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>value</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Constant.__init__" title="Permalink to this definition">¶</a></dt>
+<dd>Sets the field&#8217;s constant value to parameter <cite>value</cite>.</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.fields.Constant.install">
+<tt class="descname">install</tt><big>(</big><em>attrname</em>, <em>cls</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Constant.install" title="Permalink to this definition">¶</a></dt>
+<dd><p>Records the class that owns this field.</p>
+<p>This implementation also registers the owning class by this constant
+field&#8217;s value, so that <cite>DataObject.subclass_with_constant_field()</cite>
+will find this field&#8217;s class.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="remoteobjects.fields.Datetime">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Datetime</tt><big>(</big><em>dateformat=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field representing a timestamp.</p>
+<dl class="method">
+<dt id="remoteobjects.fields.Datetime.decode">
+<tt class="descname">decode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Datetime.decode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes a timestamp string into a <cite>DataObject</cite> attribute (a Python
+<cite>datetime</cite> instance).</p>
+<p>Timestamp strings should be of the format <tt class="docutils literal"><span class="pre">YYYY-MM-DDTHH:MM:SSZ</span></tt>.
+The resulting <cite>datetime</cite> will have no time zone.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.fields.Datetime.encode">
+<tt class="descname">encode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Datetime.encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes a <cite>DataObject</cite> attribute (a Python <cite>datetime</cite> instance)
+into a timestamp string.</p>
+<p>The <cite>datetime</cite> instance should have no time zone set. Timestamp
+strings will be of the format <tt class="docutils literal"><span class="pre">YYYY-MM-DDTHH:MM:SSZ</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="remoteobjects.fields.Dict">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Dict</tt><big>(</big><em>fld</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field representing a homogeneous mapping of data.</p>
+<p>The elements of the mapping are decoded through another field specified
+when the <cite>Dict</cite> is declared.</p>
+<dl class="method">
+<dt id="remoteobjects.fields.Dict.decode">
+<tt class="descname">decode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Dict.decode" title="Permalink to this definition">¶</a></dt>
+<dd>Decodes the dictionary value (a dictionary with dictionary values
+for values) into a <cite>DataObject</cite> attribute (a dictionary with
+<cite>DataObject</cite> attributes for values).</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.fields.Dict.encode">
+<tt class="descname">encode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Dict.encode" title="Permalink to this definition">¶</a></dt>
+<dd>Encodes a <cite>DataObject</cite> attribute (a dictionary with decoded
+<cite>DataObject</cite> attribute values for values) into a dictionary value (a
+dictionary with encoded dictionary values for values).</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="remoteobjects.fields.List">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">List</tt><big>(</big><em>fld</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.List" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field representing a homogeneous list of data.</p>
+<p>The elements of the list are decoded through another field specified when
+the <cite>List</cite> is declared.</p>
+<dl class="method">
+<dt id="remoteobjects.fields.List.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>fld</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.List.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the type of field representing the content of the list.</p>
+<p>Parameter <cite>fld</cite> is another field instance representing the list&#8217;s
+content. For instance, if the field were to represent a list of
+timestamps, <cite>fld</cite> would be a <cite>Datetime</cite> instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.fields.List.decode">
+<tt class="descname">decode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.List.decode" title="Permalink to this definition">¶</a></dt>
+<dd>Decodes the dictionary value (a list of dictionary values) into a
+<cite>DataObject</cite> attribute (a list of <cite>DataObject</cite> attribute values).</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.fields.List.encode">
+<tt class="descname">encode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.List.encode" title="Permalink to this definition">¶</a></dt>
+<dd>Encodes a <cite>DataObject</cite> attribute (a list of <cite>DataObject</cite> attribute
+values) into a dictionary value (a list of dictionary values).</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="remoteobjects.fields.Object">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Object</tt><big>(</big><em>cls</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Object" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field representing a nested <cite>DataObject</cite>.</p>
+<dl class="method">
+<dt id="remoteobjects.fields.Object.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>cls</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Object.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the the <cite>DataObject</cite> class the field represents.</p>
+<p>Parameter <cite>cls</cite> is the <cite>DataObject</cite> class representing the nested
+objects.</p>
+<p><cite>cls</cite> may also be the name of a class, in which case the referenced
+class is the leafmost <cite>DataObject</cite> subclass declared with that name.
+This means you can not only forward-reference a class by specifying
+its name, but subclassing a <cite>DataObject</cite> class with the same name in
+another module will make all name-based <cite>Object</cite> fields reference the
+new subclass.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.fields.Object.decode">
+<tt class="descname">decode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Object.decode" title="Permalink to this definition">¶</a></dt>
+<dd>Decodes the dictionary value into an instance of the <cite>DataObject</cite>
+class the field references.</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.fields.Object.encode">
+<tt class="descname">encode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Object.encode" title="Permalink to this definition">¶</a></dt>
+<dd>Encodes an instance of the field&#8217;s DataObject class into its
+representative dictionary value.</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="other-properties">
+<h2>Other properties<a class="headerlink" href="#other-properties" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="remoteobjects.fields.Property">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Property</tt><a class="headerlink" href="#remoteobjects.fields.Property" title="Permalink to this definition">¶</a></dt>
+<dd><p>An attribute that can be installed declaratively on a <cite>DataObject</cite> to
+provide data encoding or loading behavior.</p>
+<p>The primary kinds of <cite>Property</cite> objects are <cite>Field</cite> (and its subclasses)
+and <cite>Link</cite> objects.</p>
+<dl class="method">
+<dt id="remoteobjects.fields.Property.install">
+<tt class="descname">install</tt><big>(</big><em>cls</em>, <em>attrname</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Property.install" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signals to the <cite>Property</cite> that it has been installed on the given
+class as an attribute with the given name.</p>
+<p>This implementation does nothing. Override this method to customize
+the behavior to install an attribute on DataObject classes where your
+field is declared.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="remoteobjects.fields.Link">
+<em class="property">
+class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Link</tt><big>(</big><em>cls</em>, <em>api_name=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Link" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <cite>RemoteObject</cite> property representing a link from one <cite>RemoteObject</cite>
+instance to another.</p>
+<p>Use this property when related content is not <em>part</em> of a RemoteObject,
+but is instead available at a URL relative to it. By default the target
+object&#8217;s URL should be available at the property name relative to the
+owning instance&#8217;s URL.</p>
+<p>For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">RemoteObject</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">feed</span> <span class="o">=</span> <span class="n">Link</span><span class="p">(</span><span class="n">Event</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">Item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://example.com/item/&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">feed</span>  <span class="c"># f&#39;s URL: http://example.com/item/feed</span>
+</pre></div>
+</div>
+<p>Override the <cite>__get__</cite> method of a <cite>Link</cite> subclass to customize how the
+URLs to linked objects are constructed.</p>
+<dl class="method">
+<dt id="remoteobjects.fields.Link.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>cls</em>, <em>api_name=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Link.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the <cite>RemoteObject</cite> class of the target resource and,
+optionally, the real relative URL of the resource.</p>
+<p>Optional parameter <cite>api_name</cite> is used as the link&#8217;s relative URL. If
+not given, the name of the attribute to which the Link is assigned
+will be used.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.fields.Link.install">
+<tt class="descname">install</tt><big>(</big><em>attrname</em>, <em>cls</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Link.install" title="Permalink to this definition">¶</a></dt>
+<dd>Installs the <cite>Link</cite> instance as an attribute of the <cite>RemoteObject</cite>
+class in which it was declared.</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">Data Object Fields</a><ul>
+<li><a class="reference external" href="#fields">Fields</a></li>
+<li><a class="reference external" href="#other-properties">Other properties</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="index.html"
+                                  title="previous chapter">remoteobjects</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="dataobject.html"
+                                  title="next chapter">Data Objects</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="sources/fields.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dataobject.html" title="Data Objects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="remoteobjects"
+             >previous</a> |</li>
+        <li><a href="index.html">remoteobjects v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009 Six Apart.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>
