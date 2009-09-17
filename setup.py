@@ -2,7 +2,7 @@
 from distutils.core import setup
 setup(
     name='remoteobjects',
-    version='1.1',
+    version='1.1a1',
     description='an Object RESTational Model',
     author='Six Apart Ltd.',
     author_email='python@sixapart.com',
