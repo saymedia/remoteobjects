@@ -80,3 +80,32 @@ class TestPromiseObjects(unittest.TestCase):
         b = r.toybox
         self.assert_(isinstance(b, Toy))
         self.assertEquals(b._location, 'http://example.com/bwuh/toybox')
+
+    def test_set_before_delivery(self):
+
+        class Toy(self.cls):
+            names = fields.List(fields.Field())
+            foo = fields.Field()
+
+        url = 'http://example.com/whahay'
+        headers = {"accept": "application/json"}
+        request = dict(uri=url, headers=headers)
+        content = """{"names": ["Mollifred"], "foo":"something"}"""
+        h = utils.mock_http(request, content)
+
+        # test case where attribute is assigned to object ahead of delivery
+        t = Toy.get(url, http=h)
+        t.names = ["New name"]
+        d = t.to_dict() # this delivers the object
+
+        # self.assertEquals(t.foo, "something")
+        self.assertEquals(d['names'][0], "New name")
+        self.assertEquals(t.names[0], "New name")
+
+        h = utils.mock_http(request, content)
+        # test case where we update_from_dict explictly after setting attributes
+        t = Toy.get(url, http=h)
+        t.foo = "local change"
+        t.update_from_dict({"names": ["local update"]})
+
+        self.assertEquals(t.foo, None)
