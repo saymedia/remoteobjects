@@ -11,23 +11,6 @@ def update_wrapper(wrapper, original):
         setattr(wrapper, field, getattr(original, field))
 
 
-def skip(fn):
-    def test_nothing(self):
-        raise nose.SkipTest('skip this test')
-    update_wrapper(test_nothing, fn)
-    return test_nothing
-
-
-def are_automated():
-    return bool(os.getenv('AUTOMATED_TESTING'))
-
-
-def skip_if_automated(fn):
-    if are_automated():
-        return skip(fn)
-    return fn
-
-
 def todo(fn):
     def test_reverse(*args, **kwargs):
         try:
