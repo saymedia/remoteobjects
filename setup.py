@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (c) 2009 Six Apart Ltd.
 # All rights reserved.
 #
@@ -27,7 +29,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-#!/usr/bin/env python
 from distutils.core import setup
 setup(
     name='remoteobjects',
