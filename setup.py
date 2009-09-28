@@ -29,7 +29,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from distutils.core import setup
+from setuptools import setup
 setup(
     name='remoteobjects',
     version='1.1a1',
@@ -41,4 +41,5 @@ setup(
     packages=['remoteobjects'],
     provides=['remoteobjects'],
     requires=['simplejson(>=2.0.0)', 'httplib2(>=0.4.0)'],
+    install_requires=['simplejson>=2.0.0', 'httplib2>=0.4.0'],
 )
