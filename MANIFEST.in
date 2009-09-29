@@ -1,0 +1,4 @@
+global-include *
+global-exclude *.pyc .gitignore
+prune .git
+prune dist
