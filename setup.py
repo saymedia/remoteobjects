@@ -30,6 +30,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from setuptools import setup
+from os.path import join, dirname
 setup(
     name='remoteobjects',
     version='1.1a1',
@@ -38,6 +39,7 @@ setup(
     author_email='python@sixapart.com',
     url='http://sixapart.github.com/remoteobjects/',
 
+    long_description=open(join(dirname(__file__), 'README.rst')).read(),
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
