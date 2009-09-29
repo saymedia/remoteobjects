@@ -38,6 +38,19 @@ setup(
     author_email='python@sixapart.com',
     url='http://sixapart.github.com/remoteobjects/',
 
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Environment :: Web Environment',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: POSIX',
+        'Programming Language :: Python',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Software Development :: Object Brokering',
+    ],
+
     packages=['remoteobjects'],
     provides=['remoteobjects'],
     requires=['simplejson(>=2.0.0)', 'httplib2(>=0.4.0)'],
