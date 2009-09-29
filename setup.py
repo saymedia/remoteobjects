@@ -37,7 +37,7 @@ setup(
     description='an Object RESTational Model',
     author='Six Apart Ltd.',
     author_email='python@sixapart.com',
-    url='http://sixapart.github.com/remoteobjects/',
+    url='http://github.com/sixapart/remoteobjects',
 
     long_description=open(join(dirname(__file__), 'README.rst')).read(),
     classifiers=[
