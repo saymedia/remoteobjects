@@ -31,6 +31,9 @@ import urlparse
 import urllib
 import cgi
 
+import httplib
+import httplib2
+
 import remoteobjects.http
 from remoteobjects.fields import Property
 
@@ -39,6 +42,77 @@ class PromiseError(Exception):
     """An exception representing an error promising or delivering a
     `PromiseObject` instance."""
     pass
+
+
+class PromisedResponse(httplib2.Response):
+    def __init__(self, *args, **kwargs):
+        self._delivered = True
+        self._location = None
+        self._http = None
+        self._method = None
+        super(PromisedResponse, self).__init__(*args, **kwargs)
+
+    def __getattribute__(self, attr, *args):
+        if (attr not in ('deliver', 'get_request', 'update_from_response')) and (attr.find('_') != 0):
+            if not self._delivered:
+                self.deliver()
+        return super(PromisedResponse, self).__getattribute__(attr, *args)
+
+    def deliver(self):
+        """Attempts to fill the instance with the data it represents.
+
+        If the instance has already been delivered or the instance has no URL
+        from which to fetch data, `deliver()` raises a `PromiseError`. Other
+        exceptions from requesting and decoding a `RemoteObject` that might
+        normally result from a `RemoteObject.get()` may also be thrown.
+
+        """
+        if self._delivered:
+            raise PromiseError('%s instance %r has already been delivered' % (type(self).__name__, self))
+        if self._location is None:
+            raise PromiseError('Instance %r has no URL from which to deliver' % (self,))
+
+        http = self._http
+        if self._http is None:
+            http = remoteobjects.http.userAgent
+
+        request = self.get_request()
+        response, content = http.request(**request)
+        self.update_from_response(request['uri'], response, content)
+
+    def get_request(self, url=None, headers=None, **kwargs):
+        """Returns the parameters for requesting this `RemoteObject` instance
+        as a dictionary of keyword arguments suitable for passing to
+        `httplib2.Http.request()`.
+
+        Optional parameter `headers` are also included in the request as HTTP
+        headers. Other optional keyword parameters are also included as
+        specified.
+
+        """
+        if url is None:
+            url = self._location
+        if headers is None:
+            headers = {}
+
+        # Use 'uri' because httplib2.request does.
+        request = dict(uri=url, headers=headers, method=self._method)
+        request.update(kwargs)
+        return request
+
+    def update_from_response(self, url, response, content=''):
+        self._delivered = True
+        super(PromisedResponse, self).__init__(response)
+
+    def found(self):
+        """Returns True when the HTTP is in the 200-299 range."""
+        return 300 > self.status >= 200
+
+    def can_delete(self):
+        try:
+            return self['allow'].find('DELETE') > -1
+        except KeyError:
+            return False
 
 
 class PromiseObject(remoteobjects.http.HttpObject):
@@ -85,6 +159,28 @@ class PromiseObject(remoteobjects.http.HttpObject):
         self._delivered = False
 
         return self
+
+    def head(self, http=None, **kwargs):
+        """Creates a new undelivered `PromisedResponse` instance that, when
+        delivered, will contain the HTTP Response for the given object."""
+
+        resp = PromisedResponse({})
+        resp._delivered = False
+        resp._location = self._location
+        resp._http = http
+        resp._method = 'HEAD'
+        return resp
+
+    def options(self, http=None, **kwargs):
+        """Creates a new undelivered `PromisedResponse` instance that, when
+        delivered, will contain the HTTP Response for the given object."""
+
+        resp = PromisedResponse({})
+        resp._delivered = False
+        resp._location = self._location
+        resp._http = http
+        resp._method = 'OPTIONS'
+        return resp
 
     def __setattr__(self, name, value):
         if name is not '_delivered' and not self._delivered and name in self.fields:
