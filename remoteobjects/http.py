@@ -374,3 +374,37 @@ class HttpObject(DataObject):
         except AttributeError:
             # Don't mind if there's no etag.
             pass
+
+    def head(self, http=None):
+        """Issues a HTTP ``HEAD`` request for the object.
+
+        Optional parameter `http` is the user agent object to use. `http`
+        objects should be compatible with `httplib2.Http` objects.
+
+        """
+        if getattr(self, '_location', None) is None:
+            raise ValueError('Cannot issue HEAD for %r with no URL' % self)
+
+        if http is None:
+            http = userAgent
+        response, content = http.request(uri=self._location, method='HEAD')
+
+        return response
+
+    def options(self, http=None):
+        """Issues a HTTP ``OPTIONS`` request for the object.
+
+        Optional parameter `http` is the user agent object to use. `http`
+        objects should be compatible with `httplib2.Http` objects.
+
+        This method returns both the `HttpResponse` and content data.
+
+        """
+        if getattr(self, '_location', None) is None:
+            raise ValueError('Cannot issue OPTIONS for %r with no URL' % self)
+
+        if http is None:
+            http = userAgent
+        response, content = http.request(uri=self._location, method='OPTIONS')
+
+        return response
