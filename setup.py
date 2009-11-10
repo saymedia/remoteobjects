@@ -31,6 +31,12 @@
 
 from setuptools import setup
 from os.path import join, dirname
+
+try:
+    long_description = open(join(dirname(__file__), 'README.rst')).read()
+except Exception:
+    long_description = None
+
 setup(
     name='remoteobjects',
     version='1.1a1',
@@ -39,7 +45,7 @@ setup(
     author_email='python@sixapart.com',
     url='http://github.com/sixapart/remoteobjects',
 
-    long_description=open(join(dirname(__file__), 'README.rst')).read(),
+    long_description=long_description,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
