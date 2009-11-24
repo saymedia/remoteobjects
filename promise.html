@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Promise Objects &mdash; remoteobjects v1.1a1 documentation</title>
+    <title>Promise Objects &mdash; remoteobjects v1.1 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.1a1',
+        VERSION:     '1.1',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,7 +19,7 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="remoteobjects v1.1a1 documentation" href="index.html" />
+    <link rel="top" title="remoteobjects v1.1 documentation" href="index.html" />
     <link rel="prev" title="HTTP Objects" href="http.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="http.html" title="HTTP Objects"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">remoteobjects v1.1a1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">remoteobjects v1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -48,15 +48,13 @@
 <h1>Promise Objects<a class="headerlink" href="#module-remoteobjects.promise" title="Permalink to this headline">¶</a></h1>
 <dl class="exception">
 <dt id="remoteobjects.promise.PromiseError">
-<em class="property">
-exception </em><tt class="descclassname">remoteobjects.promise.</tt><tt class="descname">PromiseError</tt><a class="headerlink" href="#remoteobjects.promise.PromiseError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">remoteobjects.promise.</tt><tt class="descname">PromiseError</tt><a class="headerlink" href="#remoteobjects.promise.PromiseError" title="Permalink to this definition">¶</a></dt>
 <dd>An exception representing an error promising or delivering a
 <cite>PromiseObject</cite> instance.</dd></dl>
 
 <dl class="class">
 <dt id="remoteobjects.promise.PromiseObject">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.promise.</tt><tt class="descname">PromiseObject</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.promise.</tt><tt class="descname">PromiseObject</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <cite>RemoteObject</cite> that delays actual retrieval of the remote resource until
 required by the use of its data.</p>
 <p>A PromiseObject is only &#8220;promised&#8221; to the caller until its data is used.
@@ -93,10 +91,21 @@ you require.</p>
 
 <dl class="classmethod">
 <dt id="remoteobjects.promise.PromiseObject.get">
-<em class="property">
-classmethod </em><tt class="descname">get</tt><big>(</big><em>url</em>, <em>http=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject.get" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descname">get</tt><big>(</big><em>url</em>, <em>http=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject.get" title="Permalink to this definition">¶</a></dt>
 <dd>Creates a new undelivered <cite>PromiseObject</cite> instance that, when
 delivered, will contain the data at the given URL.</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.promise.PromiseObject.head">
+<tt class="descname">head</tt><big>(</big><em>http=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject.head" title="Permalink to this definition">¶</a></dt>
+<dd>Creates a new undelivered <cite>PromisedResponse</cite> instance that, when
+delivered, will contain the HTTP Response for the given object.</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.promise.PromiseObject.options">
+<tt class="descname">options</tt><big>(</big><em>http=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.promise.PromiseObject.options" title="Permalink to this definition">¶</a></dt>
+<dd>Creates a new undelivered <cite>PromisedResponse</cite> instance that, when
+delivered, will contain the HTTP Response for the given object.</dd></dl>
 
 <dl class="method">
 <dt id="remoteobjects.promise.PromiseObject.update_from_response">
@@ -151,12 +160,12 @@ HTTP response and if successful marks the instance delivered.</dd></dl>
         <li class="right" >
           <a href="http.html" title="HTTP Objects"
              >previous</a> |</li>
-        <li><a href="index.html">remoteobjects v1.1a1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">remoteobjects v1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009 Six Apart.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
     </div>
   </body>
 </html>

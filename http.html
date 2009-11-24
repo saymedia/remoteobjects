@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>HTTP Objects &mdash; remoteobjects v1.1a1 documentation</title>
+    <title>HTTP Objects &mdash; remoteobjects v1.1 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.1a1',
+        VERSION:     '1.1',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,7 +19,7 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="remoteobjects v1.1a1 documentation" href="index.html" />
+    <link rel="top" title="remoteobjects v1.1 documentation" href="index.html" />
     <link rel="next" title="Promise Objects" href="promise.html" />
     <link rel="prev" title="Data Objects" href="dataobject.html" /> 
   </head>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="dataobject.html" title="Data Objects"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">remoteobjects v1.1a1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">remoteobjects v1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -52,21 +52,18 @@
 <h1>HTTP Objects<a class="headerlink" href="#module-remoteobjects.http" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="remoteobjects.http.HttpObject">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.http.</tt><tt class="descname">HttpObject</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.http.</tt><tt class="descname">HttpObject</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <cite>DataObject</cite> that can be fetched and put over HTTP through a RESTful
 JSON API.</p>
 <dl class="exception">
 <dt id="remoteobjects.http.HttpObject.BadResponse">
-<em class="property">
-exception </em><tt class="descname">BadResponse</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.BadResponse" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descname">BadResponse</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.BadResponse" title="Permalink to this definition">¶</a></dt>
 <dd>An HTTPException thrown when the client receives some other
 non-success HTTP response.</dd></dl>
 
 <dl class="exception">
 <dt id="remoteobjects.http.HttpObject.Forbidden">
-<em class="property">
-exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">Forbidden</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.Forbidden" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">Forbidden</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.Forbidden" title="Permalink to this definition">¶</a></dt>
 <dd><p>An HTTPException thrown when the server reports that the client, as
 authenticated, is not authorized to request the requested resource.</p>
 <p>This exception corresponds to the HTTP status code 403. Thus when this
@@ -76,15 +73,13 @@ do will make the requested resource available.</p>
 
 <dl class="exception">
 <dt id="remoteobjects.http.HttpObject.NotFound">
-<em class="property">
-exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">NotFound</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.NotFound" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">NotFound</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.NotFound" title="Permalink to this definition">¶</a></dt>
 <dd>An HTTPException thrown when the server reports that the requested
 resource was not found.</dd></dl>
 
 <dl class="exception">
 <dt id="remoteobjects.http.HttpObject.PreconditionFailed">
-<em class="property">
-exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">PreconditionFailed</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.PreconditionFailed" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">PreconditionFailed</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.PreconditionFailed" title="Permalink to this definition">¶</a></dt>
 <dd><p>An HTTPException thrown when the server reports that some of the
 conditions in a conditional request were not true.</p>
 <p>This exception corresponds to the HTTP status code 412. The most
@@ -94,8 +89,7 @@ has already changed on the server.</p>
 
 <dl class="exception">
 <dt id="remoteobjects.http.HttpObject.RequestError">
-<em class="property">
-exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">RequestError</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.RequestError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">RequestError</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.RequestError" title="Permalink to this definition">¶</a></dt>
 <dd><p>An HTTPException thrown when the server reports an error in the
 client&#8217;s request.</p>
 <p>This exception corresponds to the HTTP status code 400.</p>
@@ -103,16 +97,14 @@ client&#8217;s request.</p>
 
 <dl class="exception">
 <dt id="remoteobjects.http.HttpObject.ServerError">
-<em class="property">
-exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">ServerError</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.ServerError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">ServerError</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.ServerError" title="Permalink to this definition">¶</a></dt>
 <dd><p>An HTTPException thrown when the server reports an unexpected error.</p>
 <p>This exception corresponds to the HTTP status code 500.</p>
 </dd></dl>
 
 <dl class="exception">
 <dt id="remoteobjects.http.HttpObject.Unauthorized">
-<em class="property">
-exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">Unauthorized</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.Unauthorized" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">HttpObject.</tt><tt class="descname">Unauthorized</tt><a class="headerlink" href="#remoteobjects.http.HttpObject.Unauthorized" title="Permalink to this definition">¶</a></dt>
 <dd><p>An HTTPException thrown when the server reports that the requested
 resource is not available through an unauthenticated request.</p>
 <p>This exception corresponds to the HTTP status code 401. Thus when this
@@ -131,8 +123,7 @@ objects should be compatible with <cite>httplib2.Http</cite> objects.</p>
 
 <dl class="classmethod">
 <dt id="remoteobjects.http.HttpObject.get">
-<em class="property">
-classmethod </em><tt class="descclassname">HttpObject.</tt><tt class="descname">get</tt><big>(</big><em>url</em>, <em>http=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.get" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descclassname">HttpObject.</tt><tt class="descname">get</tt><big>(</big><em>url</em>, <em>http=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches a new <cite>RemoteObject</cite> instance from a URL.</p>
 <p>Parameter <cite>url</cite> is the URL from which the object should be requested.
 Optional parameter <cite>http</cite> is the user agent object to use for
@@ -148,6 +139,23 @@ as a dictionary of keyword arguments suitable for passing to
 <p>Optional parameter <cite>headers</cite> are also included in the request as HTTP
 headers. Other optional keyword parameters are also included as
 specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.http.HttpObject.head">
+<tt class="descclassname">HttpObject.</tt><tt class="descname">head</tt><big>(</big><em>http=None</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.head" title="Permalink to this definition">¶</a></dt>
+<dd><p>Issues a HTTP <tt class="docutils literal"><span class="pre">HEAD</span></tt> request for the object.</p>
+<p>Optional parameter <cite>http</cite> is the user agent object to use. <cite>http</cite>
+objects should be compatible with <cite>httplib2.Http</cite> objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="remoteobjects.http.HttpObject.options">
+<tt class="descclassname">HttpObject.</tt><tt class="descname">options</tt><big>(</big><em>http=None</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Issues a HTTP <tt class="docutils literal"><span class="pre">OPTIONS</span></tt> request for the object.</p>
+<p>Optional parameter <cite>http</cite> is the user agent object to use. <cite>http</cite>
+objects should be compatible with <cite>httplib2.Http</cite> objects.</p>
+<p>This method returns both the <cite>HttpResponse</cite> and content data.</p>
 </dd></dl>
 
 <dl class="method">
@@ -173,8 +181,7 @@ objects should be compatible with <cite>httplib2.Http</cite> objects.</p>
 
 <dl class="classmethod">
 <dt id="remoteobjects.http.HttpObject.raise_for_response">
-<em class="property">
-classmethod </em><tt class="descclassname">HttpObject.</tt><tt class="descname">raise_for_response</tt><big>(</big><em>url</em>, <em>response</em>, <em>content</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.raise_for_response" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descclassname">HttpObject.</tt><tt class="descname">raise_for_response</tt><big>(</big><em>url</em>, <em>response</em>, <em>content</em><big>)</big><a class="headerlink" href="#remoteobjects.http.HttpObject.raise_for_response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raises exceptions corresponding to invalid HTTP responses that
 instances of this class can&#8217;t be updated from.</p>
 <p>Override this method to customize the error handling behavior of
@@ -258,12 +265,12 @@ instance is updated as well.</p>
         <li class="right" >
           <a href="dataobject.html" title="Data Objects"
              >previous</a> |</li>
-        <li><a href="index.html">remoteobjects v1.1a1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">remoteobjects v1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009 Six Apart.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
     </div>
   </body>
 </html>

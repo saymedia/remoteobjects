@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Data Object Fields &mdash; remoteobjects v1.1a1 documentation</title>
+    <title>Data Object Fields &mdash; remoteobjects v1.1 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.1a1',
+        VERSION:     '1.1',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,7 +19,7 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="remoteobjects v1.1a1 documentation" href="index.html" />
+    <link rel="top" title="remoteobjects v1.1 documentation" href="index.html" />
     <link rel="next" title="Data Objects" href="dataobject.html" />
     <link rel="prev" title="remoteobjects" href="index.html" /> 
   </head>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="index.html" title="remoteobjects"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">remoteobjects v1.1a1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">remoteobjects v1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -59,8 +59,7 @@ that offers links between <cite>RemoteObject</cite> instances, <cite>Link</cite>
 <h2>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="remoteobjects.fields.Field">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Field</tt><big>(</big><em>api_name=None</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Field" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Field</tt><big>(</big><em>api_name=None</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Field" title="Permalink to this definition">¶</a></dt>
 <dd><p>A property for encoding object attributes as dictionary values and
 decoding dictionary values into object attributes.</p>
 <p>Declare a <cite>Field</cite> instance for each attribute of a <cite>DataObject</cite> that
@@ -122,8 +121,7 @@ overrides this method) if you need to convert objects.</p>
 
 <dl class="class">
 <dt id="remoteobjects.fields.Constant">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Constant</tt><big>(</big><em>value</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Constant" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Constant</tt><big>(</big><em>value</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Constant" title="Permalink to this definition">¶</a></dt>
 <dd><p>A field for data that always has a certain value for all instances of
 the owning class.</p>
 <p>Use this field for an attribute of an object that is always the same for
@@ -150,8 +148,7 @@ will find this field&#8217;s class.</p>
 
 <dl class="class">
 <dt id="remoteobjects.fields.Datetime">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Datetime</tt><big>(</big><em>dateformat=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Datetime" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Datetime</tt><big>(</big><em>dateformat=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Datetime" title="Permalink to this definition">¶</a></dt>
 <dd><p>A field representing a timestamp.</p>
 <dl class="method">
 <dt id="remoteobjects.fields.Datetime.decode">
@@ -175,8 +172,7 @@ strings will be of the format <tt class="docutils literal"><span class="pre">YYY
 
 <dl class="class">
 <dt id="remoteobjects.fields.Dict">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Dict</tt><big>(</big><em>fld</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Dict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Dict</tt><big>(</big><em>fld</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>A field representing a homogeneous mapping of data.</p>
 <p>The elements of the mapping are decoded through another field specified
 when the <cite>Dict</cite> is declared.</p>
@@ -198,8 +194,7 @@ dictionary with encoded dictionary values for values).</dd></dl>
 
 <dl class="class">
 <dt id="remoteobjects.fields.List">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">List</tt><big>(</big><em>fld</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.List" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">List</tt><big>(</big><em>fld</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.List" title="Permalink to this definition">¶</a></dt>
 <dd><p>A field representing a homogeneous list of data.</p>
 <p>The elements of the list are decoded through another field specified when
 the <cite>List</cite> is declared.</p>
@@ -228,8 +223,7 @@ values) into a dictionary value (a list of dictionary values).</dd></dl>
 
 <dl class="class">
 <dt id="remoteobjects.fields.Object">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Object</tt><big>(</big><em>cls</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Object" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Object</tt><big>(</big><em>cls</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Object" title="Permalink to this definition">¶</a></dt>
 <dd><p>A field representing a nested <cite>DataObject</cite>.</p>
 <dl class="method">
 <dt id="remoteobjects.fields.Object.__init__">
@@ -264,8 +258,7 @@ representative dictionary value.</dd></dl>
 <h2>Other properties<a class="headerlink" href="#other-properties" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="remoteobjects.fields.Property">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Property</tt><a class="headerlink" href="#remoteobjects.fields.Property" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Property</tt><a class="headerlink" href="#remoteobjects.fields.Property" title="Permalink to this definition">¶</a></dt>
 <dd><p>An attribute that can be installed declaratively on a <cite>DataObject</cite> to
 provide data encoding or loading behavior.</p>
 <p>The primary kinds of <cite>Property</cite> objects are <cite>Field</cite> (and its subclasses)
@@ -284,8 +277,7 @@ field is declared.</p>
 
 <dl class="class">
 <dt id="remoteobjects.fields.Link">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Link</tt><big>(</big><em>cls</em>, <em>api_name=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Link" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.fields.</tt><tt class="descname">Link</tt><big>(</big><em>cls</em>, <em>api_name=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.fields.Link" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <cite>RemoteObject</cite> property representing a link from one <cite>RemoteObject</cite>
 instance to another.</p>
 <p>Use this property when related content is not <em>part</em> of a RemoteObject,
@@ -381,12 +373,12 @@ class in which it was declared.</dd></dl>
         <li class="right" >
           <a href="index.html" title="remoteobjects"
              >previous</a> |</li>
-        <li><a href="index.html">remoteobjects v1.1a1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">remoteobjects v1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009 Six Apart.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
     </div>
   </body>
 </html>

@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Data Objects &mdash; remoteobjects v1.1a1 documentation</title>
+    <title>Data Objects &mdash; remoteobjects v1.1 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.1a1',
+        VERSION:     '1.1',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,7 +19,7 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="remoteobjects v1.1a1 documentation" href="index.html" />
+    <link rel="top" title="remoteobjects v1.1 documentation" href="index.html" />
     <link rel="next" title="HTTP Objects" href="http.html" />
     <link rel="prev" title="Data Object Fields" href="fields.html" /> 
   </head>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="fields.html" title="Data Object Fields"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">remoteobjects v1.1a1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">remoteobjects v1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -58,8 +58,7 @@ declared on <cite>DataObject</cite> subclasses. <cite>Field</cite> classes resid
 <cite>remoteobjects.field</cite> module.</p>
 <dl class="class">
 <dt id="remoteobjects.dataobject.DataObject">
-<em class="property">
-class </em><tt class="descclassname">remoteobjects.dataobject.</tt><tt class="descname">DataObject</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">remoteobjects.dataobject.</tt><tt class="descname">DataObject</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>An object that can be decoded from or encoded as a dictionary.</p>
 <p>DataObject subclasses should be declared with their different data
 attributes defined as instances of fields from the <cite>remoteobjects.fields</cite>
@@ -81,14 +80,12 @@ instances and dictionaries.</p>
 
 <dl class="classmethod">
 <dt id="remoteobjects.dataobject.DataObject.from_dict">
-<em class="property">
-classmethod </em><tt class="descname">from_dict</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject.from_dict" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descname">from_dict</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject.from_dict" title="Permalink to this definition">¶</a></dt>
 <dd>Decodes a dictionary into a new <cite>DataObject</cite> instance.</dd></dl>
 
 <dl class="classmethod">
 <dt id="remoteobjects.dataobject.DataObject.subclass_with_constant_field">
-<em class="property">
-classmethod </em><tt class="descname">subclass_with_constant_field</tt><big>(</big><em>fieldname</em>, <em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject.subclass_with_constant_field" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descname">subclass_with_constant_field</tt><big>(</big><em>fieldname</em>, <em>value</em><big>)</big><a class="headerlink" href="#remoteobjects.dataobject.DataObject.subclass_with_constant_field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the closest subclass of this class that has a <cite>Constant</cite>
 field with the given value.</p>
 <p>Use this method in combination with the <cite>fields.Constant</cite> field class
@@ -197,12 +194,12 @@ no class by that name, raises <cite>KeyError</cite>.</p>
         <li class="right" >
           <a href="fields.html" title="Data Object Fields"
              >previous</a> |</li>
-        <li><a href="index.html">remoteobjects v1.1a1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">remoteobjects v1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009 Six Apart.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
     </div>
   </body>
 </html>
