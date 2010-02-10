@@ -375,6 +375,10 @@ class Datetime(Field):
         The resulting `datetime` will have no time zone.
 
         """
+        if value is None:
+            if callable(self.default):
+                return self.default()
+            return self.default
         try:
             return datetime(*(time.strptime(value, self.dateformat))[0:6])
         except (TypeError, ValueError):
