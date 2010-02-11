@@ -445,6 +445,35 @@ class TestDataObjects(unittest.TestCase):
         # Links don't serialize... for now anyways.
         self.assertEquals(x.to_dict(), {})
 
+    def test_field_datetime(self):
+
+        class Timely(dataobject.DataObject):
+            when = fields.Datetime()
+
+        t = Timely.from_dict({
+            'when': '2008-12-31T04:00:01Z',
+        })
+
+        self.assert_(isinstance(t, Timely), 'Datetime class decoded properly')
+        self.assert_(isinstance(t.when, datetime), 'Datetime data decoded into a datetime')
+        when = datetime(year=2008, month=12, day=31, hour=4, minute=0, second=1)
+        self.assertEquals(t.when, when, 'Datetime data decoded into the expected datetime')
+        self.assert_(t.when.tzinfo is None, 'Datetime data decoded with no timezone info')
+
+        when = datetime(year=2010, month=2, day=11, hour=4, minute=37, second=44)
+        t_data = Timely(when=when).to_dict()
+        self.assert_(isinstance(t_data, dict), 'Datetime dict encoded properly')
+        self.assertEquals(t_data['when'], '2010-02-11T04:37:44Z', 'Datetime dict encoded with expected timestamp')
+
+        t = Timely.from_dict({
+            'when': None,
+        })
+        self.assert_(isinstance(t, Timely), 'Datetime with None data decoded properly')
+        self.assert_(t.when is None, 'Datetime with None data decoded to None timestamp')
+
+        t = Timely.from_dict({})
+        self.assert_(isinstance(t, Timely), 'Datetime with missing data decoded properly')
+        self.assert_(t.when is None, 'Datetime with missing data decoded to None timestamp')
 
 
 if __name__ == '__main__':
