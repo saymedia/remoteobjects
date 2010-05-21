@@ -72,6 +72,13 @@ class HttpObject(DataObject):
         httplib.CREATED:           'Location',
         httplib.MOVED_PERMANENTLY: 'Location',
         httplib.FOUND:             'Location',
+        httplib.OK:                'Content-Location',
+    }
+
+    location_header_required = {
+        httplib.CREATED: True,
+        httplib.MOVED_PERMANENTLY: True,
+        httplib.FOUND: True,
     }
 
     content_types = ('application/json',)
@@ -217,7 +224,7 @@ class HttpObject(DataObject):
         except KeyError:
             pass
         else:
-            if location_header.lower() not in response:
+            if cls.location_header_required.get(response.status) and location_header.lower() not in response:
                 raise cls.BadResponse(
                     "%r header missing from %d %s response requesting %s %s"
                     % (location_header, response.status, response.reason,
