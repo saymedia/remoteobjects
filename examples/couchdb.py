@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2009 Six Apart Ltd.
+# Copyright (c) 2009-2010 Six Apart Ltd.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without

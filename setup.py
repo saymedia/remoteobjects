@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2009 Six Apart Ltd.
+# Copyright (c) 2009-2010 Six Apart Ltd.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ except Exception:
 
 setup(
     name='remoteobjects',
-    version='1.1',
+    version='1.1.1',
     description='an Object RESTational Model',
     author='Six Apart Ltd.',
     author_email='python@sixapart.com',

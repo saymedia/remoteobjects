@@ -1,6 +1,12 @@
 remoteobjects Changelog
 =======================
 
+1.1.1 (?)
+-----------
+
+* Applied a patch from Alex Gaynor to allow `None` for `Datetime` fields.
+
+
 1.1 (2009-11-24)
 ----------------
 

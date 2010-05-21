@@ -1,4 +1,4 @@
-# Copyright (c) 2009 Six Apart Ltd.
+# Copyright (c) 2009-2010 Six Apart Ltd.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -103,8 +103,8 @@ but extensible and replaceable through plain old subclassing.
 
 """
 
-__version__ = '1.1'
-__date__ = '24 November 2009'
+__version__ = '1.1.1'
+__date__ = '21 May 2010'
 __author__ = 'Six Apart Ltd.'
 __credits__ = """Brad Choate
 Leah Culver
