@@ -60,25 +60,25 @@ class HttpObject(DataObject):
     JSON API."""
 
     response_has_content = {
+        httplib.OK:                True,
         httplib.CREATED:           True,
+        httplib.NO_CONTENT:        False,
         httplib.MOVED_PERMANENTLY: True,
         httplib.FOUND:             True,
-        httplib.OK:                True,
         httplib.NOT_MODIFIED:      True,
-        httplib.NO_CONTENT:        False,
     }
 
     location_headers = {
+        httplib.OK:                'Content-Location',
         httplib.CREATED:           'Location',
         httplib.MOVED_PERMANENTLY: 'Location',
         httplib.FOUND:             'Location',
-        httplib.OK:                'Content-Location',
     }
 
     location_header_required = {
-        httplib.CREATED: True,
+        httplib.CREATED:           True,
         httplib.MOVED_PERMANENTLY: True,
-        httplib.FOUND: True,
+        httplib.FOUND:             True,
     }
 
     content_types = ('application/json',)
