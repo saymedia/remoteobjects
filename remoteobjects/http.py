@@ -61,6 +61,7 @@ class HttpObject(DataObject):
 
     response_has_content = {
         httplib.OK:                True,
+        httplib.ACCEPTED:          True,
         httplib.CREATED:           True,
         httplib.NO_CONTENT:        False,
         httplib.MOVED_PERMANENTLY: True,
