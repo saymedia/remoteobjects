@@ -60,25 +60,26 @@ class HttpObject(DataObject):
     JSON API."""
 
     response_has_content = {
+        httplib.OK:                True,
+        httplib.ACCEPTED:          False,
         httplib.CREATED:           True,
+        httplib.NO_CONTENT:        False,
         httplib.MOVED_PERMANENTLY: True,
         httplib.FOUND:             True,
-        httplib.OK:                True,
         httplib.NOT_MODIFIED:      True,
-        httplib.NO_CONTENT:        False,
     }
 
     location_headers = {
+        httplib.OK:                'Content-Location',
         httplib.CREATED:           'Location',
         httplib.MOVED_PERMANENTLY: 'Location',
         httplib.FOUND:             'Location',
-        httplib.OK:                'Content-Location',
     }
 
     location_header_required = {
-        httplib.CREATED: True,
+        httplib.CREATED:           True,
         httplib.MOVED_PERMANENTLY: True,
-        httplib.FOUND: True,
+        httplib.FOUND:             True,
     }
 
     content_types = ('application/json',)
@@ -271,8 +272,10 @@ class HttpObject(DataObject):
         location_header = self.location_headers.get(response.status)
         if location_header is None:
             self._location = url
-        else:
+        elif self.location_header_required.get(response.status):
             self._location = response[location_header.lower()]
+        else:
+            self._location = response.get(location_header.lower(), url)
 
         if 'etag' in response:
             self._etag = response['etag']
