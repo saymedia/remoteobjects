@@ -104,7 +104,7 @@ but extensible and replaceable through plain old subclassing.
 """
 
 __version__ = '1.1.1'
-__date__ = '21 May 2010'
+__date__ = '8 July 2010'
 __author__ = 'Six Apart Ltd.'
 __credits__ = """Brad Choate
 Leah Culver
