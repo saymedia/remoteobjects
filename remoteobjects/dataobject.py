@@ -178,6 +178,13 @@ class DataObject(object):
         return dict((k, self.__dict__[k]) for k in self.statefields()
             if k in self.__dict__)
 
+    def get(self, attr, *args):
+        return getattr(self, attr, *args)
+
+    def __iter__(self):
+        for key in self.fields.keys():
+            yield key
+
     def to_dict(self):
         """Encodes the DataObject to a dictionary."""
         data = deepcopy(self.api_data)
