@@ -151,7 +151,7 @@ class PageOf(PromiseObject.__metaclass__):
         return newcls
 
 
-class PageObject(PromiseObject, SequenceProxy):
+class PageObject(SequenceProxy, PromiseObject):
 
     """A `RemoteObject` representing a set of other `RemoteObject` instances.
 
