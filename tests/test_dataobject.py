@@ -263,6 +263,27 @@ class TestDataObjects(unittest.TestCase):
             ],
         }, 'Parentish dict has proper contents')
 
+        p = Parentish.from_dict({
+            'name': 'the parent',
+            'children': None
+        })
+
+        self.assertEquals(p.children, None)
+
+    def test_complex_dict(self):
+
+        class Thing(self.cls):
+            name     = fields.Field()
+            attributes = fields.Dict(fields.Field())
+
+        t = Thing.from_dict({
+            'name': 'the thing',
+            'attributes': None,
+        })
+
+        self.assertEquals(t.attributes, None)
+
+
     def test_self_reference(self):
 
         class Reflexive(self.cls):
