@@ -279,6 +279,8 @@ class List(Field):
     def decode(self, value):
         """Decodes the dictionary value (a list of dictionary values) into a
         `DataObject` attribute (a list of `DataObject` attribute values)."""
+        if value is None:
+            return []
         return [self.fld.decode(v) for v in value]
 
     def encode(self, value):
@@ -300,6 +302,8 @@ class Dict(List):
         """Decodes the dictionary value (a dictionary with dictionary values
         for values) into a `DataObject` attribute (a dictionary with
         `DataObject` attributes for values)."""
+        if value is None:
+            return {}
         return dict((k, self.fld.decode(v)) for k, v in value.iteritems())
 
     def encode(self, value):
