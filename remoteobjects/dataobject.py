@@ -127,8 +127,8 @@ class DataObject(object):
     attributes defined as instances of fields from the `remoteobjects.fields`
     module. For example:
 
-    >>> from remoteobjects import DataObject, fields
-    >>> class Asset(DataObject):
+    >>> from remoteobjects import dataobject, fields
+    >>> class Asset(dataobject.DataObject):
     ...     name    = fields.Field()
     ...     updated = fields.Datetime()
     ...     author  = fields.Object('Author')
