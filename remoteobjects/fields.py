@@ -475,4 +475,4 @@ class Link(AcceptsStringCls, Property):
         if instance._location is None:
             raise AttributeError('Cannot find URL of %s relative to URL-less %s' % (self.cls.__name__, owner.__name__))
         newurl = urlparse.urljoin(instance._location, self.api_name)
-        return self.cls.get(newurl)
+        return self.cls.get(newurl, http=instance._http)
