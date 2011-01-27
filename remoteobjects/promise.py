@@ -182,6 +182,12 @@ class PromiseObject(remoteobjects.http.HttpObject):
         resp._method = 'OPTIONS'
         return resp
 
+    def post(self, obj, http=None):
+        if http is None:
+            http = self._http
+
+        return super(PromiseObject, self).post(obj, http=http)
+
     def __setattr__(self, name, value):
         if name is not '_delivered' and not self._delivered and name in self.fields:
             self.deliver()
