@@ -309,7 +309,23 @@ class Dict(List):
         return dict((k, self.fld.encode(v)) for k, v in value.iteritems())
 
 
-class Object(Field):
+class AcceptsStringCls(object):
+    """Mixin for fields with a ``cls`` attribute that can either be a
+    ``DataObject`` subclass or a string name of a ``DataObject`` subclass (to
+    allow forward references)."""
+
+    def get_cls(self):
+        cls = self.__dict__['cls']
+        if not callable(cls):
+            cls = remoteobjects.dataobject.find_by_name(cls)
+        return cls
+
+    def set_cls(self, cls):
+        self.__dict__['cls'] = cls
+
+    cls = property(get_cls, set_cls)
+
+class Object(AcceptsStringCls, Field):
 
     """A field representing a nested `DataObject`."""
 
@@ -329,17 +345,6 @@ class Object(Field):
         """
         super(Object, self).__init__(**kwargs)
         self.cls = cls
-
-    def get_cls(self):
-        cls = self.__dict__['cls']
-        if not callable(cls):
-            cls = remoteobjects.dataobject.find_by_name(cls)
-        return cls
-
-    def set_cls(self, cls):
-        self.__dict__['cls'] = cls
-
-    cls = property(get_cls, set_cls)
 
     def decode(self, value):
         """Decodes the dictionary value into an instance of the `DataObject`
@@ -399,7 +404,7 @@ class Datetime(Field):
         return value.replace(microsecond=0).strftime(self.dateformat)
 
 
-class Link(Property):
+class Link(AcceptsStringCls, Property):
 
     """A `RemoteObject` property representing a link from one `RemoteObject`
     instance to another.
