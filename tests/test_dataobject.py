@@ -445,6 +445,16 @@ class TestDataObjects(unittest.TestCase):
         # Links don't serialize... for now anyways.
         self.assertEquals(x.to_dict(), {})
 
+    def test_forwards_link(self):
+        class Foo(dataobject.DataObject):
+            link = fields.Link('Bar')
+
+        class Bar(dataobject.DataObject):
+            thing = fields.Field()
+
+        # The string class name should be converted to the class
+        self.assertEquals(Foo.__dict__["link"].cls, Bar)
+
     def test_field_datetime(self):
 
         class Timely(dataobject.DataObject):
