@@ -27,7 +27,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from datetime import datetime
+from datetime import datetime, timedelta, tzinfo
 import logging
 import pickle
 import sys
@@ -472,6 +472,23 @@ class TestDataObjects(unittest.TestCase):
                 second=44, tzinfo=fields.Datetime.utc)
         t_data = Timely(when=when).to_dict()
         self.assert_(isinstance(t_data, dict), 'Datetime dict with UTC tzinfo encoded properly')
+        self.assertEquals(t_data['when'], '2010-02-11T04:37:44Z', 'Datetime dict encoded with expected timestamp')
+
+        class EST(tzinfo):
+
+            def utcoffset(self, dt):
+                return timedelta(hours=-5)
+
+            def tzname(self, dt):
+                return "UTC"
+
+            def dst(self, dt):
+                return timedelta(0)
+
+        when = datetime(year=2010, month=2, day=10, hour=23, minute=37,
+                second=44, tzinfo=EST())
+        t_data = Timely(when=when).to_dict()
+        self.assert_(isinstance(t_data, dict), 'Datetime dict with non-UTC tzinfo encoded properly')
         self.assertEquals(t_data['when'], '2010-02-11T04:37:44Z', 'Datetime dict encoded with expected timestamp')
 
         t = Timely.from_dict({

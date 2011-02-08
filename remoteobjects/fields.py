@@ -410,8 +410,8 @@ class Datetime(Field):
         """
         if not isinstance(value, datetime):
             raise TypeError('Value to encode %r is not a datetime' % (value,))
-        if value.tzinfo is not None and not isinstance(value.tzinfo, UTC):
-            raise TypeError("Value to encode %r is a datetime, but it has a non-UTC timezone and we don't want to deal with timezone information" % (value,))
+        if value.tzinfo is not None:
+            value = value.astimezone(Datetime.utc)
         return value.replace(microsecond=0).strftime(self.dateformat)
 
 
