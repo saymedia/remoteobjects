@@ -89,7 +89,8 @@ class TestDataObjects(unittest.TestCase):
         self.assert_(w, 'from_dict returned something True')
         self.assertEquals(w.name, 'foo', 'Typething got the right name')
         self.assertEquals(w.value, 4, 'Typething got the right value')
-        self.assertEquals(w.when, datetime(2008, 12, 31, 4, 0, 1, tzinfo=None),
+        self.assertEquals(w.when, datetime(2008, 12, 31, 4, 0, 1,
+            tzinfo=fields.Datetime.utc),
             'Typething got something like the right when')
 
         w = WithTypes(name='hi', value=99, when=datetime(2009, 2, 3, 10, 44, 0, tzinfo=None)).to_dict()
@@ -456,9 +457,11 @@ class TestDataObjects(unittest.TestCase):
 
         self.assert_(isinstance(t, Timely), 'Datetime class decoded properly')
         self.assert_(isinstance(t.when, datetime), 'Datetime data decoded into a datetime')
-        when = datetime(year=2008, month=12, day=31, hour=4, minute=0, second=1)
+        when = datetime(year=2008, month=12, day=31, hour=4, minute=0, second=1,
+                tzinfo=fields.Datetime.utc)
         self.assertEquals(t.when, when, 'Datetime data decoded into the expected datetime')
-        self.assert_(t.when.tzinfo is None, 'Datetime data decoded with no timezone info')
+        self.assert_(t.when.tzinfo is fields.Datetime.utc, 
+                'Datetime data decoded with utc timezone info')
 
         when = datetime(year=2010, month=2, day=11, hour=4, minute=37, second=44)
         t_data = Timely(when=when).to_dict()

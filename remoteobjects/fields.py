@@ -38,7 +38,7 @@ that offers links between `RemoteObject` instances, `Link`.
 
 """
 
-from datetime import datetime
+from datetime import datetime, tzinfo, timedelta
 import logging
 import time
 import urlparse
@@ -356,11 +356,26 @@ class Object(Field):
         return value.to_dict()
 
 
+class UTC(tzinfo):
+    """UTC"""
+    ZERO = timedelta(0)
+
+    def utcoffset(self, dt):
+        return UTC.ZERO
+
+    def tzname(self, dt):
+        return "UTC"
+
+    def dst(self, dt):
+        return UTC.ZERO
+
+
 class Datetime(Field):
 
     """A field representing a timestamp."""
 
     dateformat = "%Y-%m-%dT%H:%M:%SZ"
+    utc = UTC()
 
     def __init__(self, dateformat=None, **kwargs):
         super(Datetime, self).__init__(**kwargs)
@@ -380,7 +395,8 @@ class Datetime(Field):
                 return self.default()
             return self.default
         try:
-            return datetime(*(time.strptime(value, self.dateformat))[0:6])
+            return datetime(*(time.strptime(value, self.dateformat))[0:6],
+                    tzinfo=Datetime.utc)
         except (TypeError, ValueError):
             raise TypeError('Value to decode %r is not a valid date time stamp' % (value,))
 
