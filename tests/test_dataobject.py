@@ -468,6 +468,12 @@ class TestDataObjects(unittest.TestCase):
         self.assert_(isinstance(t_data, dict), 'Datetime dict encoded properly')
         self.assertEquals(t_data['when'], '2010-02-11T04:37:44Z', 'Datetime dict encoded with expected timestamp')
 
+        when = datetime(year=2010, month=2, day=11, hour=4, minute=37,
+                second=44, tzinfo=fields.Datetime.utc)
+        t_data = Timely(when=when).to_dict()
+        self.assert_(isinstance(t_data, dict), 'Datetime dict with UTC tzinfo encoded properly')
+        self.assertEquals(t_data['when'], '2010-02-11T04:37:44Z', 'Datetime dict encoded with expected timestamp')
+
         t = Timely.from_dict({
             'when': None,
         })
