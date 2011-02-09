@@ -387,8 +387,7 @@ class Datetime(Field):
         `datetime` instance).
 
         Timestamp strings should be of the format ``YYYY-MM-DDTHH:MM:SSZ``.
-        The resulting `datetime` will have no time zone.
-
+        The resulting `datetime` will have UTC tzinfo.
         """
         if value is None:
             if callable(self.default):
