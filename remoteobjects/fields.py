@@ -145,7 +145,7 @@ class Field(Property):
                 else:
                     value = self.default
             else:
-                value = self.decode(value)
+                value = self.decode(value, client=getattr(obj, "_http", None))
             # Store the value so we need decode it only once.
             obj.__dict__[self.attrname] = value
 
@@ -167,7 +167,7 @@ class Field(Property):
         except KeyError:
             pass
 
-    def decode(self, value):
+    def decode(self, value, client=None):
         """Decodes a dictionary value into a `DataObject` attribute value.
 
         This implementation returns the `value` parameter unchanged. This is
@@ -239,7 +239,7 @@ class Constant(Field):
             raise ValueError('Value %r is not expected value %r'
                 % (value, self.value))
 
-    def decode(self, value):
+    def decode(self, value, client=None):
         if value != self.value:
             raise ValueError('Value %r is not expected value %r'
                 % (value, self.value))
@@ -276,10 +276,10 @@ class List(Field):
         # Make sure our content field knows its owner too.
         self.fld.install(attrname, cls)
 
-    def decode(self, value):
+    def decode(self, value, client=None):
         """Decodes the dictionary value (a list of dictionary values) into a
         `DataObject` attribute (a list of `DataObject` attribute values)."""
-        return [self.fld.decode(v) for v in value]
+        return [self.fld.decode(v, client=client) for v in value]
 
     def encode(self, value):
         """Encodes a `DataObject` attribute (a list of `DataObject` attribute
@@ -296,11 +296,11 @@ class Dict(List):
 
     """
 
-    def decode(self, value):
+    def decode(self, value, client=None):
         """Decodes the dictionary value (a dictionary with dictionary values
         for values) into a `DataObject` attribute (a dictionary with
         `DataObject` attributes for values)."""
-        return dict((k, self.fld.decode(v)) for k, v in value.iteritems())
+        return dict((k, self.fld.decode(v, client=client)) for k, v in value.iteritems())
 
     def encode(self, value):
         """Encodes a `DataObject` attribute (a dictionary with decoded
@@ -346,14 +346,14 @@ class Object(AcceptsStringCls, Field):
         super(Object, self).__init__(**kwargs)
         self.cls = cls
 
-    def decode(self, value):
+    def decode(self, value, client=None):
         """Decodes the dictionary value into an instance of the `DataObject`
         class the field references."""
         if value is None:
             if callable(self.default):
                 return self.default()
             return self.default
-        return self.cls.from_dict(value)
+        return self.cls.from_dict(value, client=client)
 
     def encode(self, value):
         """Encodes an instance of the field's DataObject class into its
@@ -387,7 +387,7 @@ class Datetime(Field):
         if dateformat is not None:
             self.dateformat = dateformat
 
-    def decode(self, value):
+    def decode(self, value, client=None):
         """Decodes a timestamp string into a `DataObject` attribute (a Python
         `datetime` instance).
 
