@@ -62,6 +62,7 @@ class TestDataObjects(unittest.TestCase):
             "metaclass magic didn't break our class's name")
 
         bm = BasicMost(name='fred', value=2)
+        bm.api_data = {"name": "fred", "value": 2}
         bm_dict = bm.to_dict()
         self.assertEquals({ 'name': 'fred', 'value': 2 }, bm_dict, 'First go-round has proper contents')
         bm.name = 'tom'
