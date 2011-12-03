@@ -156,6 +156,39 @@ class TestHttpObjects(unittest.TestCase):
 
         self.assertEquals(b._etag, 'xyz')
 
+    def test_put_no_content(self):
+        """
+        Don't try to update from a no-content response.
+
+        """
+
+        class BasicMost(self.cls):
+            name  = fields.Field()
+            value = fields.Field()
+
+        request = {
+            'uri': 'http://example.com/bwuh',
+            'headers': {'accept': 'application/json'},
+        }
+        content = """{"name": "Molly", "value": 80}"""
+        h = utils.mock_http(request, content)
+        b = BasicMost.get('http://example.com/bwuh', http=h)
+        self.assertEquals(b.name, 'Molly')
+        mox.Verify(h)
+
+        headers = {
+            'accept':       'application/json',
+            'content-type': 'application/json',
+            'if-match': '7',
+        }
+        request  = dict(uri='http://example.com/bwuh', method='PUT', headers=headers, body=content)
+        response = dict(content="", status=204)
+        h = utils.mock_http(request, response)
+        b.put(http=h)
+        mox.Verify(h)
+
+        self.assertEquals(b.name, 'Molly')
+
     def test_put_failure(self):
 
         class BasicMost(self.cls):
