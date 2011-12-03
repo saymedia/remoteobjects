@@ -61,6 +61,17 @@ class TestDataObjects(unittest.TestCase):
         self.assertEquals(BasicMost.__name__, 'BasicMost',
             "metaclass magic didn't break our class's name")
 
+        bm = BasicMost(name='fred', value=2)
+        bm.api_data = {"name": "fred", "value": 2}
+        bm_dict = bm.to_dict()
+        self.assertEquals({ 'name': 'fred', 'value': 2 }, bm_dict, 'First go-round has proper contents')
+        bm.name = 'tom'
+        bm_dict = bm.to_dict()
+        self.assertEquals({ 'name': 'tom', 'value': 2 }, bm_dict, 'Setting name to another string works')
+        bm.name = None
+        bm_dict = bm.to_dict()
+        self.assertEquals({ 'value': 2 }, bm_dict, 'Setting name to None works, and name is omitted in the dict')
+
     def test_descriptorwise(self):
 
         class BasicMost(self.cls):
