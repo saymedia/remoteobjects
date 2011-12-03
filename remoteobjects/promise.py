@@ -157,6 +157,7 @@ class PromiseObject(remoteobjects.http.HttpObject):
         self._location = url
         self._http = http
         self._delivered = False
+        self._get_kwargs = kwargs
 
         return self
 
@@ -210,7 +211,7 @@ class PromiseObject(remoteobjects.http.HttpObject):
         if self._http is None:
             http = remoteobjects.http.userAgent
 
-        request = self.get_request()
+        request = self.get_request(**self._get_kwargs)
         response, content = http.request(**request)
         self.update_from_response(request['uri'], response, content)
 
