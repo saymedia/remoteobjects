@@ -57,12 +57,13 @@ class TestHttpObjects(unittest.TestCase):
 
         request = {
             'uri': 'http://example.com/ohhai',
-            'headers': {'accept': 'application/json'},
+            'headers': {'accept': 'application/json', 'x-test': 'boo'},
         }
         content = """{"name": "Fred", "value": 7}"""
 
         h = utils.mock_http(request, content)
-        b = BasicMost.get('http://example.com/ohhai', http=h)
+        b = BasicMost.get('http://example.com/ohhai', http=h,
+                          headers={"x-test": "boo"})
         self.assertEquals(b.name, 'Fred')
         self.assertEquals(b.value, 7)
         mox.Verify(h)
