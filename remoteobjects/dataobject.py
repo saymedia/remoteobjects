@@ -187,11 +187,23 @@ class DataObject(object):
 
     def to_dict(self):
         """Encodes the DataObject to a dictionary."""
+        # Start with the last set of data we got from the API
         data = deepcopy(self.api_data)
+
+        # Now replace the data with what's actually in our object
         for field_name, field in self.fields.iteritems():
             value = getattr(self, field.attrname, None)
             if value is not None:
                 data[field.api_name] = field.encode(value)
+            else:
+                data[field.api_name] = None
+
+        # Now delete any fields that ended up being None
+        # since we should exclude them in the resulting dict.
+        for k in data.keys():
+            if data[k] is None:
+                del data[k]
+
         return data
 
     @classmethod

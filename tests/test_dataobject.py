@@ -61,6 +61,17 @@ class TestDataObjects(unittest.TestCase):
         self.assertEquals(BasicMost.__name__, 'BasicMost',
             "metaclass magic didn't break our class's name")
 
+        bm = BasicMost(name='fred', value=2)
+        bm.api_data = {"name": "fred", "value": 2}
+        bm_dict = bm.to_dict()
+        self.assertEquals({ 'name': 'fred', 'value': 2 }, bm_dict, 'First go-round has proper contents')
+        bm.name = 'tom'
+        bm_dict = bm.to_dict()
+        self.assertEquals({ 'name': 'tom', 'value': 2 }, bm_dict, 'Setting name to another string works')
+        bm.name = None
+        bm_dict = bm.to_dict()
+        self.assertEquals({ 'value': 2 }, bm_dict, 'Setting name to None works, and name is omitted in the dict')
+
     def test_descriptorwise(self):
 
         class BasicMost(self.cls):
@@ -445,6 +456,16 @@ class TestDataObjects(unittest.TestCase):
         x.link = Frob()
         # Links don't serialize... for now anyways.
         self.assertEquals(x.to_dict(), {})
+
+    def test_forwards_link(self):
+        class Foo(dataobject.DataObject):
+            link = fields.Link('Bar')
+
+        class Bar(dataobject.DataObject):
+            thing = fields.Field()
+
+        # The string class name should be converted to the class
+        self.assertEquals(Foo.__dict__["link"].cls, Bar)
 
     def test_field_datetime(self):
 
