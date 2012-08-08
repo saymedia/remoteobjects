@@ -78,7 +78,7 @@ class TestHttpObjects(unittest.TestCase):
             'uri': 'http://example.com/ohhai',
             'headers': {'accept': 'application/json'},
         }
-        content = """{"name": "Fred\xf1", "value": "image by \xefndrew Example"}"""
+        content = """{"name": "Fred\xf1", "value": "image by \xefrew Example"}"""
 
         h = utils.mock_http(request, content)
         b = BasicMost.get('http://example.com/ohhai', http=h)
