@@ -267,7 +267,7 @@ class List(Field):
         timestamps, `fld` would be a `Datetime` instance.
 
         """
-        super(List, self).__init__(**kwargs)
+        super(List, self).__init__(default=[], **kwargs)
         self.fld = fld
 
     def install(self, attrname, cls):
@@ -279,6 +279,10 @@ class List(Field):
     def decode(self, value):
         """Decodes the dictionary value (a list of dictionary values) into a
         `DataObject` attribute (a list of `DataObject` attribute values)."""
+        if value is None:
+            if callable(self.default):
+                return self.default()
+            return self.default
         return [self.fld.decode(v) for v in value]
 
     def encode(self, value):
@@ -296,10 +300,18 @@ class Dict(List):
 
     """
 
+    def __init__(self, **kwargs):
+        """Sets the default to an empty dictionary."""
+        super(Dict, self).__init__(default={}, **kwargs)
+
     def decode(self, value):
         """Decodes the dictionary value (a dictionary with dictionary values
         for values) into a `DataObject` attribute (a dictionary with
         `DataObject` attributes for values)."""
+        if value is None:
+            if callable(self.default):
+                return self.default()
+            return self.default
         return dict((k, self.fld.decode(v)) for k, v in value.iteritems())
 
     def encode(self, value):
