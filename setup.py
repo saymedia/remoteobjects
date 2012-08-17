@@ -39,11 +39,11 @@ except Exception:
 
 setup(
     name='remoteobjects',
-    version='1.1.1',
+    version='1.2.1',
     description='an Object RESTational Model',
-    author='Six Apart Ltd.',
-    author_email='python@sixapart.com',
-    url='http://github.com/sixapart/remoteobjects',
+    author='SAY Media Ltd.',
+    author_email='python@saymedia.com',
+    url='http://github.com/saymedia/remoteobjects',
 
     long_description=long_description,
     classifiers=[
