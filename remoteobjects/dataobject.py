@@ -207,9 +207,11 @@ class DataObject(object):
         return data
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data, client=None):
         """Decodes a dictionary into a new `DataObject` instance."""
         self = cls()
+        if client:
+            self._http = client
         self.update_from_dict(data)
         return self
 

@@ -39,7 +39,7 @@ except Exception:
 
 setup(
     name='remoteobjects',
-    version='1.2.1',
+    version='1.2.1.post1',
     description='an Object RESTational Model',
     author='SAY Media Ltd.',
     author_email='python@saymedia.com',
