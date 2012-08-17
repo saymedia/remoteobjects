@@ -39,7 +39,7 @@ except Exception:
 
 setup(
     name='remoteobjects',
-    version='1.2.1',
+    version='1.2.2',
     description='an Object RESTational Model',
     author='SAY Media Ltd.',
     author_email='python@saymedia.com',
@@ -61,6 +61,8 @@ setup(
 
     packages=['remoteobjects'],
     provides=['remoteobjects'],
-    requires=['simplejson(>=2.0.0)', 'httplib2(>=0.5.0)'],
-    install_requires=['simplejson>=2.0.0', 'httplib2>=0.5.0'],
+    requires=['simplejson(>=2.0.0)', 'httplib2(>=0.5.0)',
+              'dateutil(>=2.1)'],
+    install_requires=['simplejson>=2.0.0', 'httplib2>=0.5.0',
+                      'python-dateutil>=2.1'],
 )
