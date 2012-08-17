@@ -104,6 +104,40 @@ class TestDataObjects(unittest.TestCase):
             tzinfo=fields.Datetime.utc),
             'Typething got something like the right when')
 
+        w = WithTypes.from_dict({
+            'name': 'bar',
+            'value': 99,
+            'when': '2012-08-17T14:49:50-05:00'
+        })
+
+        self.assertEquals(w.when, datetime(2012, 8, 17, 19, 49, 50,
+            tzinfo=fields.Datetime.utc),
+            'Non-UTC timezone was parsed and converted to UTC')
+
+        w = WithTypes.from_dict({
+            'when': '2012-13-01T24:01:01-05:00'
+        })
+
+        try:
+            w.when
+            self.fail('No TypeError parsing invalid, well-formatted timestamp')
+        except TypeError:
+            pass
+        except Exception:
+            self.fail('No TypeError parsing invalid, well-formatted timestamp')
+
+        w = WithTypes.from_dict({
+            'when': 'pack my bag with six dozen liquor jugs'
+        })
+
+        try:
+            w.when
+            self.fail('No TypeError parsing malformatted timestamp')
+        except TypeError:
+            pass
+        except Exception:
+            self.fail('No TypeError parsing malformatted timestamp')
+
         w = WithTypes(name='hi', value=99, when=datetime(2009, 2, 3, 10, 44, 0, tzinfo=None)).to_dict()
         self.assert_(w, 'to_dict() returned something True')
         self.assertEquals(w, { 'name': 'hi', 'value': 99, 'when': '2009-02-03T10:44:00Z' },
