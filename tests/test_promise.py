@@ -30,7 +30,7 @@
 import unittest
 
 import httplib2
-import mox
+from mox3 import mox
 
 from remoteobjects import fields, http, promise
 from tests import test_dataobject, test_http

@@ -32,7 +32,7 @@ import logging
 import sys
 import unittest
 
-import mox
+from mox3 import mox
 
 from remoteobjects import fields, http
 from tests import test_dataobject

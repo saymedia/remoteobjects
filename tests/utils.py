@@ -31,7 +31,7 @@ import httplib2
 import logging
 import os
 
-import mox
+from mox3 import mox
 import nose
 import nose.tools
 

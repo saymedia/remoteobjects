@@ -33,7 +33,7 @@ import pickle
 import sys
 import unittest
 
-import mox
+from mox3 import mox
 
 from remoteobjects import fields, dataobject
 from tests import utils
