@@ -31,7 +31,7 @@ import simplejson as json
 from remoteobjects.json import ForgivingDecoder
 
 import httplib2
-import httplib
+import http.client
 import logging
 
 from remoteobjects.dataobject import DataObject, DataObjectMetaclass
@@ -48,7 +48,7 @@ def omit_nulls(data):
         if not hasattr(data, '__dict__'):
             return str(data)
         data = dict(data.__dict__)
-    for key in data.keys():
+    for key in list(data.keys()):
         if data[key] is None:
             del data[key]
     return data
@@ -60,36 +60,36 @@ class HttpObject(DataObject):
     JSON API."""
 
     response_has_content = {
-        httplib.OK:                True,
-        httplib.ACCEPTED:          False,
-        httplib.CREATED:           True,
-        httplib.NO_CONTENT:        False,
-        httplib.MOVED_PERMANENTLY: True,
-        httplib.FOUND:             True,
-        httplib.NOT_MODIFIED:      True,
+        http.client.OK:                True,
+        http.client.ACCEPTED:          False,
+        http.client.CREATED:           True,
+        http.client.NO_CONTENT:        False,
+        http.client.MOVED_PERMANENTLY: True,
+        http.client.FOUND:             True,
+        http.client.NOT_MODIFIED:      True,
     }
 
     location_headers = {
-        httplib.OK:                'Content-Location',
-        httplib.CREATED:           'Location',
-        httplib.MOVED_PERMANENTLY: 'Location',
-        httplib.FOUND:             'Location',
+        http.client.OK:                'Content-Location',
+        http.client.CREATED:           'Location',
+        http.client.MOVED_PERMANENTLY: 'Location',
+        http.client.FOUND:             'Location',
     }
 
     location_header_required = {
-        httplib.CREATED:           True,
-        httplib.MOVED_PERMANENTLY: True,
-        httplib.FOUND:             True,
+        http.client.CREATED:           True,
+        http.client.MOVED_PERMANENTLY: True,
+        http.client.FOUND:             True,
     }
 
     content_types = ('application/json',)
 
-    class NotFound(httplib.HTTPException):
+    class NotFound(http.client.HTTPException):
         """An HTTPException thrown when the server reports that the requested
         resource was not found."""
         pass
 
-    class Unauthorized(httplib.HTTPException):
+    class Unauthorized(http.client.HTTPException):
         """An HTTPException thrown when the server reports that the requested
         resource is not available through an unauthenticated request.
 
@@ -100,7 +100,7 @@ class HttpObject(DataObject):
         """
         pass
 
-    class Forbidden(httplib.HTTPException):
+    class Forbidden(http.client.HTTPException):
         """An HTTPException thrown when the server reports that the client, as
         authenticated, is not authorized to request the requested resource.
 
@@ -111,7 +111,7 @@ class HttpObject(DataObject):
         """
         pass
 
-    class PreconditionFailed(httplib.HTTPException):
+    class PreconditionFailed(http.client.HTTPException):
         """An HTTPException thrown when the server reports that some of the
         conditions in a conditional request were not true.
 
@@ -122,7 +122,7 @@ class HttpObject(DataObject):
         """
         pass
 
-    class RequestError(httplib.HTTPException):
+    class RequestError(http.client.HTTPException):
         """An HTTPException thrown when the server reports an error in the
         client's request.
 
@@ -131,7 +131,7 @@ class HttpObject(DataObject):
         """
         pass
 
-    class ServerError(httplib.HTTPException):
+    class ServerError(http.client.HTTPException):
         """An HTTPException thrown when the server reports an unexpected error.
 
         This exception corresponds to the HTTP status code 500.
@@ -139,7 +139,7 @@ class HttpObject(DataObject):
         """
         pass
 
-    class BadResponse(httplib.HTTPException):
+    class BadResponse(http.client.HTTPException):
         """An HTTPException thrown when the client receives some other
         non-success HTTP response."""
         pass
@@ -187,17 +187,17 @@ class HttpObject(DataObject):
         """
         # Turn exceptional httplib2 responses into exceptions.
         classname = cls.__name__
-        if response.status == httplib.NOT_FOUND:
+        if response.status == http.client.NOT_FOUND:
             raise cls.NotFound('No such %s %s' % (classname, url))
-        if response.status == httplib.UNAUTHORIZED:
+        if response.status == http.client.UNAUTHORIZED:
             raise cls.Unauthorized('Not authorized to fetch %s %s' % (classname, url))
-        if response.status == httplib.FORBIDDEN:
+        if response.status == http.client.FORBIDDEN:
             raise cls.Forbidden('Forbidden from fetching %s %s' % (classname, url))
-        if response.status == httplib.PRECONDITION_FAILED:
+        if response.status == http.client.PRECONDITION_FAILED:
             raise cls.PreconditionFailed('Precondition failed for %s request to %s' % (classname, url))
 
-        if response.status in (httplib.INTERNAL_SERVER_ERROR, httplib.BAD_REQUEST):
-            if response.status == httplib.BAD_REQUEST:
+        if response.status in (http.client.INTERNAL_SERVER_ERROR, http.client.BAD_REQUEST):
+            if response.status == http.client.BAD_REQUEST:
                 err_cls = cls.RequestError
             else:
                 err_cls = cls.ServerError

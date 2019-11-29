@@ -85,7 +85,7 @@ class DataObjectMetaclass(type):
                 fields.update(base.fields)
 
         # Move all the class's attributes that are Fields to the fields set.
-        for attrname, field in attrs.items():
+        for attrname, field in list(attrs.items()):
             if isinstance(field, remoteobjects.fields.Property):
                 new_properties[attrname] = field
                 if isinstance(field, remoteobjects.fields.Field):
@@ -99,7 +99,7 @@ class DataObjectMetaclass(type):
         attrs['fields'] = fields
         obj_cls = super(DataObjectMetaclass, cls).__new__(cls, name, bases, attrs)
 
-        for field, value in new_properties.items():
+        for field, value in list(new_properties.items()):
             obj_cls.add_to_class(field, value)
 
         # Register the new class so Object fields can have forward-referenced it.
@@ -107,7 +107,7 @@ class DataObjectMetaclass(type):
 
         # Tell this class's fields what this class is, so they can find their
         # forward references later.
-        for field in new_properties.values():
+        for field in list(new_properties.values()):
             field.of_cls = obj_cls
 
         return obj_cls
@@ -119,7 +119,7 @@ class DataObjectMetaclass(type):
             setattr(cls, name, value)
 
 
-class DataObject(object):
+class DataObject(object, metaclass=DataObjectMetaclass):
 
     """An object that can be decoded from or encoded as a dictionary.
 
@@ -139,8 +139,6 @@ class DataObject(object):
 
     """
 
-    __metaclass__ = DataObjectMetaclass
-
     def __init__(self, **kwargs):
         """Initializes a new `DataObject` with the given field values."""
         self.api_data = {}
@@ -155,7 +153,7 @@ class DataObject(object):
         """
         if type(self) != type(other):
             return False
-        for k, v in self.fields.iteritems():
+        for k, v in self.fields.items():
             if isinstance(v, remoteobjects.fields.Field):
                 if getattr(self, k) != getattr(other, k):
                     return False
@@ -172,7 +170,7 @@ class DataObject(object):
 
     @classmethod
     def statefields(cls):
-        return cls.fields.keys() + ['api_data']
+        return list(cls.fields.keys()) + ['api_data']
 
     def __getstate__(self):
         return dict((k, self.__dict__[k]) for k in self.statefields()
@@ -182,7 +180,7 @@ class DataObject(object):
         return getattr(self, attr, *args)
 
     def __iter__(self):
-        for key in self.fields.keys():
+        for key in list(self.fields.keys()):
             yield key
 
     def to_dict(self):
@@ -191,7 +189,7 @@ class DataObject(object):
         data = deepcopy(self.api_data)
 
         # Now replace the data with what's actually in our object
-        for field_name, field in self.fields.iteritems():
+        for field_name, field in self.fields.items():
             value = getattr(self, field.attrname, None)
             if value is not None:
                 data[field.api_name] = field.encode(value)
@@ -200,7 +198,7 @@ class DataObject(object):
 
         # Now delete any fields that ended up being None
         # since we should exclude them in the resulting dict.
-        for k in data.keys():
+        for k in list(data.keys()):
             if data[k] is None:
                 del data[k]
 
@@ -229,7 +227,7 @@ class DataObject(object):
         if not isinstance(data, dict):
             raise TypeError
         # Clear any local instance field data
-        for k in self.fields.iterkeys():
+        for k in self.fields.keys():
             if k in self.__dict__:
                 del self.__dict__[k]
         self.api_data = data

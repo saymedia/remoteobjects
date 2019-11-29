@@ -55,7 +55,7 @@ def test_decoding(object_class, json, count):
     o = object_class.get('http://example.com/ohhai', http=h)
     o.deliver()
 
-    for _ in xrange(count):
+    for _ in range(count):
         h = utils.mock_http(request, json)
 
         t = time.time()
@@ -86,13 +86,13 @@ if __name__ == '__main__':
     module_name, _, class_name = args[1].rpartition('.')
     try:
         module = __import__(module_name)
-    except ImportError, e:
+    except ImportError as e:
         parser.error(e.message)
 
     try:
         RemoteObject = getattr(module, class_name)
-    except AttributeError, e:
+    except AttributeError as e:
         parser.error(e.message)
 
     for t in test_decoding(RemoteObject, json, options.num_runs):
-        print t
+        print(t)

@@ -42,7 +42,7 @@ from datetime import datetime, tzinfo, timedelta
 import dateutil.parser
 import logging
 import time
-import urlparse
+import urllib.parse
 
 import remoteobjects.dataobject
 
@@ -309,13 +309,13 @@ class Dict(List):
             if callable(self.default):
                 return self.default()
             return self.default or None
-        return dict((k, self.fld.decode(v)) for k, v in value.iteritems())
+        return dict((k, self.fld.decode(v)) for k, v in value.items())
 
     def encode(self, value):
         """Encodes a `DataObject` attribute (a dictionary with decoded
         `DataObject` attribute values for values) into a dictionary value (a
         dictionary with encoded dictionary values for values)."""
-        return dict((k, self.fld.encode(v)) for k, v in value.iteritems())
+        return dict((k, self.fld.encode(v)) for k, v in value.items())
 
 
 class AcceptsStringCls(object):
@@ -482,5 +482,5 @@ class Link(AcceptsStringCls, Property):
         """
         if instance._location is None:
             raise AttributeError('Cannot find URL of %s relative to URL-less %s' % (self.cls.__name__, owner.__name__))
-        newurl = urlparse.urljoin(instance._location, self.api_name)
+        newurl = urllib.parse.urljoin(instance._location, self.api_name)
         return self.cls.get(newurl)

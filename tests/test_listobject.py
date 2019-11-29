@@ -50,23 +50,23 @@ class TestPageObjects(unittest.TestCase):
         mox.Replay(h)
 
         b = Toybox.get('http://example.com/foo', http=h)
-        self.assertEquals(b._location, 'http://example.com/foo')
+        self.assertEqual(b._location, 'http://example.com/foo')
 
         j = b[0:10]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?limit=10&offset=0')
+        self.assertTrue(isinstance(j, Toybox))
+        self.assertEqual(j._location, 'http://example.com/foo?limit=10&offset=0')
 
         j = b[300:370]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?limit=70&offset=300')
+        self.assertTrue(isinstance(j, Toybox))
+        self.assertEqual(j._location, 'http://example.com/foo?limit=70&offset=300')
 
         j = b[1:]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?offset=1')
+        self.assertTrue(isinstance(j, Toybox))
+        self.assertEqual(j._location, 'http://example.com/foo?offset=1')
 
         j = b[:10]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?limit=10')
+        self.assertTrue(isinstance(j, Toybox))
+        self.assertEqual(j._location, 'http://example.com/foo?limit=10')
 
         # Nobody did any HTTP, right?
         mox.Verify(h)

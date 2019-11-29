@@ -40,11 +40,11 @@ __date__ = '24 August 2009'
 __author__ = 'Mark Paschal'
 
 
-import httplib
+import http.client
 from optparse import OptionParser
 import simplejson as json
 import sys
-from urlparse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse
 
 from remoteobjects import RemoteObject, fields, ListObject
 
@@ -53,10 +53,10 @@ class CouchObject(RemoteObject):
 
     # CouchDB omits Locations for Created responses, so don't expect them.
     location_headers = dict(RemoteObject.location_headers)
-    location_headers[httplib.CREATED] = None
+    location_headers[http.client.CREATED] = None
 
     def update_from_response(self, url, response, content):
-        if response.status == httplib.CREATED:
+        if response.status == http.client.CREATED:
             # CouchDB CREATED responses don't contain full content, so only
             # unpack the ID and revision.
             data = json.loads(content)
@@ -103,7 +103,7 @@ class ViewResult(CouchObject, ListObject):
     entries    = fields.List(fields.Object(ListItem), api_name='rows')
 
     def filter(self, **kwargs):
-        for k, v in kwargs.iteritems():
+        for k, v in kwargs.items():
             if isinstance(v, list) or isinstance(v, dict) or isinstance(v, bool):
                 kwargs[k] = json.dumps(v)
         return super(ViewResult, self).filter(**kwargs)
@@ -127,16 +127,16 @@ def create_db(url):
         db.deliver()
     except Database.NotFound:
         db.put()
-        print "Database %s created" % url
+        print("Database %s created" % url)
     else:
-        print "Database %s already exists" % url
+        print("Database %s already exists" % url)
 
 
 def create_view(dburl):
     viewset = Viewset.get(urljoin(dburl, '_design/profiles'))
     try:
         viewset.deliver()
-        print "Retrieved existing 'profiles' views"
+        print("Retrieved existing 'profiles' views")
     except Viewset.NotFound:
         # Start with an empty set of views.
         viewset.views = {}
@@ -150,7 +150,7 @@ def create_view(dburl):
     viewset.views['url'] = View(mapfn=profiles_url_code)
 
     viewset.put()
-    print "Updated 'profiles' views for %s" % dburl
+    print("Updated 'profiles' views for %s" % dburl)
 
 
 def main(argv=None):
@@ -164,7 +164,7 @@ def main(argv=None):
 
     db = opts.database
     if db is None:
-        print >>sys.stderr, "Option --database is required"
+        print("Option --database is required", file=sys.stderr)
         return 1
 
     # Create the database, if necessary.

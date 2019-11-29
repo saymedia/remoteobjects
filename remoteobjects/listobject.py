@@ -27,11 +27,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from urlparse import urljoin, urlparse, urlunparse
+from urllib.parse import urljoin, urlparse, urlunparse
 import cgi
 import inspect
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import remoteobjects.fields as fields
 from remoteobjects.dataobject import find_by_name
@@ -83,7 +83,7 @@ class OfOf(type):
         return type.__new__(cls, name, bases, attr)
 
 
-class PageOf(PromiseObject.__metaclass__):
+class PageOf(PromiseObject.__metaclass__, metaclass=OfOf):
 
     """Metaclass defining a `PageObject` containing a set of some other
     class's instances.
@@ -102,8 +102,6 @@ class PageOf(PromiseObject.__metaclass__):
     which is a `PageObject` of ``Entry`` instances.
 
     """
-
-    __metaclass__ = OfOf
 
     _modulename = 'remoteobjects.listobject._pages'
 
@@ -151,7 +149,7 @@ class PageOf(PromiseObject.__metaclass__):
         return newcls
 
 
-class PageObject(SequenceProxy, PromiseObject):
+class PageObject(SequenceProxy, PromiseObject, metaclass=PageOf):
 
     """A `RemoteObject` representing a set of other `RemoteObject` instances.
 
@@ -184,8 +182,6 @@ class PageObject(SequenceProxy, PromiseObject):
 
     """
 
-    __metaclass__ = PageOf
-
     entries = fields.List(fields.Field())
 
     def __getitem__(self, key):
@@ -215,9 +211,7 @@ class ListOf(PageOf):
     _modulename = 'remoteobjects.listobject._lists'
 
 
-class ListObject(PageObject):
-
-    __metaclass__ = ListOf
+class ListObject(PageObject, metaclass=ListOf):
 
     def update_from_dict(self, data):
         super(ListObject, self).update_from_dict({ 'entries': data })

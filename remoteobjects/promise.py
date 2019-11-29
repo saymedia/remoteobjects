@@ -27,11 +27,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import urlparse
-import urllib
+import urllib.parse
+import urllib.request, urllib.parse, urllib.error
 import cgi
 
-import httplib
+import http.client
 import httplib2
 
 import remoteobjects.http
@@ -220,7 +220,7 @@ class PromiseObject(remoteobjects.http.HttpObject):
             raise TypeError("Cannot update %r from non-dictionary data source %r"
                 % (self, data))
         # Clear any local instance field data
-        for k in self.fields.iterkeys():
+        for k in self.fields.keys():
             if k in self.__dict__:
                 del self.__dict__[k]
         # Update directly to avoid triggering delivery.
@@ -247,11 +247,11 @@ class PromiseObject(remoteobjects.http.HttpObject):
         you require.
 
         """
-        parts = list(urlparse.urlparse(self._location))
+        parts = list(urllib.parse.urlparse(self._location))
         queryargs = cgi.parse_qs(parts[4], keep_blank_values=True)
-        queryargs = dict([(k, v[0]) for k, v in queryargs.iteritems()])
+        queryargs = dict([(k, v[0]) for k, v in queryargs.items()])
         queryargs.update(kwargs)
-        parts[4] = urllib.urlencode(queryargs)
-        newurl = urlparse.urlunparse(parts)
+        parts[4] = urllib.parse.urlencode(queryargs)
+        newurl = urllib.parse.urlunparse(parts)
 
         return self.get(newurl, http=self._http)

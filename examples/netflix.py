@@ -43,8 +43,8 @@ __author__ = 'Mark Paschal'
 import cgi
 from optparse import OptionParser
 import sys
-from urllib import urlencode
-import urlparse
+from urllib.parse import urlencode
+import urllib.parse
 from xml.etree import ElementTree
 
 import httplib2
@@ -68,9 +68,9 @@ class Flixject(RemoteObject):
             http_url=request['uri'])
 
         # OAuthRequest will strip our query parameters, so add them back in.
-        parts = list(urlparse.urlparse(self._location))
+        parts = list(urllib.parse.urlparse(self._location))
         queryargs = cgi.parse_qs(parts[4], keep_blank_values=True)
-        for key, value in queryargs.iteritems():
+        for key, value in queryargs.items():
             orq.set_parameter(key, value[0])
 
         # Sign the request.
@@ -86,7 +86,7 @@ class Flixject(RemoteObject):
         return request
 
     def update_from_tree(self, tree):
-        data = dict((k, v(tree)) for k, v in self.decoder_ring.items())
+        data = dict((k, v(tree)) for k, v in list(self.decoder_ring.items()))
         self.update_from_dict(data)
         return self
 
@@ -135,18 +135,18 @@ def do_search(opts, args):
     search.deliver()
 
     if len(search.results) == 0:
-        print "No results for %r" % query
+        print("No results for %r" % query)
     elif len(search.results) == 1:
         result = search.results[0]
-        print "## %s ##" % result.title
+        print("## %s ##" % result.title)
     else:
-        print "## Results for %r ##" % query
-        print
+        print("## Results for %r ##" % query)
+        print()
         for title in search.results:
             if title is None:
-                print "(oops, none)"
+                print("(oops, none)")
             else:
-                print title.title
+                print(title.title)
 
     return 0
 
@@ -166,7 +166,7 @@ def main(argv=None):
     opts, args = parser.parse_args()
 
     if opts.key is None or opts.secret is None:
-        print >>sys.stderr, "Options --key and --secret are required"
+        print("Options --key and --secret are required", file=sys.stderr)
         return 1
 
     Flixject.api_token = (opts.key, opts.secret)
