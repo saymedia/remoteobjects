@@ -34,7 +34,7 @@ import sys
 import urllib.request, urllib.parse, urllib.error
 
 import remoteobjects.fields as fields
-from remoteobjects.dataobject import find_by_name
+from remoteobjects.dataobject import find_by_name, DataObjectMetaclass
 from remoteobjects.promise import PromiseObject, PromiseError
 
 
@@ -83,7 +83,7 @@ class OfOf(type):
         return type.__new__(cls, name, bases, attr)
 
 
-class PageOf(PromiseObject.__metaclass__, metaclass=OfOf):
+class PageOf(DataObjectMetaclass, metaclass=OfOf):
 
     """Metaclass defining a `PageObject` containing a set of some other
     class's instances.
