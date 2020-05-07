@@ -30,11 +30,16 @@
 import unittest
 
 import httplib2
+import urllib.parse
 from mox3 import mox
 
 from remoteobjects import fields, http, promise, listobject
 from tests import test_dataobject, test_http
 from tests import utils
+
+
+def _q(url):
+    return urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
 
 
 class TestPageObjects(unittest.TestCase):
@@ -54,11 +59,11 @@ class TestPageObjects(unittest.TestCase):
 
         j = b[0:10]
         self.assertTrue(isinstance(j, Toybox))
-        self.assertEqual(j._location, 'http://example.com/foo?limit=10&offset=0')
+        self.assertEqual(_q(j._location), _q('http://example.com/foo?limit=10&offset=0'))
 
         j = b[300:370]
         self.assertTrue(isinstance(j, Toybox))
-        self.assertEqual(j._location, 'http://example.com/foo?limit=70&offset=300')
+        self.assertEqual(_q(j._location), _q('http://example.com/foo?limit=70&offset=300'))
 
         j = b[1:]
         self.assertTrue(isinstance(j, Toybox))
