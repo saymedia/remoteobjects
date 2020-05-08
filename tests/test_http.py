@@ -82,9 +82,9 @@ class TestHttpObjects(unittest.TestCase):
 
         h = utils.mock_http(request, content)
         b = BasicMost.get('http://example.com/ohhai', http=h)
-        self.assertEqual(b.name, "Fred\ufffd")
+        self.assertEqual(b.name, "Fred\u00f1")
         # Bad characters are replaced with the unicode Replacement Character 0xFFFD.
-        self.assertEqual(b.value, "image by \ufffdrew Example")
+        self.assertEqual(b.value, "image by \u00efrew Example")
         mox.Verify(h)
 
     def test_post(self):
