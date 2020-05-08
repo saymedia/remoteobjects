@@ -30,13 +30,17 @@
 from datetime import datetime, timedelta, tzinfo
 import logging
 import pickle
-import sys
 import unittest
 
 from mox3 import mox
 
 from remoteobjects import fields, dataobject
 from tests import utils
+
+
+class PicklableBasicMost(dataobject.DataObject):
+    name  = fields.Field()
+    value = fields.Field()
 
 
 class TestDataObjects(unittest.TestCase):
@@ -359,35 +363,16 @@ class TestDataObjects(unittest.TestCase):
         self.assertTrue(isinstance(r.related, Related))  # not extra_dataobject.Related
         self.assertTrue(isinstance(r.other,   extra_dataobject.OtherRelated))  # not NotRelated
 
-    def set_up_pickling_class(self):
-        class BasicMost(self.cls):
-            name  = fields.Field()
-            value = fields.Field()
-
-        # Simulate a special module for this BasicMost, so pickle can find
-        # the class for it.
-        pickletest_module = mox.MockAnything()
-        pickletest_module.BasicMost = BasicMost
-        # Note this pseudomodule has no file, so coverage doesn't get a mock
-        # method by mistake.
-        pickletest_module.__file__ = None
-        BasicMost.__module__ = 'remoteobjects._pickletest'
-        sys.modules['remoteobjects._pickletest'] = pickletest_module
-
-        return BasicMost
-
     def test_pickling(self):
 
-        BasicMost = self.set_up_pickling_class()
-
-        obj = BasicMost(name='fred', value=7)
+        obj = PicklableBasicMost(name='fred', value=7)
 
         pickled_obj = pickle.dumps(obj)
         self.assertTrue(pickled_obj)
         unpickled_obj = pickle.loads(pickled_obj)
         self.assertEqual(unpickled_obj, obj)
 
-        obj = BasicMost.from_dict({'name': 'fred', 'value': 7})
+        obj = PicklableBasicMost.from_dict({'name': 'fred', 'value': 7})
 
         cloned_obj = pickle.loads(pickle.dumps(obj))
         self.assertTrue(cloned_obj)
