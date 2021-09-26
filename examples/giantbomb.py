@@ -34,6 +34,7 @@
 An example Giant Bomb API client, implemented using remoteobjects.
 
 """
+from __future__ import print_function
 
 __version__ = '1.0'
 __date__ = '24 August 2009'
@@ -42,8 +43,9 @@ __author__ = 'Mark Paschal'
 
 from optparse import OptionParser
 import sys
-from urllib import urlencode
-from urlparse import parse_qs, urljoin, urlparse, urlunparse
+from six.moves.urllib.parse import (
+    urlencode, parse_qs, urljoin, urlparse, urlunparse
+)
 
 from remoteobjects import RemoteObject, fields
 
@@ -66,9 +68,9 @@ class Bombject(RemoteObject):
         url = self._location
         parts = list(urlparse(url))
         query = parse_qs(parts[4])
-        query = dict([(k, v[0]) for k, v in query.iteritems()])
+        query = dict([(k, v[0]) for k, v in query.items()])
 
-        for k, v in kwargs.iteritems():
+        for k, v in kwargs.items():
             if v is None and k in query:
                 del query[k]
             else:
@@ -141,7 +143,7 @@ def main(argv=None):
     opts, args = parser.parse_args()
 
     if opts.key is None:
-        print >>sys.stderr, "Option --key is required"
+        print("Option --key is required", file=sys.stderr)
         return 1
 
     query = ' '.join(args)
@@ -152,16 +154,16 @@ def main(argv=None):
     search = search.filter(query=query)
 
     if len(search.results) == 0:
-        print "No results for %r" % query
+        print("No results for %r" % query)
     elif len(search.results) == 1:
         (game,) = search.results
-        print "## %s ##" % game.name
-        print
-        print game.summary
+        print("## %s ##" % game.name)
+        print()
+        print(game.summary)
     else:
-        print "## Search results for %r ##" % query
+        print("## Search results for %r ##" % query)
         for game in search.results:
-            print game.name
+            print(game.name)
 
     return 0
 

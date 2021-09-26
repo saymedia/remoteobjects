@@ -3,3 +3,17 @@ pyparsing==2.4.7
 python-dateutil==2.8.2
 simplejson==3.19.2
 six==1.16.0
+
+cffi==1.15.1; platform_python_implementation == 'PyPy'
+greenlet==0.4.13; platform_python_implementation == 'PyPy'
+hpy==0.0.4.dev179+g9b5d200; platform_python_implementation == 'PyPy' and python_version < '3.9'
+readline==6.2.4.1; platform_python_implementation == 'PyPy'
+
+argcomplete==3.1.2; python_version == '3.9' and sys_platform == 'win32'
+click==8.1.7; python_version == '3.9' and sys_platform == 'win32'
+colorama==0.4.6; python_version == '3.9' and sys_platform == 'win32'
+packaging==23.2; python_version == '3.9' and sys_platform == 'win32'
+pipx==1.2.0; python_version == '3.9' and sys_platform == 'win32'
+userpath==1.9.1; python_version == '3.9' and sys_platform == 'win32'
+
+certifi==2023.7.22; python_version == '3.11' and sys_platform == 'darwin'

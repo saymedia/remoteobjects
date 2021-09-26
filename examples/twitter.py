@@ -34,17 +34,21 @@
 A Twitter API client, implemented using remoteobjects.
 
 """
+from __future__ import print_function
 
 __version__ = '1.1'
 __date__ = '17 April 2009'
 __author__ = 'Brad Choate'
 
 
-import httplib
 from optparse import OptionParser
 import sys
-from urllib import urlencode, quote_plus
-from urlparse import urljoin, urlunsplit
+from six import text_type
+from six.moves import input
+from six.moves import http_client  # python3: http.client
+from six.moves.urllib.parse import (
+    urlencode, quote_plus, urljoin, urlunsplit
+)
 
 from httplib2 import Http
 
@@ -77,7 +81,7 @@ class User(RemoteObject):
             url += '/%s.json' % quote_plus(kwargs['id'])
         else:
             url += '.json'
-        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('screen_name', 'user_id')])
+        query = urlencode([(key, value) for key, value in kwargs.items() if key in ('screen_name', 'user_id')])
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
@@ -143,14 +147,14 @@ class DirectMessageList(ListObject):
     @classmethod
     def get_messages(cls, http=None, **kwargs):
         url = '/direct_messages.json'
-        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('since_id', 'page')])
+        query = urlencode([(key, value) for key, value in kwargs.items() if key in ('since_id', 'page')])
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
     @classmethod
     def get_sent_messages(cls, http=None, **kwargs):
         url = '/direct_messages/sent.json'
-        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('since_id', 'page')])
+        query = urlencode([(key, value) for key, value in kwargs.items() if key in ('since_id', 'page')])
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
@@ -177,7 +181,7 @@ class UserList(ListObject):
             url += '/%s.json' % quote_plus(kwargs['id'])
         else:
             url += '.json'
-        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('screen_name', 'user_id', 'page')])
+        query = urlencode([(key, value) for key, value in kwargs.items() if key in ('screen_name', 'user_id', 'page')])
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
@@ -195,7 +199,7 @@ class Timeline(ListObject):
 
     @classmethod
     def friends(cls, http=None, **kwargs):
-        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('since_id', 'max_id', 'count', 'page')])
+        query = urlencode([(key, value) for key, value in kwargs.items() if key in ('since_id', 'max_id', 'count', 'page')])
         url = urlunsplit((None, None, '/statuses/friends_timeline.json', query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
@@ -206,13 +210,13 @@ class Timeline(ListObject):
             url += '/%s.json' % quote_plus(kwargs['id'])
         else:
             url += '.json'
-        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('screen_name', 'user_id', 'since_id', 'max_id', 'page')])
+        query = urlencode([(key, value) for key, value in kwargs.items() if key in ('screen_name', 'user_id', 'since_id', 'max_id', 'page')])
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
     @classmethod
     def mentions(cls, http=None, **kwargs):
-        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('since_id', 'max_id', 'page')])
+        query = urlencode([(key, value) for key, value in kwargs.items() if key in ('since_id', 'max_id', 'page')])
         url = urlunsplit((None, None, '/statuses/mentions.json', query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
@@ -258,21 +262,21 @@ class Twitter(Http):
 
 
 def show_public(twitter):
-    print "## Public timeline ##"
+    print("## Public timeline ##")
     for tweet in twitter.public_timeline():
-        print unicode(tweet)
+        print(text_type(tweet))
 
 
 def show_dms(twitter):
-    print "## Direct messages sent to me ##"
+    print("## Direct messages sent to me ##")
     for dm in twitter.direct_messages_received():
-        print unicode(dm)
+        print(text_type(dm))
 
 
 def show_friends(twitter):
-    print "## Tweets from my friends ##"
+    print("## Tweets from my friends ##")
     for tweet in twitter.friends_timeline():
-        print unicode(tweet)
+        print(text_type(tweet))
 
 
 def main(argv=None):
@@ -296,18 +300,18 @@ def main(argv=None):
     # We'll use regular HTTP authentication, so ask for a password and add
     # it in the regular httplib2 way.
     if opts.username is not None:
-        password = raw_input("Password (will echo): ")
+        password = input("Password (will echo): ")
         twitter.add_credentials(opts.username, password)
 
     try:
-        print
+        print()
         opts.action(twitter)
-        print
-    except httplib.HTTPException, exc:
+        print()
+    except http_client.HTTPException as exc:
         # The API could be down, or the credentials on an auth-only request
         # could be wrong, so show the error to the end user.
-        print >>sys.stderr, "Error making request: %s: %s" \
-            % (type(exc).__name__, str(exc))
+        print("Error making request: %s: %s"
+            % (type(exc).__name__, text_type(exc)), file=sys.stderr)
         return 1
 
     return 0

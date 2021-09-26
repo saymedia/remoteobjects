@@ -12,6 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "pypy-3.8", "pypy-3.9"]
+        os: [ubuntu-20.04, ubuntu-22.04, macOS-latest, windows-latest]
         include:
           - python-version: "2.7"
             os: "ubuntu-20.04"
@@ -19,7 +21,14 @@ jobs:
             os: "ubuntu-22.04"
     steps:
     - uses: actions/checkout@v4.1.0
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python-version }} (github action)
+      if: matrix.python-version != '2.7'
+      uses: actions/setup-python@v4.7.0
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    - name: Set up Python ${{ matrix.python-version }} (apt-get)
+      if: matrix.python-version == '2.7'
       # since actions/python-versions removed 2.7 from versions-manifest.json
       # and also deleted all the python 2.7 binary artifacts,
       # we have to apt-get install python2

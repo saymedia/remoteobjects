@@ -42,6 +42,7 @@ except ImportError:
         # https://github.com/simplejson/simplejson/commit/104b40fcf6aa39d9ba7b240c3c528d1f85e86ef2
         from simplejson.decoder import errmsg
 from simplejson.scanner import py_make_scanner
+from six import unichr, text_type
 import sys
 
 # Truly heinous... we are going to the trouble of reproducing this
@@ -71,8 +72,8 @@ def forgiving_scanstring(s, end, encoding=None, strict=True, _b=BACKSLASH, _m=ST
         content, terminator = chunk.groups()
         # Content is contains zero or more unescaped string characters
         if content:
-            if not isinstance(content, unicode):
-                content = unicode(content, encoding, errors="replace")
+            if not isinstance(content, text_type):
+                content = text_type(content, encoding, errors="replace")
             _append(content)
         # Terminator is the end of string, a literal control character,
         # or a backslash denoting that an escape sequence follows
