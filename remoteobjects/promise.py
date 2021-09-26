@@ -27,11 +27,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import urlparse
-from urlparse import parse_qs
-import urllib
-
 import httplib2
+from six.moves.urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 import remoteobjects.http
 
@@ -218,7 +215,7 @@ class PromiseObject(remoteobjects.http.HttpObject):
             raise TypeError("Cannot update %r from non-dictionary data source %r"
                 % (self, data))
         # Clear any local instance field data
-        for k in self.fields.iterkeys():
+        for k in self.fields.keys():
             if k in self.__dict__:
                 del self.__dict__[k]
         # Update directly to avoid triggering delivery.
@@ -245,11 +242,11 @@ class PromiseObject(remoteobjects.http.HttpObject):
         you require.
 
         """
-        parts = list(urlparse.urlparse(self._location))
+        parts = list(urlparse(self._location))
         queryargs = parse_qs(parts[4], keep_blank_values=True)
-        queryargs = dict([(k, v[0]) for k, v in queryargs.iteritems()])
+        queryargs = dict([(k, v[0]) for k, v in queryargs.items()])
         queryargs.update(kwargs)
-        parts[4] = urllib.urlencode(queryargs)
-        newurl = urlparse.urlunparse(parts)
+        parts[4] = urlencode(queryargs)
+        newurl = urlunparse(parts)
 
         return self.get(newurl, http=self._http)
