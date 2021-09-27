@@ -182,12 +182,12 @@ class PromiseObject(remoteobjects.http.HttpObject):
         return resp
 
     def __setattr__(self, name, value):
-        if name is not '_delivered' and not self._delivered and name in self.fields:
+        if name != '_delivered' and not self._delivered and name in self.fields:
             self.deliver()
         return super(PromiseObject, self).__setattr__(name, value)
 
     def __delattr__(self, name):
-        if name is not '_delivered' and not self._delivered and name in self.fields:
+        if name != '_delivered' and not self._delivered and name in self.fields:
             self.deliver()
         return super(PromiseObject, self).__delattr__(name)
 
