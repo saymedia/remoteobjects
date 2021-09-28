@@ -30,6 +30,7 @@
 import unittest
 
 from remoteobjects import fields, http
+from six import PY2
 from tests import test_dataobject
 from tests import utils
 
@@ -80,6 +81,40 @@ class TestHttpObjects(unittest.TestCase):
         self.assertEqual(b.name, u"Fred\ufffd")
         # Bad characters are replaced with the unicode Replacement Character 0xFFFD.
         self.assertEqual(b.value, u"image by \ufffdrew Example")
+        h.request.assert_called_once_with(**request)
+        h.reset_mock()
+
+        # since simplejson 3.3.0, lone surrogates are passed through
+        # https://github.com/simplejson/simplejson/commit/35816bfe2d0ddeb5ddcc68239683cbb35b7e3ff2
+        content = """{"name": "lone surrogate \\ud800", "value": "\\udc00 lone surrogate"}"""
+        h = utils.mock_http(request, content)
+        b = BasicMost.get('http://example.com/ohhai', http=h)
+        # Lone surrogates are passed through as lone surrogates in the python unicode value
+        self.assertEqual(b.name, u"lone surrogate \ud800")
+        self.assertEqual(b.value, u"\udc00 lone surrogate")
+        h.request.assert_called_once_with(**request)
+
+        content = u"""{"name": "100 \u20AC", "value": "13000 \u00A5"}""".encode('utf-8')
+        h = utils.mock_http(request, content)
+        b = BasicMost.get('http://example.com/ohhai', http=h)
+        # JSON containing non-ascii UTF-8 should be decoded to unicode strings
+        self.assertEqual(b.name, u"100 \u20AC")
+        self.assertEqual(b.value, u"13000 \u00A5")
+        h.request.assert_called_once_with(**request)
+
+        content = b"""{"name": "lone surrogate \xed\xa0\x80", "value": "\xed\xb0\x80 lone surrogate"}"""
+        h = utils.mock_http(request, content)
+        b = BasicMost.get('http://example.com/ohhai', http=h)
+        # Lone surrogates are passed through as lone surrogates in the python unicode value
+        if PY2:
+            # in python2, our JSONDecoder does not detect naked lone surrogates
+            self.assertEqual(b.name, u"lone surrogate \ud800")
+            self.assertEqual(b.value, u"\udc00 lone surrogate")
+        else:
+            # in python3, bytes.decode replaces lone surrogates with replacement char
+            self.assertEqual(b.name, u"lone surrogate \ufffd\ufffd\ufffd")
+            self.assertEqual(b.value, u"\ufffd\ufffd\ufffd lone surrogate")
+
         h.request.assert_called_once_with(**request)
 
     def test_post(self):
