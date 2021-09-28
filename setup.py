@@ -67,7 +67,11 @@ setup(
     extras_require={
         'test': [
             'flake8~=3.9',
-            'mox',
+            # according to https://mock.readthedocs.io/en/latest/
+            # version 3.0.5 is the last version supporting Python <= 3.5.
+            # Once we migrate to python 3.3+, we can switch from mock to
+            # unittest.mock
+            'mock~=3.0.5',
         ]
     },
 )

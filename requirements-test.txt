@@ -2,10 +2,11 @@ configparser==4.0.2
 contextlib2==0.6.0.post1
 enum34==1.1.10
 flake8==3.9.2
+funcsigs==1.0.2
 functools32==3.2.3.post2
 importlib-metadata==2.1.3
 mccabe==0.6.1
-mox==0.5.3
+mock==3.0.5
 pathlib2==2.3.7.post1
 pycodestyle==2.7.0
 pyflakes==2.3.1
