@@ -28,8 +28,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import urlparse
+from urlparse import parse_qs
 import urllib
-import cgi
 
 import httplib2
 
@@ -246,7 +246,7 @@ class PromiseObject(remoteobjects.http.HttpObject):
 
         """
         parts = list(urlparse.urlparse(self._location))
-        queryargs = cgi.parse_qs(parts[4], keep_blank_values=True)
+        queryargs = parse_qs(parts[4], keep_blank_values=True)
         queryargs = dict([(k, v[0]) for k, v in queryargs.iteritems()])
         queryargs.update(kwargs)
         parts[4] = urllib.urlencode(queryargs)
