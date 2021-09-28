@@ -30,7 +30,7 @@
 import unittest
 
 import httplib2
-import mox
+import mock
 
 from remoteobjects import fields, promise
 from tests import test_dataobject, test_http
@@ -56,30 +56,29 @@ class TestPromiseObjects(unittest.TestCase):
         class Tiny(self.cls):
             name = fields.Field()
 
-        h = mox.MockObject(httplib2.Http)
-        mox.Replay(h)
+        h = mock.NonCallableMock(spec_set=httplib2.Http)
 
         url = 'http://example.com/whahay'
         t = Tiny.get(url, http=h)
 
         # Check that we didn't do anything.
-        mox.Verify(h)
+        self.assertEqual([], h.method_calls)
 
         headers = {"accept": "application/json"}
         request = dict(uri=url, headers=headers)
         content = """{"name": "Mollifred"}"""
         h = utils.mock_http(request, content)
-        t._http = h  # inject, oops
+        t._http = h
+
         self.assertEquals(t.name, 'Mollifred')
-        mox.Verify(h)
+        h.request.assert_called_once_with(**request)
 
     def test_filter(self):
 
         class Toy(self.cls):
             name = fields.Field()
 
-        h = mox.MockObject(httplib2.Http)
-        mox.Replay(h)
+        h = mock.NonCallableMock(spec_set=httplib2.Http)
 
         b = Toy.get('http://example.com/foo', http=h)
         self.assertEquals(b._location, 'http://example.com/foo')
@@ -95,7 +94,7 @@ class TestPromiseObjects(unittest.TestCase):
         self.assertEquals(y._location, 'http://example.com/foo?awesome=no')
 
         # Nobody did any HTTP, right?
-        mox.Verify(h)
+        self.assertEqual([], h.method_calls)
 
     def test_awesome(self):
 

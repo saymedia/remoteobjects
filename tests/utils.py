@@ -31,7 +31,7 @@ from functools import wraps
 import httplib2
 import logging
 
-import mox
+import mock
 
 
 def todo(fn):
@@ -47,7 +47,7 @@ def todo(fn):
 
 
 def mock_http(req, resp_or_content):
-    mock = mox.MockObject(httplib2.Http)
+    m = mock.Mock(spec_set=httplib2.Http)
 
     if not isinstance(req, dict):
         req = dict(uri=req)
@@ -81,9 +81,8 @@ def mock_http(req, resp_or_content):
         return httplib2.Response(response_info), content
 
     resp, content = make_response(resp_or_content, req['uri'])
-    mock.request(**req).AndReturn((resp, content))
-    mox.Replay(mock)
-    return mock
+    m.request.return_value = (resp, content)
+    return m
 
 
 def log():

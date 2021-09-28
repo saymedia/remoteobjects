@@ -30,7 +30,7 @@
 import unittest
 
 import httplib2
-import mox
+import mock
 
 from remoteobjects import listobject
 from tests import utils
@@ -45,8 +45,7 @@ class TestPageObjects(unittest.TestCase):
         class Toybox(self.cls):
             pass
 
-        h = mox.MockObject(httplib2.Http)
-        mox.Replay(h)
+        h = mock.NonCallableMock(spec_set=httplib2.Http)
 
         b = Toybox.get('http://example.com/foo', http=h)
         self.assertEquals(b._location, 'http://example.com/foo')
@@ -68,7 +67,7 @@ class TestPageObjects(unittest.TestCase):
         self.assertEquals(j._location, 'http://example.com/foo?limit=10')
 
         # Nobody did any HTTP, right?
-        mox.Verify(h)
+        self.assertEqual([], h.method_calls)
 
     def test_index(self):
 
@@ -80,9 +79,8 @@ class TestPageObjects(unittest.TestCase):
         request = dict(uri=url, headers=headers)
         content = """{"entries":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}"""
         h = utils.mock_http(request, content)
-        mox.Replay(h)
 
         b = Toybox.get('http://example.com/whahay', http=h)
         self.assertEqual(b[7], 7)
 
-        mox.Verify(h)
+        h.request.assert_called_once_with(**request)

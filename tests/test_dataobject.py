@@ -32,7 +32,7 @@ import pickle
 import sys
 import unittest
 
-import mox
+import mock
 
 from remoteobjects import fields, dataobject
 from tests import utils
@@ -365,7 +365,7 @@ class TestDataObjects(unittest.TestCase):
 
         # Simulate a special module for this BasicMost, so pickle can find
         # the class for it.
-        pickletest_module = mox.MockAnything()
+        pickletest_module = mock.Mock()
         pickletest_module.BasicMost = BasicMost
         # Note this pseudomodule has no file, so coverage doesn't get a mock
         # method by mistake.
