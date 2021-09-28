@@ -40,10 +40,10 @@ __date__ = '25 August 2009'
 __author__ = 'Mark Paschal'
 
 
-import cgi
 from optparse import OptionParser
 import sys
 import urlparse
+from urlparse import parse_qs
 from xml.etree import ElementTree
 
 from oauth.oauth import OAuthConsumer, OAuthRequest, OAuthSignatureMethod_HMAC_SHA1
@@ -67,7 +67,7 @@ class Flixject(RemoteObject):
 
         # OAuthRequest will strip our query parameters, so add them back in.
         parts = list(urlparse.urlparse(self._location))
-        queryargs = cgi.parse_qs(parts[4], keep_blank_values=True)
+        queryargs = parse_qs(parts[4], keep_blank_values=True)
         for key, value in queryargs.iteritems():
             orq.set_parameter(key, value[0])
 

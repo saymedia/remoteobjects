@@ -40,11 +40,10 @@ __date__ = '24 August 2009'
 __author__ = 'Mark Paschal'
 
 
-from cgi import parse_qs
 from optparse import OptionParser
 import sys
 from urllib import urlencode
-from urlparse import urljoin, urlparse, urlunparse
+from urlparse import parse_qs, urljoin, urlparse, urlunparse
 
 from remoteobjects import RemoteObject, fields
 
