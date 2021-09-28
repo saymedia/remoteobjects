@@ -96,6 +96,22 @@ class TestPromiseObjects(unittest.TestCase):
         # Nobody did any HTTP, right?
         self.assertEqual([], h.method_calls)
 
+    def test_filter_mix_str_unicode(self):
+        """On python2, test that filter accepts both unicode and str"""
+        class Toy(self.cls):
+            name = fields.Field()
+
+        h = mock.NonCallableMock(spec_set=httplib2.Http)
+
+        b = Toy.get('http://example.com/foo', http=h)
+        self.assertEquals(b._location, 'http://example.com/foo')
+
+        y = b.filter(a='a', b=u'b')
+        self.assertEquals(y._location, 'http://example.com/foo?a=a&b=b')
+        y = b.filter(**{'a': 'a', u'b': u'b'})
+        self.assertEquals(y._location, 'http://example.com/foo?a=a&b=b')
+
+
     def test_awesome(self):
 
         class Toy(self.cls):
