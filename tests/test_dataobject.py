@@ -371,6 +371,8 @@ class TestDataObjects(unittest.TestCase):
         # method by mistake.
         pickletest_module.__file__ = None
         BasicMost.__module__ = 'remoteobjects._pickletest'
+        # In python3, we have to set __qualname__ too
+        BasicMost.__qualname__ = BasicMost.__name__
         sys.modules['remoteobjects._pickletest'] = pickletest_module
 
         return BasicMost
