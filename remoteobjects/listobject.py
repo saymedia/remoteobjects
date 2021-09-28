@@ -193,9 +193,9 @@ class PageObject(with_metaclass(PageOf, SequenceProxy, PromiseObject)):
         if isinstance(key, slice):
             args = dict()
             if key.start is not None:
-                args['offset'] = key.start
                 if key.stop is not None:
                     args['limit'] = key.stop - key.start
+                args['offset'] = key.start
             elif key.stop is not None:
                 args['limit'] = key.stop
             return self.filter(**args)
