@@ -263,10 +263,22 @@ class HttpObject(DataObject):
         self.raise_for_response(url, response, content)
 
         if self.response_has_content.get(response.status):
-            try:
+            if PY3:
+                # Both simplejson and the built-in json module decode the bytes
+                # before passing it to the JSONDecoder in python3,
+                # so we might as well do the same thing
+                # instead of passing bytes to a modified JSONDecoder
+                # https://github.com/simplejson/simplejson/blob/v3.17.5/simplejson/decoder.py#L368-L369
+                # https://github.com/python/cpython/blob/v3.9.7/Lib/json/__init__.py#L341
+                if not isinstance(content, text_type):
+                    # use a forgiving decode
+                    content = content.decode('utf-8', errors='replace')
                 data = json.loads(content)
-            except UnicodeDecodeError:
-                data = json.loads(content, cls=ForgivingDecoder)
+            else:
+                try:
+                    data = json.loads(content)
+                except UnicodeDecodeError:
+                    data = json.loads(content, cls=ForgivingDecoder)
 
             self.update_from_dict(data)
 
