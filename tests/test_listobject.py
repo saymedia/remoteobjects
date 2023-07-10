@@ -48,23 +48,23 @@ class TestPageObjects(unittest.TestCase):
         h = mock.NonCallableMock(spec_set=httplib2.Http)
 
         b = Toybox.get('http://example.com/foo', http=h)
-        self.assertEquals(b._location, 'http://example.com/foo')
+        self.assertEqual(b._location, 'http://example.com/foo')
 
         j = b[0:10]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?limit=10&offset=0')
+        self.assertIsInstance(j, Toybox)
+        self.assertEqual(j._location, 'http://example.com/foo?limit=10&offset=0')
 
         j = b[300:370]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?limit=70&offset=300')
+        self.assertIsInstance(j, Toybox)
+        self.assertEqual(j._location, 'http://example.com/foo?limit=70&offset=300')
 
         j = b[1:]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?offset=1')
+        self.assertIsInstance(j, Toybox)
+        self.assertEqual(j._location, 'http://example.com/foo?offset=1')
 
         j = b[:10]
-        self.assert_(isinstance(j, Toybox))
-        self.assertEquals(j._location, 'http://example.com/foo?limit=10')
+        self.assertIsInstance(j, Toybox)
+        self.assertEqual(j._location, 'http://example.com/foo?limit=10')
 
         # Nobody did any HTTP, right?
         self.assertEqual([], h.method_calls)
