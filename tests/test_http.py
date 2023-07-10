@@ -59,8 +59,8 @@ class TestHttpObjects(unittest.TestCase):
         h = utils.mock_http(request, content)
         b = BasicMost.get('http://example.com/ohhai', http=h,
                           headers={"x-test": "boo"})
-        self.assertEquals(b.name, 'Fred')
-        self.assertEquals(b.value, 7)
+        self.assertEqual(b.name, 'Fred')
+        self.assertEqual(b.value, 7)
         h.request.assert_called_once_with(**request)
 
     def test_get_bad_encoding(self):
@@ -77,9 +77,9 @@ class TestHttpObjects(unittest.TestCase):
 
         h = utils.mock_http(request, content)
         b = BasicMost.get('http://example.com/ohhai', http=h)
-        self.assertEquals(b.name, u"Fred\ufffd")
+        self.assertEqual(b.name, u"Fred\ufffd")
         # Bad characters are replaced with the unicode Replacement Character 0xFFFD.
-        self.assertEquals(b.value, u"image by \ufffdrew Example")
+        self.assertEqual(b.value, u"image by \ufffdrew Example")
         h.request.assert_called_once_with(**request)
 
     def test_post(self):
@@ -98,7 +98,7 @@ class TestHttpObjects(unittest.TestCase):
         content = """{"name": "CBS"}"""
         h = utils.mock_http(request, content)
         c = ContainerMost.get('http://example.com/asfdasf', http=h)
-        self.assertEquals(c.name, 'CBS')
+        self.assertEqual(c.name, 'CBS')
         h.request.assert_called_once_with(**request)
 
         b = BasicMost(name='Fred Friendly', value=True)
@@ -116,8 +116,8 @@ class TestHttpObjects(unittest.TestCase):
         c.post(b, http=h)
         h.request.assert_called_once_with(**request)
 
-        self.assertEquals(b._location, 'http://example.com/fred')
-        self.assertEquals(b._etag, 'xyz')
+        self.assertEqual(b._location, 'http://example.com/fred')
+        self.assertEqual(b._etag, 'xyz')
 
     def test_put(self):
 
@@ -135,7 +135,7 @@ class TestHttpObjects(unittest.TestCase):
         content = """{"name": "Molly", "value": 80}"""
         h = utils.mock_http(request, content)
         b = BasicMost.get('http://example.com/bwuh', http=h)
-        self.assertEquals(b.name, 'Molly')
+        self.assertEqual(b.name, 'Molly')
         h.request.assert_called_once_with(**request)
 
         headers = {
@@ -149,7 +149,7 @@ class TestHttpObjects(unittest.TestCase):
         b.put(http=h)
         h.request.assert_called_once_with(**request)
 
-        self.assertEquals(b._etag, 'xyz')
+        self.assertEqual(b._etag, 'xyz')
 
     def test_put_no_content(self):
         """
@@ -168,7 +168,7 @@ class TestHttpObjects(unittest.TestCase):
         content = """{"name": "Molly", "value": 80}"""
         h = utils.mock_http(request, content)
         b = BasicMost.get('http://example.com/bwuh', http=h)
-        self.assertEquals(b.name, 'Molly')
+        self.assertEqual(b.name, 'Molly')
         h.request.assert_called_once_with(**request)
 
         headers = {
@@ -182,7 +182,7 @@ class TestHttpObjects(unittest.TestCase):
         b.put(http=h)
         h.request.assert_called_once_with(**request)
 
-        self.assertEquals(b.name, 'Molly')
+        self.assertEqual(b.name, 'Molly')
 
     def test_put_failure(self):
 
@@ -197,7 +197,7 @@ class TestHttpObjects(unittest.TestCase):
         content = """{"name": "Molly", "value": 80}"""
         h = utils.mock_http(request, content)
         b = BasicMost.get('http://example.com/bwuh', http=h)
-        self.assertEquals(b.value, 80)
+        self.assertEqual(b.value, 80)
         h.request.assert_called_once_with(**request)
 
         b.value = 'superluminal'
@@ -232,7 +232,7 @@ class TestHttpObjects(unittest.TestCase):
         content = """{"name": "Molly", "value": 80}"""
         h = utils.mock_http(request, content)
         b = BasicMost.get('http://example.com/bwuh', http=h)
-        self.assertEquals(b.value, 80)
+        self.assertEqual(b.value, 80)
         h.request.assert_called_once_with(**request)
 
         headers = {
@@ -245,8 +245,8 @@ class TestHttpObjects(unittest.TestCase):
         b.delete(http=h)
         h.request.assert_called_once_with(**request)
 
-        self.failIf(b._location is not None)
-        self.failIf(hasattr(b, '_etag'))
+        self.assertFalse(b._location is not None)
+        self.assertFalse(hasattr(b, '_etag'))
 
     def test_delete_failure(self):
 
@@ -270,12 +270,12 @@ class TestHttpObjects(unittest.TestCase):
         h.request.assert_called_once_with(**request)
 
     def test_not_found(self):
-        self.assert_(self.cls.NotFound)
+        self.assertTrue(self.cls.NotFound)
 
         class Huh(self.cls):
             name = fields.Field()
 
-        self.assert_(Huh.NotFound)
+        self.assertTrue(Huh.NotFound)
 
         request = {
             'uri': 'http://example.com/bwuh',

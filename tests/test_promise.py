@@ -70,7 +70,7 @@ class TestPromiseObjects(unittest.TestCase):
         h = utils.mock_http(request, content)
         t._http = h
 
-        self.assertEquals(t.name, 'Mollifred')
+        self.assertEqual(t.name, 'Mollifred')
         h.request.assert_called_once_with(**request)
 
     def test_filter(self):
@@ -81,17 +81,17 @@ class TestPromiseObjects(unittest.TestCase):
         h = mock.NonCallableMock(spec_set=httplib2.Http)
 
         b = Toy.get('http://example.com/foo', http=h)
-        self.assertEquals(b._location, 'http://example.com/foo')
+        self.assertEqual(b._location, 'http://example.com/foo')
 
         x = b.filter(limit=10, offset=7)
-        self.assert_(x is not b)
-        self.assertEquals(b._location, 'http://example.com/foo')
-        self.assertEquals(x._location, 'http://example.com/foo?limit=10&offset=7')
+        self.assertTrue(x is not b)
+        self.assertEqual(b._location, 'http://example.com/foo')
+        self.assertEqual(x._location, 'http://example.com/foo?limit=10&offset=7')
 
         y = b.filter(awesome='yes')
-        self.assertEquals(y._location, 'http://example.com/foo?awesome=yes')
+        self.assertEqual(y._location, 'http://example.com/foo?awesome=yes')
         y = y.filter(awesome='no')
-        self.assertEquals(y._location, 'http://example.com/foo?awesome=no')
+        self.assertEqual(y._location, 'http://example.com/foo?awesome=no')
 
         # Nobody did any HTTP, right?
         self.assertEqual([], h.method_calls)
@@ -104,12 +104,12 @@ class TestPromiseObjects(unittest.TestCase):
         h = mock.NonCallableMock(spec_set=httplib2.Http)
 
         b = Toy.get('http://example.com/foo', http=h)
-        self.assertEquals(b._location, 'http://example.com/foo')
+        self.assertEqual(b._location, 'http://example.com/foo')
 
         y = b.filter(a='a', b=u'b')
-        self.assertEquals(y._location, 'http://example.com/foo?a=a&b=b')
+        self.assertEqual(y._location, 'http://example.com/foo?a=a&b=b')
         y = b.filter(**{'a': 'a', u'b': u'b'})
-        self.assertEquals(y._location, 'http://example.com/foo?a=a&b=b')
+        self.assertEqual(y._location, 'http://example.com/foo?a=a&b=b')
 
 
     def test_awesome(self):
@@ -122,8 +122,8 @@ class TestPromiseObjects(unittest.TestCase):
 
         r = Room.get('http://example.com/bwuh/')
         b = r.toybox
-        self.assert_(isinstance(b, Toy))
-        self.assertEquals(b._location, 'http://example.com/bwuh/toybox')
+        self.assertIsInstance(b, Toy)
+        self.assertEqual(b._location, 'http://example.com/bwuh/toybox')
 
     def test_set_before_delivery(self):
 
@@ -142,9 +142,9 @@ class TestPromiseObjects(unittest.TestCase):
         t.names = ["New name"]
         d = t.to_dict() # this delivers the object
 
-        # self.assertEquals(t.foo, "something")
-        self.assertEquals(d['names'][0], "New name")
-        self.assertEquals(t.names[0], "New name")
+        # self.assertEqual(t.foo, "something")
+        self.assertEqual(d['names'][0], "New name")
+        self.assertEqual(t.names[0], "New name")
 
         h = utils.mock_http(request, content)
         # test case where we update_from_dict explictly after setting attributes
@@ -152,4 +152,4 @@ class TestPromiseObjects(unittest.TestCase):
         t.foo = "local change"
         t.update_from_dict({"names": ["local update"]})
 
-        self.assertEquals(t.foo, None)
+        self.assertEqual(t.foo, None)
