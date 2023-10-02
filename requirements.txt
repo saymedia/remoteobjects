@@ -1,3 +1,5 @@
-simplejson
-httplib2>=0.5.0
-python-dateutil
+httplib2==0.22.0
+pyparsing==2.4.7
+python-dateutil==2.8.2
+simplejson==3.19.2
+six==1.16.0

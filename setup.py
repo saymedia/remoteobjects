@@ -64,4 +64,10 @@ setup(
     python_requires='>=2.7, <3.0',
     install_requires=['simplejson>=2.0.0', 'httplib2>=0.5.0',
                       'python-dateutil>=2.1'],
+    extras_require={
+        'test': [
+            'nose',
+            'mox',
+        ]
+    },
 )
