@@ -27,17 +27,16 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from functools import wraps
 import httplib2
 import logging
 import os
 
 import mox
-import nose
-import nose.tools
 
 
 def todo(fn):
-    @nose.tools.make_decorator(fn)
+    @wraps(fn)
     def test_reverse(*args, **kwargs):
         try:
             fn(*args, **kwargs)

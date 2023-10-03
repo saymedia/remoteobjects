@@ -43,7 +43,7 @@ jobs:
     - name: Install test dependencies
       run: python -m pip install -r requirements-test.txt
     - name: Run tests
-      run: nosetests
+      run: python -m unittest discover
     - name: Check that all recursive dependencies are in requirements.txt and requirements-test.txt
       run: python -m unittest tests.test_requirements_txt
       env:
