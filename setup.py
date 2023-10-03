@@ -66,7 +66,6 @@ setup(
                       'python-dateutil>=2.1'],
     extras_require={
         'test': [
-            'nose',
             'mox',
         ]
     },
