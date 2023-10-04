@@ -1,0 +1,42 @@
+name: Tests
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python-version: "2.7"
+            os: "ubuntu-20.04"
+          - python-version: "2.7"
+            os: "ubuntu-22.04"
+    steps:
+    - uses: actions/checkout@v4.1.0
+    - name: Set up Python ${{ matrix.python-version }}
+      # since actions/python-versions removed 2.7 from versions-manifest.json
+      # and also deleted all the python 2.7 binary artifacts,
+      # we have to apt-get install python2
+      # https://github.com/actions/setup-python/issues/672
+      run: |
+        set -eux
+        sudo apt-get update
+        sudo apt-get install -y python2 python3-virtualenv
+        virtualenv -p python2 "${{ runner.temp }}/venv"
+        # Fix for error in ubuntu-20.04 pip (fixed in ubuntu-22.04)
+        # can't find '__main__' module in '/usr/share/python-wheels/pep517-0.8.2-py2.py3-none-any.whl/pep517/_in_process.py
+        # https://github.com/pypa/pip/issues/7874#issuecomment-605520503
+        "${{ runner.temp }}/venv/bin/pip" install --force-reinstall --upgrade pip
+        echo "${{ runner.temp }}/venv/bin" >> $GITHUB_PATH
+    - name: Install prod dependencies
+      run: python -m pip install -r requirements.txt
+    - name: Install test dependencies
+      run: python -m pip install -r requirements-test.txt
+    - name: Run tests
+      run: nosetests
