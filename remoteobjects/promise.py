@@ -31,11 +31,9 @@ import urlparse
 import urllib
 import cgi
 
-import httplib
 import httplib2
 
 import remoteobjects.http
-from remoteobjects.fields import Property
 
 
 class PromiseError(Exception):

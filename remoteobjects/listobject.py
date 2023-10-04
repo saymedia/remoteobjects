@@ -27,15 +27,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from urlparse import urljoin, urlparse, urlunparse
-import cgi
-import inspect
 import sys
-import urllib
 
 import remoteobjects.fields as fields
-from remoteobjects.dataobject import find_by_name
-from remoteobjects.promise import PromiseObject, PromiseError
+from remoteobjects.promise import PromiseObject
 
 
 class SequenceProxy(object):

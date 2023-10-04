@@ -34,8 +34,7 @@ import httplib2
 import httplib
 import logging
 
-from remoteobjects.dataobject import DataObject, DataObjectMetaclass
-from remoteobjects import fields
+from remoteobjects.dataobject import DataObject
 
 userAgent = httplib2.Http()
 

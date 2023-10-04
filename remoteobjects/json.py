@@ -28,9 +28,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from simplejson import JSONDecoder
-from simplejson.decoder import FLAGS, BACKSLASH, STRINGCHUNK, DEFAULT_ENCODING
+from simplejson.decoder import BACKSLASH, STRINGCHUNK, DEFAULT_ENCODING
 from simplejson.scanner import py_make_scanner
-import re
 
 
 # Truly heinous... we are going to the trouble of reproducing this

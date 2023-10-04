@@ -43,14 +43,12 @@ __author__ = 'Mark Paschal'
 import cgi
 from optparse import OptionParser
 import sys
-from urllib import urlencode
 import urlparse
 from xml.etree import ElementTree
 
-import httplib2
 from oauth.oauth import OAuthConsumer, OAuthRequest, OAuthSignatureMethod_HMAC_SHA1
 
-from remoteobjects import RemoteObject, fields, PageObject
+from remoteobjects import RemoteObject, fields
 
 
 class Flixject(RemoteObject):

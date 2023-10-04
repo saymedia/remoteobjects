@@ -34,8 +34,6 @@ A Sphinx extension to autodocument __init__ methods.
 """
 
 
-import logging
-
 def document_init_methods(app, what, name, obj, skip, options):
     if not skip:
         return
