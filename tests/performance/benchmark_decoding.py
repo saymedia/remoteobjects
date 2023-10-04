@@ -76,7 +76,7 @@ if __name__ == '__main__':
     try:
         fd = open(args[0])
         json = fd.read()
-    except:
+    except Exception:
         parser.error("Unable to read file: '%s'" % args[1])
     finally:
         fd.close()

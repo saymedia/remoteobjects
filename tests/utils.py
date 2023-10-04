@@ -39,7 +39,7 @@ def todo(fn):
     def test_reverse(*args, **kwargs):
         try:
             fn(*args, **kwargs)
-        except:
+        except Exception:
             pass
         else:
             raise AssertionError('test %s unexpectedly succeeded' % fn.__name__)
