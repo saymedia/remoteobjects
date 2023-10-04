@@ -44,7 +44,7 @@ import httplib
 from optparse import OptionParser
 import simplejson as json
 import sys
-from urlparse import urljoin, urlparse
+from urlparse import urljoin
 
 from remoteobjects import RemoteObject, fields, ListObject
 

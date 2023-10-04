@@ -40,8 +40,6 @@ that offers links between `RemoteObject` instances, `Link`.
 
 from datetime import datetime, tzinfo, timedelta
 import dateutil.parser
-import logging
-import time
 import urlparse
 
 import remoteobjects.dataobject

@@ -28,7 +28,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from datetime import datetime, timedelta, tzinfo
-import logging
 import pickle
 import sys
 import unittest

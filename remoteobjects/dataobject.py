@@ -41,7 +41,6 @@ declared on `DataObject` subclasses. `Field` classes reside in the
 
 
 from copy import deepcopy
-import logging
 
 import remoteobjects.fields
 

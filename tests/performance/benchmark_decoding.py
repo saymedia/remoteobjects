@@ -38,8 +38,6 @@ the -n flag). The raw times to decode the JSON data will be dumped to stdout.
 
 import optparse
 import time
-import remoteobjects
-import mox
 
 from tests import utils
 

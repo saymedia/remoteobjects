@@ -41,10 +41,8 @@ __author__ = 'Mark Paschal'
 
 
 from cgi import parse_qs
-from datetime import datetime
 from optparse import OptionParser
 import sys
-import time
 from urllib import urlencode
 from urlparse import urljoin, urlparse, urlunparse
 

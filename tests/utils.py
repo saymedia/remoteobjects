@@ -30,7 +30,6 @@
 from functools import wraps
 import httplib2
 import logging
-import os
 
 import mox
 
