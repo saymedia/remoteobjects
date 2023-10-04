@@ -77,7 +77,7 @@ class User(RemoteObject):
             url += '/%s.json' % quote_plus(kwargs['id'])
         else:
             url += '.json'
-        query = urlencode(filter(lambda x: x in ('screen_name', 'user_id'), kwargs))
+        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('screen_name', 'user_id')])
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
@@ -143,14 +143,14 @@ class DirectMessageList(ListObject):
     @classmethod
     def get_messages(cls, http=None, **kwargs):
         url = '/direct_messages.json'
-        query = urlencode(filter(lambda x: x in ('since_id', 'page'), kwargs))
+        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('since_id', 'page')])
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
     @classmethod
     def get_sent_messages(cls, http=None, **kwargs):
         url = '/direct_messages/sent.json'
-        query = urlencode(filter(lambda x: x in ('since_id', 'page'), kwargs))
+        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('since_id', 'page')])
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
@@ -177,7 +177,7 @@ class UserList(ListObject):
             url += '/%s.json' % quote_plus(kwargs['id'])
         else:
             url += '.json'
-        query = urlencode(filter(lambda x: x in ('screen_name', 'user_id', 'page'), kwargs))
+        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('screen_name', 'user_id', 'page')])
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
@@ -195,7 +195,7 @@ class Timeline(ListObject):
 
     @classmethod
     def friends(cls, http=None, **kwargs):
-        query = urlencode(filter(lambda x: x in ('since_id', 'max_id', 'count', 'page'), kwargs))
+        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('since_id', 'max_id', 'count', 'page')])
         url = urlunsplit((None, None, '/statuses/friends_timeline.json', query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
@@ -206,13 +206,13 @@ class Timeline(ListObject):
             url += '/%s.json' % quote_plus(kwargs['id'])
         else:
             url += '.json'
-        query = urlencode(filter(lambda x: x in ('screen_name', 'user_id', 'since_id', 'max_id', 'page'), kwargs))
+        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('screen_name', 'user_id', 'since_id', 'max_id', 'page')])
         url = urlunsplit((None, None, url, query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
     @classmethod
     def mentions(cls, http=None, **kwargs):
-        query = urlencode(filter(lambda x: x in ('since_id', 'max_id', 'page'), kwargs))
+        query = urlencode([(key, value) for key, value in kwargs.iteritems() if key in ('since_id', 'max_id', 'page')])
         url = urlunsplit((None, None, '/statuses/mentions.json', query, None))
         return cls.get(urljoin(Twitter.endpoint, url), http=http)
 
