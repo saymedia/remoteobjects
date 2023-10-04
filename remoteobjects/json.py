@@ -29,8 +29,20 @@
 
 from simplejson import JSONDecoder
 from simplejson.decoder import BACKSLASH, STRINGCHUNK, DEFAULT_ENCODING
+try:
+    # simplejson >=3.12
+    from simplejson.errors import errmsg
+except ImportError:
+    try:
+        # simplejson >=3.1.0, <3.12, before this commit:
+        # https://github.com/simplejson/simplejson/commit/0d36c5cd16055d55e6eceaf252f072a9339e0746
+        from simplejson.scanner import errmsg
+    except ImportError:
+        # simplejson >=1.1,<3.1.0, before this commit:
+        # https://github.com/simplejson/simplejson/commit/104b40fcf6aa39d9ba7b240c3c528d1f85e86ef2
+        from simplejson.decoder import errmsg
 from simplejson.scanner import py_make_scanner
-
+import sys
 
 # Truly heinous... we are going to the trouble of reproducing this
 # entire routine, because we need to supply an errors="replace"
