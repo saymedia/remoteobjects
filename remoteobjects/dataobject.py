@@ -152,8 +152,8 @@ class DataObject(object):
         same data in all their fields, the objects are equivalent.
 
         """
-        if type(self) != type(other):
-            return False
+        if not isinstance(other, type(self)):
+            return NotImplemented
         for k, v in self.fields.iteritems():
             if isinstance(v, remoteobjects.fields.Field):
                 if getattr(self, k) != getattr(other, k):
