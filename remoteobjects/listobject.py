@@ -92,6 +92,10 @@ class PageOf(PromiseObject.__metaclass__):
     new `PageObject` classes that contain objects of a specified other class,
     like so:
 
+    >>> from remoteobjects import RemoteObject
+    >>> from remoteobjects.listobject import PageObject, PageOf
+    >>> class Entry(RemoteObject): pass
+    ...
     >>> PageOfEntry = PageOf(Entry)
 
     This is equivalent to defining ``PageOfEntry`` yourself:
@@ -173,6 +177,9 @@ class PageObject(SequenceProxy, PromiseObject):
     `PageOf`, with the class reference you would use to construct an `Object`
     field. That is, these declarations are equivalent:
 
+    >>> from remoteobjects import fields, RemoteObject
+    >>> from remoteobjects.listobject import PageObject, PageOf
+    >>> class Entry(RemoteObject): pass
     >>> PageOfEntry = PageOf(Entry)
 
     >>> class PageOfEntry(PageObject):

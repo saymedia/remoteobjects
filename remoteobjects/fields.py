@@ -439,11 +439,17 @@ class Link(AcceptsStringCls, Property):
 
     For example:
 
+    >>> from remoteobjects import RemoteObject
+    >>> from remoteobjects.fields import Link
+    >>> class Event(RemoteObject): pass
+    ...
     >>> class Item(RemoteObject):
     ...     feed = Link(Event)
     ...
     >>> i = Item.get('http://example.com/item/')
-    >>> f = i.feed  # f's URL: http://example.com/item/feed
+    >>> f = i.feed
+    >>> f._location
+    'http://example.com/item/feed'
 
     Override the `__get__` method of a `Link` subclass to customize how the
     URLs to linked objects are constructed.
