@@ -61,6 +61,7 @@ setup(
 
     packages=['remoteobjects'],
     provides=['remoteobjects'],
+    python_requires='>=2.7, <3.0',
     requires=['simplejson(>=2.0.0)', 'httplib2(>=0.5.0)',
               'dateutil(>=2.1)'],
     install_requires=['simplejson>=2.0.0', 'httplib2>=0.5.0',
