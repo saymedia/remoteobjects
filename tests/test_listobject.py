@@ -32,7 +32,7 @@ import unittest
 import httplib2
 import mock
 
-from remoteobjects import listobject
+from remoteobjects import fields, listobject, promise
 from tests import utils
 
 
@@ -84,3 +84,55 @@ class TestPageObjects(unittest.TestCase):
         self.assertEqual(b[7], 7)
 
         h.request.assert_called_once_with(**request)
+
+
+class TestPageOf(unittest.TestCase):
+
+    def test_basemodule(self):
+        # When creating PageOf(myclass), it should use PageObject as superclass
+        self.assertEqual(listobject.PageOf._basemodule, listobject.PageObject)
+
+    def test_to_dict(self):
+        class MyObj(promise.PromiseObject):
+            myfield = fields.Field()
+        MyObjPage = listobject.PageOf(MyObj)
+        obj = MyObjPage(entries=[MyObj(myfield="myval")])
+        # When creating PageOf(myclass), it should use PageObject as superclass
+        self.assertIsInstance(obj, listobject.PageObject)
+        self.assertEqual({"entries": [{"myfield": "myval"}]}, obj.to_dict())
+
+    def test_from_dict(self):
+        class MyObj(promise.PromiseObject):
+            myfield = fields.Field()
+        MyObjPage = listobject.PageOf(MyObj)
+        actual = MyObjPage.from_dict({"entries": [{"myfield": "myval"}]})
+        self.assertIsInstance(actual, listobject.PageObject)
+        self.assertEqual("myval", actual.entries[0].myfield)
+        expected = MyObjPage(entries=[MyObj(myfield="myval")])
+        self.assertEqual(actual, expected)
+
+
+class TestListOf(unittest.TestCase):
+
+    def test_basemodule(self):
+        # When creating ListOf(myclass), it should use ListObject as superclass
+        self.assertEqual(listobject.ListOf._basemodule, listobject.ListObject)
+
+    def test_to_dict(self):
+        class MyObj(promise.PromiseObject):
+            myfield = fields.Field()
+        MyObjList = listobject.ListOf(MyObj)
+        obj = MyObjList(entries=[MyObj(myfield="myval")])
+        # When creating ListOf(myclass), it should use ListObject as superclass
+        self.assertIsInstance(obj, listobject.ListObject)
+        self.assertEqual([{"myfield": "myval"}], obj.to_dict())
+
+    def test_from_dict(self):
+        class MyObj(promise.PromiseObject):
+            myfield = fields.Field()
+        MyObjList = listobject.ListOf(MyObj)
+        actual = MyObjList.from_dict([{"myfield": "myval"}])
+        expected = MyObjList(entries=[MyObj(myfield="myval")])
+        self.assertEqual("myval", actual.entries[0].myfield)
+        self.assertIsInstance(actual, listobject.ListObject)
+        self.assertEqual(actual, expected)
