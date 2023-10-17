@@ -535,7 +535,7 @@ class TestDataObjects(unittest.TestCase):
         when = datetime(year=2008, month=12, day=31, hour=4, minute=0, second=1,
                 tzinfo=fields.Datetime.utc)
         self.assertEquals(t.when, when, 'Datetime data decoded into the expected datetime')
-        self.assert_(t.when.tzinfo is fields.Datetime.utc, 
+        self.assert_(t.when.tzinfo is fields.Datetime.utc,
                 'Datetime data decoded with utc timezone info')
 
         when = datetime(year=2010, month=2, day=11, hour=4, minute=37, second=44)

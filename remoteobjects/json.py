@@ -53,7 +53,8 @@ def forgiving_scanstring(s, end, encoding=None, strict=True, _b=BACKSLASH, _m=ST
     Unescapes all valid JSON string escape sequences and raises ValueError
     on attempt to decode an invalid string. If strict is False then literal
     control characters are allowed in the string.
-    
+
+
     Returns a tuple of the decoded string and the index of the character in s
     after the end quote."""
     if encoding is None:
