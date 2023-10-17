@@ -1,1 +1,14 @@
+configparser==4.0.2
+contextlib2==0.6.0.post1
+enum34==1.1.10
+flake8==3.9.2
+functools32==3.2.3.post2
+importlib-metadata==2.1.3
+mccabe==0.6.1
 mox==0.5.3
+pathlib2==2.3.7.post1
+pycodestyle==2.7.0
+pyflakes==2.3.1
+scandir==1.10.0
+typing==3.10.0.0
+zipp==1.2.0

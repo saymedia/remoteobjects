@@ -66,6 +66,7 @@ setup(
                       'python-dateutil>=2.1'],
     extras_require={
         'test': [
+            'flake8~=3.9',
             'mox',
         ]
     },
