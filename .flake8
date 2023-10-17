@@ -1,0 +1,36 @@
+[flake8]
+exclude =
+    .git,
+    .direnv,
+# flake8 has extend-ignore, but autopep8 does not support it
+ignore =
+    # python3 -m flake8 --help (3.9.2, with no .flake8 config)
+    # gives these defaults:
+    # E704 multiple statements on one line (def)
+    E704,
+    # E24 multiple spaces after ‘,’ or tab after ‘,’
+    E24,
+    # E226 missing whitespace around arithmetic operator
+    E226,
+    # E126 continuation line over-indented for hanging indent
+    E126,
+    # W503 line break before binary operator
+    W503,
+    # W504 line break after binary operator
+    W504,
+    # E121 continuation line under-indented for hanging indent
+    E121,
+    # E123 closing bracket does not match indentation of opening bracket’s line
+    E123,
+
+    # too many changes for now
+    # E501 line too long
+    E501,
+    # fixing style is too many changes for now
+    # https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes
+    # E1 Indentation
+    E1,
+    # E2 Whitespace
+    E2,
+    # E3 Blank line
+    E3,
