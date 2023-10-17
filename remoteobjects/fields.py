@@ -231,7 +231,7 @@ class Constant(Field):
             return self
         # Since it's a constant, always return the same value.
         return self.value
-    
+
     def __set__(self, obj, value):
         # If it's the correct value, do nothing. Else, raise an exception.
         if value != self.value:

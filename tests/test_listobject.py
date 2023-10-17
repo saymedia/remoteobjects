@@ -85,4 +85,4 @@ class TestPageObjects(unittest.TestCase):
         b = Toybox.get('http://example.com/whahay', http=h)
         self.assertEqual(b[7], 7)
 
-        mox.Verify(h)        
+        mox.Verify(h)

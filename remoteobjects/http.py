@@ -126,7 +126,7 @@ class HttpObject(DataObject):
         client's request.
 
         This exception corresponds to the HTTP status code 400.
-        
+
         """
         pass
 
