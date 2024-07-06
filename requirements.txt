@@ -16,4 +16,4 @@ packaging==23.2; python_version == '3.9' and sys_platform == 'win32'
 pipx==1.2.0; python_version == '3.9' and sys_platform == 'win32'
 userpath==1.9.1; python_version == '3.9' and sys_platform == 'win32'
 
-certifi==2023.7.22; python_version == '3.11' and sys_platform == 'darwin'
+certifi==2024.7.4; python_version == '3.11' and sys_platform == 'darwin'
