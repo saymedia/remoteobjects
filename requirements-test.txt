@@ -12,4 +12,4 @@ pycodestyle==2.7.0
 pyflakes==2.3.1
 scandir==1.10.0
 typing==3.10.0.0; python_version < '3.0'
-zipp==1.2.0
+zipp==3.19.1
